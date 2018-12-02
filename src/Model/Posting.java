@@ -15,13 +15,13 @@ public class Posting {
     final String path =  "C:\\Users\\dorlev\\IdeaProjects\\SearchEngine\\src\\Model\\postings\\";
     List<String>typeOfFile;
 
-    public Posting() {
+    public Posting(String path, boolean withStem) {
         theFiles = new LinkedList<>();
         merge1 = new LinkedList<>();
-        postFiles = new ArrayList<>();
-        typeOfFile = new ArrayList();
-        setTypeOfFile();
-        buildFiles();
+        //postFiles = new ArrayList<>();
+        //typeOfFile = new ArrayList();
+        //setTypeOfFile();
+        //buildFiles();
     }
 
     /**
@@ -83,7 +83,6 @@ public class Posting {
             treeDict.put(term,words.get(term));
         }
         prepareForWriting(treeDict);
-
     }
 
     private Queue<String> readFile(File file) {
@@ -118,76 +117,17 @@ public class Posting {
      * @param wordsInDictionary
      */
     private void prepareForWriting(Map<ATerm,Map<String,Integer>> wordsInDictionary) {
-        StringBuffer wordsInfo = new StringBuffer();
+
+        StringBuffer termInfo = new StringBuffer();
         StringBuffer docNumber ;
-        boolean changeToLetter = true;
-        boolean changeToDigit = true;
-        char letter = 'a';
-        char digit = '0';
-        // term
         for (ATerm term : wordsInDictionary.keySet()) {
             docNumber = new StringBuffer();
-            char firstCharacter = term.finalName.charAt(0);
-            // signs
-            if(!Character.isLetterOrDigit(firstCharacter)) {
-                // doc and counter
-                for (String docName : wordsInDictionary.get(term).keySet()) {
-                    docNumber.append("{" + docName + ":" + wordsInDictionary.get(term).get(docName));
-                }
-                wordsInfo.append(term.finalName +","+ docNumber + "\n");
-                continue;
+            for (String docName : wordsInDictionary.get(term).keySet()) {
+                docNumber.append("{" + docName + ":" + wordsInDictionary.get(term).get(docName));
             }
-            // 0-9
-            if(Character.isDigit(firstCharacter)) {
-                // doc and counter
-                for (String docName : wordsInDictionary.get(term).keySet()) {
-                    docNumber.append("{" + docName + ":" + wordsInDictionary.get(term).get(docName));
-                }
-                if(changeToDigit){
-                    wordsInfo.append("}" + term.finalName +","+ docNumber + "\n");
-                    changeToDigit = false;
-                    continue;
-                }
-                if(Character.toLowerCase(digit) == Character.toLowerCase(firstCharacter))
-                    wordsInfo.append(term.finalName +","+ docNumber + "\n");
-                else {
-                    digit = (char) (digit+1);
-                    while (Character.toLowerCase(digit) != Character.toLowerCase(firstCharacter)){
-                        digit = (char) (digit+1);
-                        wordsInfo.append("}");
-                    }
-                    wordsInfo.append("}" + term.finalName +","+ docNumber + "\n");
-                    //letter = (char) (letter+1);
-                }
-                continue;
-            }
-            //a-z
-            if(Character.isLetter(firstCharacter)) {
-                // doc and counter
-                for (String docName : wordsInDictionary.get(term).keySet()) {
-                    docNumber.append("{" + docName + ":" + wordsInDictionary.get(term).get(docName));
-                }
-                if(changeToLetter){
-                    wordsInfo.append("}" + term.finalName +","+ docNumber + "\n");
-                    changeToLetter = false;
-                    continue;
-                }
-                if(Character.toLowerCase(letter) == Character.toLowerCase(firstCharacter))
-                    wordsInfo.append(term.finalName +","+ docNumber + "\n");
-                else {
-                    letter = (char) (letter+1);
-                    while (Character.toLowerCase(letter) != Character.toLowerCase(firstCharacter)){
-                        letter = (char) (letter+1);
-                        wordsInfo.append("}");
-                    }
-                    wordsInfo.append("}" + term.finalName +","+ docNumber + "\n");
-                    //letter = (char) (letter+1);
-                }
-                continue;
-            }
-
+            termInfo.append(term.finalName+","+docNumber+"\n");
         }
-        writeToAllFiles(wordsInfo);
+        writeToFile(termInfo.toString());
     }
 
 
@@ -217,7 +157,7 @@ public class Posting {
             lines = findDuplicateTerm(lines);
             file.delete();
             file.createNewFile();
-            writeUniceTerm(file,lines);
+            //writeToFile(file,lines);
             // write back here
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -227,15 +167,16 @@ public class Posting {
 
     }
 
-    private void writeUniceTerm(File file, List<String>allLines){
+    private void writeToFile(String termTXT){
+        File file;
         try {
+            file = new File(path+numberOfFile++);
             FileOutputStream out = new FileOutputStream(file);
             try {
                 //Writer writer = new OutputStreamWriter(new GZIPOutputStream(out), "UTF-8");
                 Writer writer = new OutputStreamWriter(out);
                 try {
-                    for (String line:allLines)
-                    writer.write(line+"\n");
+                    writer.write(termTXT);
                 } catch (IOException e) {
                     e.printStackTrace();
                 } finally {
@@ -320,35 +261,33 @@ public class Posting {
         }
     }
 
-
+/*
     private void writeToAllFiles(StringBuffer allTermInfo){
-        String[]term = allTermInfo.toString().split("}");
-        for(int i=0;i<postFiles.size();i++) {
+        try {
+            FileOutputStream out = new FileOutputStream(postFiles.get(i),true);
             try {
-                FileOutputStream out = new FileOutputStream(postFiles.get(i),true);
+                //Writer writer = new OutputStreamWriter(new GZIPOutputStream(out), "UTF-8");
+                Writer writer = new OutputStreamWriter(out);
                 try {
-                    //Writer writer = new OutputStreamWriter(new GZIPOutputStream(out), "UTF-8");
-                    Writer writer = new OutputStreamWriter(out);
-                    try {
-                        writer.write(term[i]);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    } finally {
-                        writer.close();
-                    }
+                    writer.write(term[i]);
+                } catch (IOException e) {
+                    e.printStackTrace();
                 } finally {
-                    out.close();
+                    writer.close();
                 }
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
+            } finally {
+                out.close();
             }
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-    }
 
+    }
+*/
 
     public void writePerDoc(Map<String,String> docInfo){
         String bf="";

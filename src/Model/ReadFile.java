@@ -19,8 +19,9 @@ import org.jsoup.select.Elements;
 public class ReadFile {
 
 
-    ParseUnit Parse = new ParseUnit();
-    public ReadFile(String path) {
+    ParseUnit Parse ;
+    public ReadFile(String path,String stopWords, String PathPosting, boolean withStemming) {
+        Parse = new ParseUnit(stopWords, PathPosting, withStemming);
         List<File> allFiles = null;
         int addFile = 0;
         int counter =0;
@@ -66,7 +67,7 @@ public class ReadFile {
                 }
                 counter++;
 
-                if(counter == 50){
+                if(counter == 2){
                     Parse.post.fromMapToPostFiles(Parse.allWordsDic);
                     Parse.allWordsDic.clear();
                     Parse.post.writePerDoc(Parse.docInfo);
@@ -84,36 +85,11 @@ public class ReadFile {
 
     public static void main(String [] args){
         long start = System.nanoTime();
-        ReadFile rf = new ReadFile("d:\\documents\\users\\dorlev\\Downloads\\corpus\\corpus");
+        //ReadFile rf = new ReadFile("d:\\documents\\users\\dorlev\\Downloads\\corpus\\corpus");
         long end = System.nanoTime();
         System.out.println(end-start);
     }
 
-
-    public static void convertTo(){
-        List<String> lines = new ArrayList<>();
-        Stack<String> lineInStack = new Stack<>();
-        File f = new File("C:\\Users\\glazersh\\IdeaProjects\\SearchEngineJ\\src\\main\\java\\postings\\post15");
-        try (GZIPInputStream gzip = new GZIPInputStream(new FileInputStream(f));
-             BufferedReader br = new BufferedReader(new InputStreamReader(gzip))) {
-            String line = null;
-            while ((line = br.readLine()) != null) {
-                lines.add(line);
-            }
-            File f2 = new File("C:\\Users\\glazersh\\IdeaProjects\\SearchEngineJ\\src\\main\\java\\postings\\post16");
-            FileOutputStream out = new FileOutputStream(f2);
-            Writer writer = new OutputStreamWriter(out);
-            writer.write(lines.toString());
-            writer.close();
-            out.close();
-
-
-        } catch (FileNotFoundException e1) {
-            e1.printStackTrace();
-        } catch (IOException e1) {
-            e1.printStackTrace();
-        }
-    }
 
 
 }

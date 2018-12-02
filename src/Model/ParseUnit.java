@@ -10,7 +10,7 @@ import java.util.*;
 
 public class ParseUnit {
 
-    Posting post = new Posting();
+    Posting post ;
     Stemmer stem = new Stemmer();
 
 
@@ -52,10 +52,11 @@ public class ParseUnit {
 
 
 
-    public ParseUnit(){
+    public ParseUnit(String stopWords, String PathPosting,boolean  withStemming){
+        post = new Posting(PathPosting, withStemming);
         insertMonth(); // init all months
         insertAfterWords(); // init special words for our parse
-        StopWords(); // init all stopWords from stopWords.txt
+        StopWords(stopWords); // init all stopWords from stopWords.txt
         insertSigns(); // init all the signs
         /*
         try {
@@ -66,11 +67,11 @@ public class ParseUnit {
         */
     }
 
-    private void StopWords(){
+    private void StopWords(String path){
         Scanner file = null;
         try {
             //don't forget to change the path !!!!
-            file = new Scanner(new File("C:\\Users\\dorlev\\IdeaProjects\\SearchEngine\\src\\resources\\stopWords.txt"));
+            file = new Scanner(new File(path));
             // For each word in the input
             while (file.hasNext()) {
                 // Convert the word to lower case, trim it and insert into the set
@@ -907,7 +908,7 @@ public class ParseUnit {
 
             if(term instanceof Word ) {
                 char c = term.finalName.charAt(0);
-                int counterWord = 0;
+                int counterWord;
                 if (Character.isUpperCase(c)) {
                     String tp = Character.toLowerCase(c) + term.finalName.substring(1); // the term with lowerCase
                     ATerm a = new Word(tp);
@@ -968,20 +969,9 @@ public class ParseUnit {
             }
             else{
                 termMap = new HashMap<>();
-                // max
-                if(maxTermCounter<wordsInDoc.get(term)){
-                    maxTermCounter = wordsInDoc.get(term);
-                    commonTerm = term.finalName;
-                }
-                if(minTermCounter==wordsInDoc.get(term)){
-                    counterMinTerm++;
-                }
-                // min
-                if(minTermCounter>wordsInDoc.get(term)){
-                    minTermCounter = wordsInDoc.get(term);
-                    counterMinTerm=0;
-                    counterMinTerm++;
-                }
+                checkMinMaxCounter(wordsInDoc.get(term));
+
+
 
                 //if do not exist
                 termMap.put(docName, wordsInDoc.get(term));
@@ -1000,59 +990,40 @@ public class ParseUnit {
 
     }
 
+    private void checkMinMaxCounter( int numTermInDoc ){
+        //max
+        if(maxTermCounter<numTermInDoc){
+            maxTermCounter = numTermInDoc;
+            commonTerm = term.finalName;
+        }
+        if(minTermCounter==numTermInDoc){
+            counterMinTerm++;
+        }
+        // min
+        if(minTermCounter>numTermInDoc){
+            minTermCounter = numTermInDoc;
+            counterMinTerm=0;
+            counterMinTerm++;
+        }
+    }
+
+
     private void checkIfExistsLower(String docName, ATerm termOld) {
         if (allWordsDic.containsKey(termOld)) {
             int counterWord = wordsInDoc.get(termOld);
             if(allWordsDic.get(termOld).get(docName)==null){
                 // max
-                if(maxTermCounter<counterWord){
-                    maxTermCounter = counterWord;
-                    commonTerm = term.finalName;
-                }
-                //min
-                if(minTermCounter==counterWord){
-                    counterMinTerm++;
-                }
-                if(minTermCounter>counterWord){
-                    minTermCounter = counterWord;
-                    counterMinTerm = 0;
-                    counterMinTerm++;
-                }
-
+                checkMinMaxCounter(counterWord);
                 allWordsDic.get(termOld).put(docName, counterWord);
             }else{
                 counterWord = wordsInDoc.get(termOld)+allWordsDic.get(termOld).get(docName);
-
-                if(maxTermCounter<counterWord){
-                    maxTermCounter = counterWord;
-                    commonTerm = term.finalName;
-                }
-                if(minTermCounter==counterWord){
-                    counterMinTerm++;
-                }
-                if(minTermCounter>counterWord){
-                    minTermCounter = counterWord;
-                    counterMinTerm=0;
-                    counterMinTerm++;
-                }
-
+                checkMinMaxCounter(counterWord);
                 allWordsDic.get(termOld).put(docName, counterWord);
             }
         } else {
             termMap = new HashMap<>();
+            checkMinMaxCounter(wordsInDoc.get(termOld));
 
-            if(maxTermCounter<wordsInDoc.get(termOld)){
-                maxTermCounter = wordsInDoc.get(termOld);
-                commonTerm = term.finalName;
-            }
-            if(minTermCounter==wordsInDoc.get(termOld)){
-                counterMinTerm++;
-            }
-            if(minTermCounter>wordsInDoc.get(termOld)){
-                minTermCounter = wordsInDoc.get(termOld);
-                counterMinTerm=0;
-                counterMinTerm++;
-            }
 
             //if do not exist
             termMap.put(docName, wordsInDoc.get(termOld));
@@ -1068,26 +1039,11 @@ public class ParseUnit {
             int counterWord = wordsInDoc.get(termOld);
 
             if(allWordsDic.get(termUp).get(docName)==null){
-
-                if(maxTermCounter<wordsInDoc.get(termOld)){
-                    maxTermCounter = wordsInDoc.get(termOld);
-                    commonTerm = term.finalName;
-                }
-                if(minTermCounter==wordsInDoc.get(termOld)){
-                    counterMinTerm++;
-                }
-                if(minTermCounter>wordsInDoc.get(termOld)){
-                    minTermCounter = wordsInDoc.get(termOld);
-                    counterMinTerm=0;
-                    counterMinTerm++;
-                }
-
-
+                checkMinMaxCounter(wordsInDoc.get(termOld));
                 allWordsDic.get(termUp).put(docName, counterWord);
             }
             else {
                 counterWord = wordsInDoc.get(termOld) + allWordsDic.get(termUp).get(docName);
-
                 if(maxTermCounter<counterWord){
                     maxTermCounter = wordsInDoc.get(termOld);
                     commonTerm = term.finalName;
@@ -1106,19 +1062,8 @@ public class ParseUnit {
         } else {
             termMap = new HashMap<>();
             //if do not exist
+            checkMinMaxCounter(wordsInDoc.get(termOld));
 
-            if(maxTermCounter<wordsInDoc.get(termOld)){
-                maxTermCounter = wordsInDoc.get(termOld);
-                commonTerm = term.finalName;
-            }
-            if(minTermCounter==wordsInDoc.get(termOld)){
-                counterMinTerm++;
-            }
-            if(minTermCounter>wordsInDoc.get(termOld)){
-                minTermCounter = wordsInDoc.get(termOld);
-                counterMinTerm=0;
-                counterMinTerm++;
-            }
 
             termMap.put(docName, wordsInDoc.get(termOld));
             //checkCapital(termUp.finalName);

@@ -11,16 +11,16 @@
 
 <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="View.View">
    <children>
-      <Button layoutX="196.0" layoutY="188.0" mnemonicParsing="false" text="Browse files" />
-      <Button layoutX="161.0" layoutY="240.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="149.0" text="Start" />
+      <Button fx:id="btn_Posting" layoutX="196.0" layoutY="188.0" mnemonicParsing="false" onAction="#BrowsePostingPath" text="Browse files" />
+      <Button fx:id="btn_Start" layoutX="161.0" layoutY="240.0" mnemonicParsing="false" onAction="#startEngine" prefHeight="25.0" prefWidth="149.0" text="Start" />
       <TextField fx:id="PathCollection" layoutX="161.0" layoutY="84.0" />
-      <TextField layoutX="161.0" layoutY="162.0" />
-      <Label fx:id="wrongPath" disable="true" layoutX="161.0" layoutY="67.0" text="the path is not exists" textFill="#e40404" />
-      <Label layoutX="161.0" layoutY="145.0" text="Label" />
+      <TextField fx:id="lbl_PathPositng" layoutX="161.0" layoutY="162.0" />
+      <Label fx:id="wrongPath" disable="true" layoutX="161.0" layoutY="67.0" textFill="#e40404" />
+      <Label fx:id="wrongPathPost" layoutX="161.0" layoutY="145.0" text="Label" />
       <Button fx:id="CollectionButton" layoutX="196.0" layoutY="110.0" mnemonicParsing="false" onAction="#BrowseCollection" text="Browse files" />
       <Button layoutX="384.0" layoutY="265.0" mnemonicParsing="false" prefHeight="48.0" prefWidth="165.0" text="Button" />
       <Button layoutX="431.0" layoutY="162.0" mnemonicParsing="false" text="Button" />
-      <CheckBox layoutX="447.0" layoutY="88.0" mnemonicParsing="false" text="CheckBox" />
+      <CheckBox fx:id="lbl_Stemming" layoutX="447.0" layoutY="88.0" mnemonicParsing="false" text="CheckBox" />
       <ChoiceBox layoutX="422.0" layoutY="122.0" prefWidth="150.0" />
       <TextArea layoutX="210.0" layoutY="12.0" prefHeight="48.0" prefWidth="188.0" text="Welcome to our Engine">
          <font>
