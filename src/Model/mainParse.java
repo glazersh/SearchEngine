@@ -10,7 +10,13 @@ public class mainParse {
 
     public static void main(String [] args) {
 
-        ParseUnit p = new ParseUnit();
+        //ParseUnit p = new ParseUnit();
+        String tmp = "{8{{{8{";
+        String [] d = tmp.split("\\{");
+        int x=97;
+        char tmp2 = (char)x;
+        int x2=4;
+
     }
 
 

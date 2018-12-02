@@ -22,6 +22,7 @@ public class ReadFile {
     ParseUnit Parse = new ParseUnit();
     public ReadFile(String path) {
         List<File> allFiles = null;
+        int addFile = 0;
         int counter =0;
         try {
             // Read all files from path
@@ -65,22 +66,27 @@ public class ReadFile {
                 }
                 counter++;
 
-                if(counter==50){
-                    Parse.post.createPostingFileFirstTime(Parse.allWordsDic);
+                if(counter == 50){
+                    Parse.post.fromMapToPostFiles(Parse.allWordsDic);
                     Parse.allWordsDic.clear();
                     Parse.post.writePerDoc(Parse.docInfo);
                     Parse.docInfo.clear();
                     counter = 0;
+                    System.out.println("Insert more 50 file " + (++addFile)*50);
                 }
-
-
-
-
             }
-            Parse.post.createPostingFileFirstTime(Parse.allWordsDic);
+            Parse.post.fromMapToPostFiles(Parse.allWordsDic);
             Parse.allWordsDic.clear();
             Parse.post.createFileWithAllTerms(Parse.allTerm);
+            Parse.post.checkTheFiles();
         } catch (IOException e) { }
+    }
+
+    public static void main(String [] args){
+        long start = System.nanoTime();
+        ReadFile rf = new ReadFile("d:\\documents\\users\\dorlev\\Downloads\\corpus\\corpus");
+        long end = System.nanoTime();
+        System.out.println(end-start);
     }
 
 
