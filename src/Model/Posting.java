@@ -7,62 +7,26 @@ import java.util.*;
 
 public class Posting {
 
-    private int numberOfFile = 1;
+    private int numberOfFileNo = 1;
+    private int numberOfFileYes = 1;
     Queue<File>theFiles;
     Queue<File> merge1;
     File postDocs;
-    List<File>postFiles;
-    final String path =  "C:\\Users\\dorlev\\IdeaProjects\\SearchEngine\\src\\Model\\postings\\";
-    List<String>typeOfFile;
+    List<File>postFilesYes;
+    List<File>postFilesNo;
+    String path;
+    boolean withStem;
 
     public Posting(String path, boolean withStem) {
         theFiles = new LinkedList<>();
         merge1 = new LinkedList<>();
-        //postFiles = new ArrayList<>();
-        //typeOfFile = new ArrayList();
-        //setTypeOfFile();
-        //buildFiles();
+        postFilesYes = new LinkedList<>();
+        postFilesNo = new LinkedList<>();
+        this.withStem = withStem;
+        this.path = path;
     }
 
-    /**
-     * all the file kind
-     * 0-9, a-z, signs
-     */
-    private void setTypeOfFile(){
-        for(int i=0;i<36;i++){
-            if(i<10){
-                typeOfFile.add(i+"");
-            }
-            else{
-                typeOfFile.add((char)(i+87)+"");
-            }
-        }
-    }
 
-    /**
-     * build the postFile
-     */
-    private void buildFiles(){
-        for(int i=0;i<37;i++) {
-            File file;
-            if (i == 0) {
-                file = new File( path + "signs");
-            } else {
-                file = new File (path+typeOfFile.get(i-1));
-            }
-            try {
-                if(file.exists()){
-                    file.delete();
-                }
-                file.createNewFile();
-                postFiles.add(file);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        //System.out.println("build all postFile");
-
-    }
 
     /**
      * get dictionary and write the term in the correct postFile by his first character
@@ -131,52 +95,25 @@ public class Posting {
     }
 
 
-    public void checkTheFiles(){
-        for(int i=0;i<postFiles.size();i++){
-            uniteTerm(postFiles.get(i));
-        }
-    }
-
-    /**
-     * check if exist duplicate term, and join them
-     * @param file
-     */
-    private void uniteTerm(File file) {
-        List<String> lines = new ArrayList<>();
-        FileInputStream out;
-        BufferedReader br;
-        //GZIPInputStream gzip = new GZIPInputStream(new FileInputStream(file));
-        try{
-            out = new FileInputStream(file);
-            br = new BufferedReader(new InputStreamReader(out));
-            String line;
-            while ((line = br.readLine()) != null) {
-                lines.add(line);
-            }
-            Collections.sort(lines);
-            lines = findDuplicateTerm(lines);
-            file.delete();
-            file.createNewFile();
-            //writeToFile(file,lines);
-            // write back here
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-    }
-
     private void writeToFile(String termTXT){
         File file;
         try {
-            file = new File(path+numberOfFile++);
+            if(withStem) {
+                file = new File(path + "\\" +"Y"+numberOfFileYes++);
+            }else{
+                file = new File(path + "\\" +"N"+numberOfFileNo++);
+            }
             FileOutputStream out = new FileOutputStream(file);
             try {
                 //Writer writer = new OutputStreamWriter(new GZIPOutputStream(out), "UTF-8");
                 Writer writer = new OutputStreamWriter(out);
                 try {
                     writer.write(termTXT);
+                    if(withStem){
+                        postFilesYes.add(file);
+                    }else{
+                        postFilesNo.add(file);
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 } finally {
@@ -194,55 +131,10 @@ public class Posting {
         }
     }
 
-    private List<String> findDuplicateTerm(List<String> lines) {
-        List <String>newLines= new ArrayList<>();
-        StringBuffer bf = new StringBuffer();
-        boolean isUpper = true;
-
-        String line = lines.get(0);
-        bf.append(line);
-        String term = line.split(",\\{")[0];
-        String nextLine = lines.get(1);
-        String nextTerm = nextLine.split(",\\{")[0];
-
-        for(int i=2;i<lines.size()-1;i++) {
-
-            if (nextTerm.equalsIgnoreCase(term)) {
-                if(Character.isUpperCase(term.charAt(0)) && Character.isLowerCase(nextTerm.charAt(0))){
-                    int x=4;
-                }
-                if(Character.isUpperCase(nextTerm.charAt(0)) && Character.isLowerCase(term.charAt(0))){
-                    int x=4;
-                }
-                String InfoTerm = nextLine.substring(nextTerm.length() + 1);
-                bf.append(InfoTerm);
-                nextLine = lines.get(i + 1);
-                nextTerm = nextLine.split(",\\{")[0];
-            } else {
-                newLines.add(bf.toString());
-                bf = new StringBuffer();
-                term = nextTerm;
-                line = nextLine;
-                bf.append(line);
-                nextLine = lines.get(i + 1);
-                nextTerm = nextLine.split(",\\{")[0];
-            }
-        }
-        if(nextTerm.equalsIgnoreCase(term)){
-            String InfoTerm = nextLine.substring(nextTerm.length() + 1);
-            bf.append(InfoTerm);
-            newLines.add(bf.toString());
-        }else{
-            newLines.add(bf.toString());
-            newLines.add(nextLine);
-        }
-        int x=4;
-        return newLines;
-    }
 
 
     public void createFileWithAllTerms(HashSet<String> allTerm) {
-        File file = new File("C:\\Users\\dorlev\\IdeaProjects\\SearchEngine\\src\\Model\\postings\\"+"FileTerms");
+        File file = new File(path+"\\"+"FileTerms");
         try {
             file.createNewFile();
             FileOutputStream out = new FileOutputStream(file);
@@ -261,38 +153,12 @@ public class Posting {
         }
     }
 
-/*
-    private void writeToAllFiles(StringBuffer allTermInfo){
-        try {
-            FileOutputStream out = new FileOutputStream(postFiles.get(i),true);
-            try {
-                //Writer writer = new OutputStreamWriter(new GZIPOutputStream(out), "UTF-8");
-                Writer writer = new OutputStreamWriter(out);
-                try {
-                    writer.write(term[i]);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } finally {
-                    writer.close();
-                }
-            } finally {
-                out.close();
-            }
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
-    }
-*/
 
     public void writePerDoc(Map<String,String> docInfo){
         String bf="";
         if(postDocs==null){
-            postDocs = new File("C:\\Users\\dorlev\\IdeaProjects\\SearchEngine\\src\\Model\\postings\\"+"FileDocs");
+            postDocs = new File(path +"\\"+"FileDocs");
             try {
                 postDocs.createNewFile();
             } catch (IOException e) {

@@ -79,7 +79,6 @@ public class ReadFile {
             Parse.post.fromMapToPostFiles(Parse.allWordsDic);
             Parse.allWordsDic.clear();
             Parse.post.createFileWithAllTerms(Parse.allTerm);
-            Parse.post.checkTheFiles();
         } catch (IOException e) { }
     }
 
