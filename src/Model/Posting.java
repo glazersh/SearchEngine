@@ -14,12 +14,19 @@ public class Posting {
     File postDocs;
     Queue<File>postFilesYes;
     Queue<File>postFilesNo;
+
+    List<File>finalPostFileYes;
+    List<File>finalPostFileNo;
     String path;
     boolean withStem;
 
     public Posting(String path, boolean withStem) {
         theFiles = new LinkedList<>();
         merge1 = new LinkedList<>();
+
+        finalPostFileYes = new ArrayList<>();
+        finalPostFileNo = new ArrayList<>();
+
         postFilesYes = new LinkedList<>();
         postFilesNo = new LinkedList<>();
         this.withStem = withStem;
@@ -51,7 +58,6 @@ public class Posting {
 
     private List<String> readFile(File file) {
         List<String> lines = new ArrayList<>();
-        Queue<String> lineInQueue = new LinkedList<>();
 
         try (//GZIPInputStream gzip = new GZIPInputStream(new FileInputStream(file));
              FileInputStream out = new FileInputStream(file);
@@ -60,11 +66,6 @@ public class Posting {
             while ((line = br.readLine()) != null) {
                 lines.add(line);
             }
-            //Collections.sort(lines, Collections.reverseOrder());
-
-            //for(String lineInFile:lines){
-            //    lineInQueue.add(lineInFile);
-            //}
 
         } catch (FileNotFoundException e) {
             e.printStackTrace(System.err);
@@ -93,7 +94,6 @@ public class Posting {
         }
         writeToFile(termInfo.toString());
     }
-
 
     private void writeToFile(String termTXT){
         File file;
@@ -131,8 +131,6 @@ public class Posting {
         }
     }
 
-
-
     public void createFileWithAllTerms(HashSet<String> allTerm) {
         File file = new File(path+"\\"+"FileTerms");
         try {
@@ -152,8 +150,6 @@ public class Posting {
             e1.printStackTrace();
         }
     }
-
-
 
     public void writePerDoc(Map<String,String> docInfo){
         String bf="";
@@ -199,17 +195,173 @@ public class Posting {
                 File f1=postFilesNo.poll();
                 File f2=postFilesNo.poll();
                 mergeFile(f1,f2);
-            }/*
-            File lastFile1 = postFilesNo.poll();
-            File lastFile2 = postFilesNo.poll();
-            mergeLastTime(lastFile1,lastFile2);
-*/
+            }
+            makeThePostFiles(postFilesNo.poll());
 
-            //finalFile1.addAll(finalFile2);
-            //Collections.sort(finalFile1,new SortIgnoreCase());
-            //List<String> postFileFina = findDuplicate(finalFile1);
             int x =4;
             // final here
+        }
+    }
+
+    private void makeThePostFiles(File file) {
+        List<String> fileInfo = new ArrayList<>();
+        StringBuffer bf = new StringBuffer();
+
+        FileInputStream out1 ;
+        BufferedReader br1;
+        String line;
+        String nextLine;
+        String []term;
+        String []nextTerm;
+
+        try {
+            out1 = new FileInputStream(file);
+            br1 =new BufferedReader(new InputStreamReader(out1));
+            boolean isLower = false;
+            boolean isLetter = false;
+            boolean first = true;
+            line = br1.readLine();
+            term = line.split(",\\{");
+            char d ='0';
+            char l = 'a';
+            if(Character.isLetter(term[0].charAt(0))){
+                isLetter = true;
+                if(Character.isLowerCase(term[0].charAt(0))){
+                    isLower = true;
+                }
+            }
+
+            bf.append(",{"+term[1]);
+            while ((nextLine=br1.readLine()) != null) {
+                nextTerm = nextLine.split(",\\{");
+                if(term[0].equalsIgnoreCase(nextTerm[0])){
+                    if(isLetter) {
+                        if (!isLower) {
+                            bf.append("{" + nextTerm[1]);
+                        } else {
+                            isLower = true;
+                            bf.append("{" + nextTerm[1]);
+                        }
+                    }else{
+                        bf.append("{" + nextTerm[1]);
+                    }
+                }else {
+                    if (nextTerm[0].charAt(0) == d) {
+                        String tmp = term[0] + bf.toString();
+                        fileInfo.add(tmp);
+                        writeTheFinalFilePost(fileInfo, "sign");
+                        fileInfo.clear();
+                        bf = new StringBuffer();
+                        d=(char)(d-1);
+                    }
+                    else {
+                        if (nextTerm[0].charAt(0) == l) {
+                            if (first) {
+                                String tmp = term[0] + bf.toString();
+                                fileInfo.add(tmp);
+                                writeTheFinalFilePost(fileInfo, "numbers Final");
+                                first = false;
+                            } else {
+                                if (isLetter) {
+                                    if (isLower) {
+                                        term[0] = term[0].toLowerCase();
+                                    } else {
+                                        term[0] = term[0].toUpperCase();
+                                    }
+                                }
+                                String tmp = term[0] + bf.toString();
+                                fileInfo.add(tmp);
+                                writeTheFinalFilePost(fileInfo, (char) (l - 1) + " Final");
+                            }
+                            fileInfo.clear();
+                            l = (char) (l + 1);
+                            bf = new StringBuffer();
+                        }
+                    }
+                    if (bf.length() != 0) {
+                        if (isLetter) {
+                            if (isLower) {
+                                term[0] = term[0].toLowerCase();
+                            } else {
+                                term[0] = term[0].toUpperCase();
+                            }
+                        }
+                        String tmp = term[0] + bf.toString();
+                        fileInfo.add(tmp);
+                        bf = new StringBuffer();
+                        bf.append(",{" + nextTerm[1]);
+                    }
+
+                    else
+                        bf.append(",{"+nextTerm[1]);
+                    term = nextTerm;
+                    if(term[0].equalsIgnoreCase("ZAGORA")){
+                        int x=4;
+                    }
+                    isLower = false;
+                    isLetter = false;
+                    if (Character.isLetter(term[0].charAt(0))) {
+                        isLetter = true;
+                        if (Character.isLowerCase(term[0].charAt(0))) {
+                            isLower = true;
+                        }else{
+                            int x=4;
+                        }
+                    }
+
+                }
+            }
+
+            writeTheFinalFilePost(fileInfo, (char)(l-1) + " Final");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+
+
+
+
+
+    }
+
+    private void writeTheFinalFilePost(List<String>info, String namePost) {
+        File file;
+        try {
+            if(withStem) {
+                file = new File(path + "\\" +"Y-"+namePost);
+            }else{
+                file = new File(path + "\\" +"N-"+namePost);
+            }
+            FileOutputStream out = new FileOutputStream(file);
+            try {
+                //Writer writer = new OutputS treamWriter(new GZIPOutputStream(out), "UTF-8");
+                Writer writer = new OutputStreamWriter(out);
+                try {
+                    for(int i=0;i<info.size();i++){
+                        writer.write(info.get(i)+'\n');
+                    }
+                    if(withStem){
+                        finalPostFileYes.add(file);
+                    }else{
+                        finalPostFileNo.add(file);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+                    writer.close();
+                }
+            } finally {
+                out.close();
+            }
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -331,8 +483,6 @@ public class Posting {
     }
 
     private void mergeLastTime(File lastFile1, File lastFile2) {
-//        List <String> file1Txt = readFile(lastFile1);
-//        List <String> file2Txt = readFile(lastFile2);
         List<String> mergeFile = new ArrayList<>();
         boolean first = true;
         StringBuffer bf = new StringBuffer();
@@ -438,48 +588,7 @@ public class Posting {
         writeToFileList(readF1);
 
 
-//        StringBuffer bf = new StringBuffer();
-//        FileInputStream out1 ;
-//        FileInputStream out2 ;
-//        BufferedReader br1;
-//        BufferedReader br2;
-//        String line1;
-//        String line2;
-//        try {
-//            out1 = new FileInputStream(f1);
-//            out2 = new FileInputStream(f2);
-//            br1 =new BufferedReader(new InputStreamReader(out1));
-//            br2 = new BufferedReader(new InputStreamReader(out2));
-//            line1 = br1.readLine();
-//            line2 = br2.readLine();
-//            while (true) {
-//                if(line1.compareToIgnoreCase(line2) < 0){
-//                    bf.append(line1+"\n");
-//                    line1 = br1.readLine();
-//                    if(line1 == null)
-//                        break;
-//                }else{
-//                    //write line2 first
-//                    bf.append(line2+"\n");
-//                    line2 = br2.readLine();
-//                    if(line2 == null)
-//                        break;
-//                }
-//            }
-//            while((line1 = br1.readLine())!= null){
-//                bf.append(line1+"\n");
-//            }
-//            while((line2 = br2.readLine())!= null){
-//                bf.append(line2+"\n");
-//            }
-//            writeToFile(bf.toString());
-//            f1.delete();
-//            f2.delete();
-//        } catch (FileNotFoundException e) {
-//            e.printStackTrace();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+
 
     }
 

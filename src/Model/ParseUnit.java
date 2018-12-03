@@ -303,6 +303,7 @@ public class ParseUnit {
                 }
                 else{
                     double numD = (Double.parseDouble(word)/1000000);
+
                     termBeforeChanged.replace(0,allTerm[0].length(),Double.toString(numD));
                     termBeforeChanged.append(" M Dollars");
                 }
@@ -330,6 +331,7 @@ public class ParseUnit {
         }
         else{
             double numD = (Double.parseDouble(word)/1000000);
+            numD = Math.round(numD*100.0)/100.0;
             termBeforeChanged.replace(0,word.length(),Double.toString(numD));
             termBeforeChanged.append(" M Dollars");
         }
@@ -1152,6 +1154,7 @@ public class ParseUnit {
             // 1k - 1M
             if (numberWord < 1000000) {
                 numberWord = numberWord / 1000;
+                numberWord = Math.round(numberWord*100.0)/100.0;
                 numberInString = cutDot0(numberWord);
                 termBeforeChanged = new StringBuffer(numberInString + "K");
                 return termBeforeChanged.toString();
@@ -1160,6 +1163,7 @@ public class ParseUnit {
                 // 1M - 1B
                 if (numberWord < 1000000000) {
                     numberWord = numberWord / 1000000;
+                    numberWord = Math.round(numberWord*100.0)/100.0;
                     numberInString = cutDot0(numberWord);
                     termBeforeChanged = new StringBuffer(numberInString + "M");
                     return termBeforeChanged.toString();
@@ -1167,6 +1171,7 @@ public class ParseUnit {
                 // over 1B
                 else {
                     numberWord = numberWord / 1000000000;
+                    numberWord = Math.round(numberWord*100.0)/100.0;
                     numberInString = cutDot0(numberWord);
                     termBeforeChanged = new StringBuffer(numberInString + "B");
                     return termBeforeChanged.toString();

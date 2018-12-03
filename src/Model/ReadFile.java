@@ -67,19 +67,19 @@ public class ReadFile {
                 }
                 counter++;
 
-                if(counter == 50){
+                if(counter %2==0){
                     Parse.post.fromMapToPostFiles(Parse.allWordsDic);
                     Parse.allWordsDic.clear();
                     Parse.post.writePerDoc(Parse.docInfo);
                     Parse.docInfo.clear();
-                    counter = 0;
+                    //counter = 0;
                     System.out.println("Insert more 50 file " + (++addFile)*50);
-//                    if(counter == 32)
-//                        break;
+                    if(counter == 32)
+                        break;
                 }
             }
-            Parse.post.fromMapToPostFiles(Parse.allWordsDic);
-            Parse.allWordsDic.clear();
+            //Parse.post.fromMapToPostFiles(Parse.allWordsDic);
+            //Parse.allWordsDic.clear();
             Parse.post.createFileWithAllTerms(Parse.allTerm);
             Parse.post.startMerge();
         } catch (IOException e) { }
@@ -87,7 +87,7 @@ public class ReadFile {
 
     public static void main(String [] args){
         long start = System.nanoTime();
-        ReadFile rf = new ReadFile("d:\\documents\\users\\dorlev\\Downloads\\corpus\\corpus","d:\\documents\\users\\dorlev\\Downloads\\corpus\\corpus","C:\\Users\\dorlev\\IdeaProjects\\SearchEngine\\src\\Model\\postings",false);
+        ReadFile rf = new ReadFile("C:\\Users\\USER\\Desktop\\search2018\\corpus","C:\\Users\\USER\\Desktop\\search2018\\SearchEngine\\src\\resources\\","C:\\Users\\USER\\Desktop\\search2018\\SearchEngine\\src\\Model\\postings",false);
         long end = System.nanoTime();
         System.out.println(end-start);
     }
