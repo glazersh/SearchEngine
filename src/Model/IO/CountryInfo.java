@@ -21,8 +21,6 @@ public class CountryInfo {
 
     }
 
-
-
     public String getCapitalName() {
         return this.CapitalName;
     }

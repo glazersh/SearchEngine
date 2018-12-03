@@ -6,13 +6,13 @@ import Model.Term.*;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.*;
 
 public class ParseUnit {
 
     Posting post ;
     Stemmer stem = new Stemmer();
-
 
     Map<String,String> month= new HashMap<>();
     HashSet<String> afterNumber = new HashSet<>();
@@ -27,12 +27,16 @@ public class ParseUnit {
     Map<String,String> docInfo = new HashMap<>();
 
     ATerm term;
+
     StringBuffer termBeforeChanged;
 
     Map<ATerm,Integer>wordsInDoc = new HashMap<>();
 
     CountryInMemoryDB countryInMemory;
+
     Map<CountryInfo,String> capitalTerms = new HashMap<>();
+
+    Map<String,StringBuffer>PosTerms = new HashMap<>();
 
     HashSet<String> allTerm = new HashSet<>();
     int maxTermCounter;
@@ -52,26 +56,25 @@ public class ParseUnit {
 
 
 
-    public ParseUnit(String stopWords, String PathPosting,boolean  withStemming){
-        post = new Posting(PathPosting, withStemming);
+    public ParseUnit(String stopWords, String PathPosting,boolean  withStemming, DataCollector dataCollector){
+        post = new Posting(PathPosting, withStemming, dataCollector);
         insertMonth(); // init all months
         insertAfterWords(); // init special words for our parse
         StopWords(stopWords); // init all stopWords from stopWords.txt
         insertSigns(); // init all the signs
-        /*
         try {
             countryInMemory = new CountryInMemoryDB("https://restcountries.eu/rest/v2/all?fields=name;capital;population;currencies");
         } catch (IOException e) {
             e.printStackTrace();
         }
-        */
+
     }
 
     private void StopWords(String path){
         Scanner file = null;
         try {
             //don't forget to change the path !!!!
-            file = new Scanner(new File(path+"\\stopWords.txt"));
+            file = new Scanner(new File(path));
             // For each word in the input
             while (file.hasNext()) {
                 // Convert the word to lower case, trim it and insert into the set
@@ -473,7 +476,6 @@ public class ParseUnit {
         found = false;
     }
 
-
     private void typeTerm(String [] termWords, String word){
         // if the term is date
         if (isTermDate) {
@@ -543,8 +545,6 @@ public class ParseUnit {
                 increaseCounter(term);
                 return;
             }
-
-
             else{
                 term = new Word(word);
                 increaseCounter(term);
@@ -576,7 +576,6 @@ public class ParseUnit {
         return true;
     }
 
-
     private boolean betweenTerm(String num1String, String andString, String num2String){
         String num1 = cutSigns(num1String);
         String and = cutSigns(andString);
@@ -590,7 +589,6 @@ public class ParseUnit {
         }
         return false;
     }
-
 
     public String transferNumberInRange(String number, String kind){
         boolean isTrillion = false;
@@ -615,7 +613,6 @@ public class ParseUnit {
         }
         return finalRange;
     }
-
 
     private int RangeTerm(String word, String word2, String minusWord){
         int addIndex = 0;
@@ -709,6 +706,15 @@ public class ParseUnit {
         return addIndex;
     }
 
+    private void addPosTerm(String termName, String docName, int pos){
+        StringBuffer str = new StringBuffer(docName+":"+pos+",");
+        if(PosTerms.containsKey(termName)){
+            PosTerms.get(termName).append(str);
+        }else{
+            PosTerms.put(termName,str);
+        }
+    }
+
     /**
      * The parser
      * @param allText
@@ -756,6 +762,7 @@ public class ParseUnit {
                         word=stem.toString();
                     }
                     term = new Word(word);
+                    addPosTerm(term.finalName,docName,i);
                     increaseCounter(term);
                 } else {
                     if (i == allText.length - 1) {
@@ -763,6 +770,7 @@ public class ParseUnit {
                             stem.add(word.toCharArray(), word.length());
                             stem.stem();
                             term = new Word(word);
+                            addPosTerm(term.finalName,docName,i);
                             increaseCounter(term);
                             continue;
                         }
@@ -946,7 +954,7 @@ public class ParseUnit {
                         p = allWordsDic.get(a);
                         //maybe no need to remove just put
                         allWordsDic.remove(a);
-                        //checkCapital(term.finalName);
+                        checkCapital(term.finalName);
                         allWordsDic.put(term, p);
                         //may not be needed if checking earlier
                         if (allWordsDic.get(term).get(docName) != null)
@@ -980,7 +988,7 @@ public class ParseUnit {
 
                 //if do not exist
                 termMap.put(docName, wordsInDoc.get(term));
-                //checkCapital(term.finalName);
+                checkCapital(term.finalName);
                 allWordsDic.put(term, termMap);
             }
         }
@@ -1032,7 +1040,7 @@ public class ParseUnit {
 
             //if do not exist
             termMap.put(docName, wordsInDoc.get(termOld));
-            //checkCapital(termOld.finalName);
+            checkCapital(termOld.finalName);
             allWordsDic.put(termOld, termMap);
         }
     }
@@ -1071,7 +1079,7 @@ public class ParseUnit {
 
 
             termMap.put(docName, wordsInDoc.get(termOld));
-            //checkCapital(termUp.finalName);
+            checkCapital(termUp.finalName);
             allWordsDic.put(termUp, termMap);
         }
     }
@@ -1084,10 +1092,6 @@ public class ParseUnit {
      * @param term
      */
     private void increaseCounter(ATerm term){
-
-        if(term.finalName.equalsIgnoreCase("B")){
-            int x=4;
-        }
 
         if(wordsInDoc.containsKey(term)) {
             Integer tmp = wordsInDoc.get(term);
@@ -1194,8 +1198,15 @@ public class ParseUnit {
         if(capitalTerm!=null){
             String pop =capitalTerm.getPopulation();
             String rightWord = TermNumber(pop);
-            capitalTerms.put(capitalTerm, capitalTerm.getCountryName()+":"+capitalTerm.getCurrency()+":" + rightWord);
+            if(PosTerms.get(capitalTerm.getCapitalName())!= null) {
+                StringBuffer bf = PosTerms.get(capitalTerm.getCapitalName());
+                capitalTerms.put(capitalTerm, capitalTerm.getCapitalName()+"-"+capitalTerm.getCountryName() + ":" + capitalTerm.getCurrency() + ":" + rightWord+":"+bf);
+            }
         }
+    }
+
+    public Map<CountryInfo, String> getCapitalDictionary(){
+        return capitalTerms;
     }
 
 

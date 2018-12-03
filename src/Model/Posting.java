@@ -1,5 +1,6 @@
 package Model;
 
+import Model.IO.CountryInfo;
 import Model.Term.ATerm;
 
 import java.io.*;
@@ -21,8 +22,12 @@ public class Posting {
     List<File>finalPostFileNo;
     String path;
     boolean withStem;
+    Map<CountryInfo,String>capitalTerms;
 
-    public Posting(String path, boolean withStem) {
+    DataCollector dataCollector;
+    Map<String,Integer>bigDictionary = new HashMap<>(); // for the gui
+
+    public Posting(String path, boolean withStem, DataCollector dataCollector) {
         theFiles = new LinkedList<>();
         merge1 = new LinkedList<>();
 
@@ -31,6 +36,8 @@ public class Posting {
 
         postFilesYes = new LinkedList<>();
         postFilesNo = new LinkedList<>();
+
+        this.dataCollector = dataCollector;
 
         postDictionary = new File(path+"\\Dictionary");
         if(postDictionary.exists()){
@@ -44,8 +51,6 @@ public class Posting {
         this.withStem = withStem;
         this.path = path;
     }
-
-
 
     /**
      * get dictionary and write the term in the correct postFile by his first character
@@ -66,6 +71,11 @@ public class Posting {
             treeDict.put(term,words.get(term));
         }
         prepareForWriting(treeDict);
+    }
+
+    // need to send it in the end !
+    public void setMap(){
+        dataCollector.setMap(bigDictionary);
     }
 
     private List<String> readFile(File file) {
@@ -143,6 +153,7 @@ public class Posting {
         }
     }
 
+    // need to remove it !
     public void createFileWithAllTerms(HashSet<String> allTerm) {
         File file = new File(path+"\\"+"FileTerms");
         try {
@@ -163,6 +174,10 @@ public class Posting {
         }
     }
 
+    /**
+     * Fix it !
+     * @param docInfo
+     */
     public void writePerDoc(Map<String,String> docInfo){
         String bf="";
         if(postDocs==null){
@@ -399,26 +414,34 @@ public class Posting {
             counter+=Integer.parseInt(docsInfo[i].split(":")[1]);
         }
         String lineInPost = nameTerm+",{"+counter+":"+docFrequency+":"+namePostFile+"/"+index+"\n";
+        bigDictionary.put(nameTerm, counter);
         return lineInPost;
 
     }
 
-    private void writeToPostDictionary(String lineInPost) {
-        FileOutputStream out = null;
+    public void createCapitalPost(Map<CountryInfo, String> capitalDictionary) {
+        File capitalPost = new File(path + "\\" + "capitalPost");
+        FileWriter out = null;
         try {
-            out = new FileOutputStream(postDictionary,true);
-            //Writer writer = new OutputStreamWriter(new GZIPOutputStream(out), "UTF-8");
-            Writer writer = new OutputStreamWriter(out);
+            capitalPost.createNewFile();
+            BufferedWriter writer = null;
             try {
-                writer.write(lineInPost+"\n");
+                out = new FileWriter(capitalPost);
+                writer = new BufferedWriter(out);
+                for (CountryInfo countryInfo : capitalDictionary.keySet()) {
+                    writer.write(countryInfo.getCapitalName() + "-" + capitalDictionary.get(countryInfo) + "\n");
+                }
+                writer.flush();
+
             } catch (IOException e) {
                 e.printStackTrace();
+            }finally {
+                writer.close();
+                out.close();
             }
-        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
-
-
     }
 
     public class SortIgnoreCase implements Comparator<Object> {
@@ -429,204 +452,6 @@ public class Posting {
         }
     }
 
-    private List<String> findDuplicate(List<String> linePerChar) {
-        List <String> finalTerms = new ArrayList<>();
-        StringBuffer bf = new StringBuffer();
-
-        String[]term; // current term
-        String[]nextTerm; // check the next Term
-
-        String lineTerm;
-        String nextLineTerm;
-
-        int index = 1;
-        boolean isLower = false;
-        boolean isLetter = false;
-
-        lineTerm = linePerChar.get(0); // line of term
-        nextLineTerm = linePerChar.get(1);// line of first Term
-        term = lineTerm.split(",\\{");// firstTerm
-        nextTerm = nextLineTerm.split(",\\{");// line of first Term
-        if(Character.isLetter(term[0].charAt(0))){
-            isLetter = true;
-        }
-        if(isLetter && Character.isLowerCase(term[0].charAt(0))){
-            isLower = true;
-        }
-        bf.append("{"+term[1]);
-        while(index!=linePerChar.size()-1) {
-            if (term[0].equalsIgnoreCase(nextTerm[0])) { // are the same term, now check if upper or lower
-                if(isLetter && !isLower) {
-                    if(term[0].equals(nextTerm[0])){
-                        bf.append("{"+nextTerm[1]);
-                    }else{
-                        isLower = true;
-                        bf.append("{"+nextTerm[1]);
-                    }
-                }else{
-                    bf.append("{"+nextTerm[1]);
-                }
-                index= index+1;
-                lineTerm = nextLineTerm;
-                nextLineTerm = linePerChar.get(index);
-                nextTerm = nextLineTerm.split(",\\{");
-                if(Character.isLetter(nextTerm[0].charAt(0))){
-                    isLetter = true;
-                    isLower = false;
-                }
-                if(isLetter && Character.isLowerCase(nextTerm[0].charAt(0))){
-                    isLower = true;
-                }
-
-            }
-            else{
-                if(isLetter) {
-                    if (isLower) {
-                        term[0] = term[0].toLowerCase();
-                    } else {
-                        term[0] = term[0].toUpperCase();
-                    }
-                }
-                finalTerms.add(term[0]+bf.toString());
-                bf = new StringBuffer("{"+nextTerm[1]);
-                term = nextTerm;
-                lineTerm = nextLineTerm;
-                index= index+1;
-                nextLineTerm = linePerChar.get(index);
-                nextTerm = nextLineTerm.split(",\\{");
-                if(Character.isLetter(nextTerm[0].charAt(0))){
-                    isLetter = true;
-                    isLower = false;
-                }
-                if(isLetter && Character.isLowerCase(nextTerm[0].charAt(0))){
-                    isLower = true;
-                }
-            }
-        }
-        if(term[0].equalsIgnoreCase(nextTerm[0])){
-            if(isLetter && !isLower) {
-                if(term[0].equals(nextTerm[0])){
-                    bf.append("{"+nextTerm[1]);
-                }else{
-                    isLower = true;
-                    bf.append("{"+nextTerm[1]);
-                }
-            }else{
-                bf.append("{"+nextTerm[1]);
-                finalTerms.add(bf.toString());
-            }
-        }else{
-            if(isLetter) {
-                if (isLower) {
-                    term[0] = term[0].toLowerCase();
-                } else {
-                    term[0] = term[0].toUpperCase();
-                }
-            }
-            finalTerms.add(term[0]+bf.toString());
-            finalTerms.add(nextLineTerm);
-        }
-
-        return finalTerms;
-    }
-
-    private int endOfTerm(String line){
-        for(int i=0;i<line.length()-1;i++){
-            if(line.charAt(i) == ',' && line.charAt(i+1)=='{')
-                return i;
-        }
-        return 0;
-    }
-
-    private void mergeLastTime(File lastFile1, File lastFile2) {
-        List<String> mergeFile = new ArrayList<>();
-        boolean first = true;
-        StringBuffer bf = new StringBuffer();
-        FileInputStream out1 ;
-        FileInputStream out2 ;
-        BufferedReader br1;
-        BufferedReader br2;
-        String line1;
-        String line2;
-        try {
-            out1 = new FileInputStream(lastFile1);
-            out2 = new FileInputStream(lastFile2);
-            br1 =new BufferedReader(new InputStreamReader(out1));
-            br2 = new BufferedReader(new InputStreamReader(out2));
-            line1 = br1.readLine();
-            line2 = br2.readLine();
-            while (true) {
-                int sizeTermF1 = endOfTerm(line1);
-                String term1 = line1.split(",\\{")[0];
-                String term2 = line2.split(",\\{")[0];
-                if(term1.compareToIgnoreCase(term2) == 0){// equals
-                    bf.append(line1);
-                    bf.append(line2.split(",\\{")[1]);
-                    while((line1=br1.readLine()).split(",\\{")[0].equalsIgnoreCase(term1)){
-                        bf.append(line1.substring(sizeTermF1));
-                    }
-                    while((line2=br2.readLine()).split(",\\{")[0].equalsIgnoreCase(term2)){
-                        bf.append(line2.split(",\\{")[1]);
-                    }
-                    mergeFile.add(bf.toString());
-                    bf = new StringBuffer();
-                    continue;
-                }
-                if(bf.length()!=0){
-                    mergeFile.add(bf.toString());
-                    bf = new StringBuffer();
-                }
-                if(term1.compareToIgnoreCase(term2) < 0){// term1 is smaller
-                    String lineTmp = line1;
-                    while((line1=br1.readLine()).split(",\\{")[0].equalsIgnoreCase(term1)){
-                        bf.append(line1.split(",\\{")[1]);
-                    }
-                    mergeFile.add(lineTmp + bf.toString());
-                    bf = new StringBuffer();
-                    if(line1 == null)
-                        break;
-                }else{
-                    String lineTmp = line2;
-                    while((line2=br2.readLine()).split(",\\{")[0].equalsIgnoreCase(term2)){
-                        bf.append(line2.split(",\\{")[1]);
-                    }
-                    mergeFile.add(lineTmp + bf.toString());
-                    bf = new StringBuffer();
-                    if(line2 == null)
-                        break;
-                }
-
-
-//                if(line1.compareToIgnoreCase(line2) < 0){
-//                    bf.append(line1+"\n");
-//                    line1 = br1.readLine();
-//                    if(line1 == null)
-//                        break;
-//                }else{
-//                    //write line2 first
-//                    bf.append(line2+"\n");
-//                    line2 = br2.readLine();
-//                    if(line2 == null)
-//                        break;
-//                }
-            }
-            while((line1 = br1.readLine())!= null){
-                bf.append(line1+"\n");
-            }
-            while((line2 = br2.readLine())!= null){
-                bf.append(line2+"\n");
-            }
-            writeToFile(bf.toString());
-//            f1.delete();
-//            f2.delete();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-    }
-
     private void mergeFile(File f1, File f2) {
 
         List<String>readF1 = readFile(f1);
@@ -635,10 +460,6 @@ public class Posting {
         Collections.sort(readF1, new SortIgnoreCase());
 
         writeToFileList(readF1);
-
-
-
-
     }
 
     private void writeToFileList(List<String> readF1) {
@@ -678,8 +499,30 @@ public class Posting {
             e.printStackTrace();
         }
     }
+
+
+
+    public void buildCapitalPostFile(){
+        File BigDic = new File(path + "\\" + "BigDic");
+        FileWriter out = null;
+        try {
+            BigDic.createNewFile();
+            BufferedWriter writer = null;
+            try {
+                out = new FileWriter(BigDic);
+                writer = new BufferedWriter(out);
+                for (String str : bigDictionary.keySet()) {
+                    writer.write(str+"-"+bigDictionary.get(str) + "\n");
+                }
+                writer.flush();
+            }catch (IOException e) {
+                e.printStackTrace();
+            }finally {
+                writer.close();
+                out.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
-
-
-
-

@@ -3,16 +3,27 @@ package View;
 import ViewModel.ViewModel;
 //import javafx.beans.Observable;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
-import javafx.scene.control.CheckBox;
 
+import javax.xml.soap.Node;
 import javax.xml.soap.Text;
-import java.io.File;
+import java.awt.*;
+import java.io.*;
+import java.util.Map;
 import java.util.Observer;
 import java.util.Observable;
 
@@ -22,21 +33,29 @@ public class View  implements Observer {
     @FXML
     public TextField PathCollection;
     public TextField lbl_PathPositng;
-    public javafx.scene.control.Label lbl_Corpus;
 
     Boolean withStemming;
     File selectedFolderBrowseCollection;
     File PostingPath;
+    public File BigDic;
+
     @FXML
     public Button CollectionButton;
     public Button btn_Posting;
     public Button btn_Start;
+    public Button btn_showDic;
     @FXML
     Label wrongPath;
     @FXML
     Label wrongPathPost;
     @FXML
     CheckBox lbl_Stemming;
+    @FXML
+    ChoiceBox cb_leng;
+    @FXML
+    public ListView lv_terms;
+    ListView lv_bigDic;
+    TextArea dicText;
 
     private ViewModel viewModel;
 
@@ -70,6 +89,13 @@ public class View  implements Observer {
 
         }
     }
+
+    public void showDic() throws IOException {
+        lv_terms.setVisible(true);
+        lv_terms.getItems().add("shula-3");
+        lv_terms.getItems().add("dor-2");
+    }
+
 
 
     public void startEngine(){

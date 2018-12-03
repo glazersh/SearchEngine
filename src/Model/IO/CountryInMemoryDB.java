@@ -20,7 +20,7 @@ public class CountryInMemoryDB {
         for (Object obj: result){
             JSONObject data = (JSONObject)obj;
             CountryInfo country = new CountryInfo(data);
-            this.CountryDB.put(country.getCapitalName(),country);
+            this.CountryDB.put(country.getCapitalName().toUpperCase(),country);
         }
     }
 
