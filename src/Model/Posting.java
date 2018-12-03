@@ -12,6 +12,8 @@ public class Posting {
     Queue<File>theFiles;
     Queue<File> merge1;
     File postDocs;
+    File postDictionary;
+
     Queue<File>postFilesYes;
     Queue<File>postFilesNo;
 
@@ -29,6 +31,16 @@ public class Posting {
 
         postFilesYes = new LinkedList<>();
         postFilesNo = new LinkedList<>();
+
+        postDictionary = new File(path+"\\Dictionary");
+        if(postDictionary.exists()){
+            try {
+                postDictionary.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
         this.withStem = withStem;
         this.path = path;
     }
@@ -295,9 +307,6 @@ public class Posting {
                     else
                         bf.append(",{"+nextTerm[1]);
                     term = nextTerm;
-                    if(term[0].equalsIgnoreCase("ZAGORA")){
-                        int x=4;
-                    }
                     isLower = false;
                     isLetter = false;
                     if (Character.isLetter(term[0].charAt(0))) {
@@ -329,32 +338,47 @@ public class Posting {
 
     private void writeTheFinalFilePost(List<String>info, String namePost) {
         File file;
+        String line;
+        StringBuffer bf = new StringBuffer();
         try {
-            if(withStem) {
-                file = new File(path + "\\" +"Y-"+namePost);
+            if(withStem){
+                namePost = "Y-"+namePost;
             }else{
-                file = new File(path + "\\" +"N-"+namePost);
+                namePost = "N-"+namePost;
             }
-            FileOutputStream out = new FileOutputStream(file);
+            file = new File(path + "\\" +namePost);
+
+            FileWriter out = new FileWriter(file);
+            FileWriter outDic = new FileWriter(postDictionary,true);
             try {
                 //Writer writer = new OutputS treamWriter(new GZIPOutputStream(out), "UTF-8");
-                Writer writer = new OutputStreamWriter(out);
+                Writer writer = new BufferedWriter(out);
+                Writer writerDic = new BufferedWriter(outDic);
                 try {
                     for(int i=0;i<info.size();i++){
-                        writer.write(info.get(i)+'\n');
+                        line = info.get(i);
+                        bf.append(buildDictionary(line, i,namePost));
+                        writer.write(line+'\n');
                     }
+                    writer.flush();
+                    writerDic.write(bf.toString());
+                    writerDic.flush();
                     if(withStem){
                         finalPostFileYes.add(file);
                     }else{
                         finalPostFileNo.add(file);
                     }
+                    //writer.flush();
+                    ///
                 } catch (IOException e) {
                     e.printStackTrace();
                 } finally {
                     writer.close();
+                    writerDic.close();
                 }
             } finally {
                 out.close();
+                outDic.close();
             }
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
@@ -363,6 +387,38 @@ public class Posting {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private String buildDictionary(String line, int index,String namePostFile) {
+        String []info = line.split(",\\{");
+        String nameTerm = info[0];
+        String[]docsInfo = info[1].split("\\{");
+        int docFrequency = docsInfo.length;
+        int counter = 0;
+        for(int i=0;i<docsInfo.length;i++){
+            counter+=Integer.parseInt(docsInfo[i].split(":")[1]);
+        }
+        String lineInPost = nameTerm+",{"+counter+":"+docFrequency+":"+namePostFile+"/"+index+"\n";
+        return lineInPost;
+
+    }
+
+    private void writeToPostDictionary(String lineInPost) {
+        FileOutputStream out = null;
+        try {
+            out = new FileOutputStream(postDictionary,true);
+            //Writer writer = new OutputStreamWriter(new GZIPOutputStream(out), "UTF-8");
+            Writer writer = new OutputStreamWriter(out);
+            try {
+                writer.write(lineInPost+"\n");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+
     }
 
     public class SortIgnoreCase implements Comparator<Object> {
@@ -502,12 +558,7 @@ public class Posting {
             while (true) {
                 int sizeTermF1 = endOfTerm(line1);
                 String term1 = line1.split(",\\{")[0];
-
-                //int sizeTermF2 = endOfTerm(line2);
                 String term2 = line2.split(",\\{")[0];
-                if(term2.equalsIgnoreCase("0")){
-                    int x=4;
-                }
                 if(term1.compareToIgnoreCase(term2) == 0){// equals
                     bf.append(line1);
                     bf.append(line2.split(",\\{")[1]);
@@ -517,13 +568,11 @@ public class Posting {
                     while((line2=br2.readLine()).split(",\\{")[0].equalsIgnoreCase(term2)){
                         bf.append(line2.split(",\\{")[1]);
                     }
-                    // write here
                     mergeFile.add(bf.toString());
                     bf = new StringBuffer();
                     continue;
                 }
                 if(bf.length()!=0){
-                    // write here
                     mergeFile.add(bf.toString());
                     bf = new StringBuffer();
                 }
