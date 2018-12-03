@@ -71,7 +71,7 @@ public class ParseUnit {
         Scanner file = null;
         try {
             //don't forget to change the path !!!!
-            file = new Scanner(new File(path));
+            file = new Scanner(new File(path+"\\stopWords.txt"));
             // For each word in the input
             while (file.hasNext()) {
                 // Convert the word to lower case, trim it and insert into the set
@@ -396,6 +396,7 @@ public class ParseUnit {
                 // 1k - 1M
                 if (numberWord < 1000000) {
                     numberWord = numberWord / 1000;
+                    numberWord = Math.round(numberWord*100.0)/100.0;
                     termBeforeChanged = new StringBuffer(cutDot0(numberWord) + "K");
                     term = new NumberK(termBeforeChanged.toString());
 
@@ -403,12 +404,14 @@ public class ParseUnit {
                     // 1M - 1B
                     if (numberWord < 1000000000) {
                         numberWord = numberWord / 1000000;
+                        numberWord = Math.round(numberWord*100.0)/100.0;
                         termBeforeChanged = new StringBuffer(cutDot0(numberWord) + "M");
                         term = new NumberM(termBeforeChanged.toString());
                     }
                     // over 1B
                     else {
                         numberWord = numberWord / 1000000000;
+                        numberWord = Math.round(numberWord*100.0)/100.0;
                         termBeforeChanged = new StringBuffer(cutDot0(numberWord) + "B");
                         term = new NumberB(termBeforeChanged.toString());
                     }

@@ -67,24 +67,27 @@ public class ReadFile {
                 }
                 counter++;
 
-                if(counter == 2){
+                if(counter == 50){
                     Parse.post.fromMapToPostFiles(Parse.allWordsDic);
                     Parse.allWordsDic.clear();
                     Parse.post.writePerDoc(Parse.docInfo);
                     Parse.docInfo.clear();
                     counter = 0;
                     System.out.println("Insert more 50 file " + (++addFile)*50);
+//                    if(counter == 32)
+//                        break;
                 }
             }
             Parse.post.fromMapToPostFiles(Parse.allWordsDic);
             Parse.allWordsDic.clear();
             Parse.post.createFileWithAllTerms(Parse.allTerm);
+            Parse.post.startMerge();
         } catch (IOException e) { }
     }
 
     public static void main(String [] args){
         long start = System.nanoTime();
-        //ReadFile rf = new ReadFile("d:\\documents\\users\\dorlev\\Downloads\\corpus\\corpus");
+        ReadFile rf = new ReadFile("d:\\documents\\users\\dorlev\\Downloads\\corpus\\corpus","d:\\documents\\users\\dorlev\\Downloads\\corpus\\corpus","C:\\Users\\dorlev\\IdeaProjects\\SearchEngine\\src\\Model\\postings",false);
         long end = System.nanoTime();
         System.out.println(end-start);
     }
