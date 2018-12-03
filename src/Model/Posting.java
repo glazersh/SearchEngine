@@ -500,29 +500,5 @@ public class Posting {
         }
     }
 
-
-
-    public void buildCapitalPostFile(){
-        File BigDic = new File(path + "\\" + "BigDic");
-        FileWriter out = null;
-        try {
-            BigDic.createNewFile();
-            BufferedWriter writer = null;
-            try {
-                out = new FileWriter(BigDic);
-                writer = new BufferedWriter(out);
-                for (String str : bigDictionary.keySet()) {
-                    writer.write(str+"-"+bigDictionary.get(str) + "\n");
-                }
-                writer.flush();
-            }catch (IOException e) {
-                e.printStackTrace();
-            }finally {
-                writer.close();
-                out.close();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+    
 }
