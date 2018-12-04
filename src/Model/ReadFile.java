@@ -7,11 +7,10 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Stack;
+import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.zip.GZIPInputStream;
 
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -21,6 +20,7 @@ public class ReadFile {
 
     ParseUnit Parse ;
     DataCollector dataC;
+    Set<String> languages = new HashSet<>();
 
     public ReadFile(String path,String stopWords, String PathPosting, boolean withStemming, DataCollector dataCollector) {
         this.dataC = dataCollector;
@@ -41,23 +41,28 @@ public class ReadFile {
                     FileInputStream fis = new FileInputStream(file);
                     Document doc = Jsoup.parse(new String(Files.readAllBytes(file.toPath())));
                     Elements elements = doc.getElementsByTag("DOC");
-                    String docCity = doc.getElementsByTag("DOC").select("F[P=104]").text();
-                    if(docCity.equals(""))
-                        docCity = doc.getElementsByTag("HEADER").select("F[P=104]").text();
-                    if(docCity.equals(""))
-                        docCity = doc.getElementsByTag("TEXT").select("F[P=104]").text();
-               /////////////////////////////////check!////////////////////////////////////////////////
 
                     // For every doc in the file
                     // Cut all the string from <TEXT> until </TEXT>
                     // Send it to Model.ParseUnit
                     for (Element element : elements) {
                         countDoc++;
+                        String docCity = element.getElementsByTag("DOC").select("F[P=104]").text(); // why F[P=104]
+                        if(docCity.equals("")) {
+                            docCity = element.getElementsByTag("HEADER").select("F[P=104]").text();
+                        }
+                        if(docCity.equals("")) {
+                            docCity = element.getElementsByTag("TEXT").select("F[P=104]").text();
+                        }
+                        if(!docCity.equalsIgnoreCase(""))
+                            docCity = docCity.split(" ")[0].toUpperCase();
                         String docText = element.getElementsByTag("TEXT").text();
                         String docName = element.getElementsByTag("DOCNO").text();
-                        docCity = element.getElementsByTag("F P=104").text();
+                        String docLanguage = element.getElementsByTag("DOC").select("F[P=105]").text();
+                        if(!languages.contains(docLanguage)){
+                            languages.add(docLanguage);
+                        }
                         String[] withoutSpaceText = docText.split(" "); // split the text by " "(space) into array
-                        //System.out.println("~~~~~" + docName + "~~~~~~");
                         Parse.parse(withoutSpaceText, docName,docCity);
                     }
 
@@ -67,21 +72,24 @@ public class ReadFile {
                 counterFiles++;
                 if(counterFiles == 50){
                     Parse.post.fromMapToPostFiles(Parse.allWordsDic);
-                    Parse.allWordsDic.clear();
                     Parse.post.writePerDoc(Parse.docInfo);
-                    Parse.docInfo.clear();
+                    Parse.clearDictionary();
                     counterFiles = 0;
                     System.out.println("Insert more 50 file " + (++addFile)*50);
-//                    if(counter == 32)
+//                    if(counterFiles == 10)
 //                        break;
                 }
             }
-            System.out.println("number of Doc - "+countDoc);
+            //
             Parse.post.fromMapToPostFiles(Parse.allWordsDic);
-            Parse.allWordsDic.clear();
+            Parse.post.writePerDoc(Parse.docInfo);
+            Parse.clearDictionary();
+
             Parse.post.createCapitalPost(Parse.getCapitalDictionary());
             Parse.post.setMap();
             Parse.post.startMerge();
+
+            dataCollector.setLang(languages);
         } catch (IOException e) { }
     }
 

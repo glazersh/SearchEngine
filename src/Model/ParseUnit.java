@@ -12,6 +12,7 @@ import java.util.*;
 public class ParseUnit {
 
     Posting post ;
+
     Stemmer stem = new Stemmer();
 
     Map<String,String> month= new HashMap<>();
@@ -19,10 +20,10 @@ public class ParseUnit {
     Set<String> stopWords = new HashSet<>();
     Set<String>signs = new HashSet<>();
 
-
-    Map<ATerm,Map<String,Integer>> allWordsDic = new HashMap<>();
+    Map<ATerm,Map<String,Integer>> allWordsDic = new HashMap<>(); // clear
     Map<String,Integer> termMap;
-    Map<String,String> docInfo = new HashMap<>();
+
+    List<String> docInfo = new ArrayList<>(); // clear
 
 
     ATerm term;
@@ -34,6 +35,8 @@ public class ParseUnit {
     CountryInMemoryDB countryInMemory;
 
     Map<CountryInfo,String> capitalTerms = new HashMap<>();
+
+
 
     int maxTermCounter;
     int counterMinTerm;
@@ -50,10 +53,13 @@ public class ParseUnit {
 
     boolean withStem;
 
+    DataCollector dt ;
+
 
 
     public ParseUnit(String stopWords, String PathPosting,boolean  withStemming, DataCollector dataCollector){
         this.withStem = withStemming;
+        this.dt = dataCollector;
         post = new Posting(PathPosting, withStemming, dataCollector);
         insertMonth(); // init all months
         insertAfterWords(); // init special words for our parse
@@ -712,6 +718,7 @@ public class ParseUnit {
         maxTermCounter = 0;
         counterMinTerm = 0;
         wordsInDoc = new HashMap<>();
+        termInDoc=0;
 
 
         /**
@@ -961,7 +968,8 @@ public class ParseUnit {
             }
         }
         //// Finish
-        docInfo.put(docName,maxTermCounter+","+wordsInDoc.size()+","+termInDoc+","+cityName);
+
+        docInfo.add(docName+","+maxTermCounter+","+wordsInDoc.size()+","+termInDoc+","+cityName);
         //post.writePerDoc(docName,cityName,wordsInDoc.size(),maxTermCounter,counterMinTerm);
 
     }
@@ -1008,7 +1016,7 @@ public class ParseUnit {
             else {
                 counterWord = wordsInDoc.get(termOld) + allWordsDic.get(termUp).get(docName);
                 if(maxTermCounter<counterWord){
-                    maxTermCounter = wordsInDoc.get(termOld);
+                    maxTermCounter = counterWord;
                 }
 
                 allWordsDic.get(termUp).put(docName, counterWord);
@@ -1156,4 +1164,13 @@ public class ParseUnit {
         return capitalTerms;
     }
 
+    public void clearDictionary() {
+        docInfo.clear();
+        allWordsDic.clear();
+    }
+
+    //Parse.post.fromMapToPostFiles(Parse.allWordsDic);
+    private void sendMapToPost(){
+        post.fromMapToPostFiles(dt.getMap());
+    }
 }

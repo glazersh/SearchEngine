@@ -13,6 +13,7 @@ import java.io.File;
 import java.util.Map;
 import java.util.Observer;
 import java.util.Observable;
+import java.util.Set;
 
 
 public class ViewModel extends java.util.Observable implements Observer  {
@@ -49,6 +50,10 @@ public class ViewModel extends java.util.Observable implements Observer  {
             setChanged();
             notifyObservers();
         }
+    }
+
+    public Set getLang(){
+        return model.getLang();
     }
 
 }

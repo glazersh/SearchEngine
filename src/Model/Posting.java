@@ -154,7 +154,7 @@ public class Posting {
      * Fix it !
      * @param docInfo
      */
-    public void writePerDoc(Map<String,String> docInfo){
+    public void writePerDoc(List<String>docInfo){
         String bf="";
         if(postDocs==null){
             postDocs = new File(path +"\\"+"FileDocs");
@@ -171,8 +171,8 @@ public class Posting {
                 //Writer writer = new OutputStreamWriter(new GZIPOutputStream(out), "UTF-8");
                 Writer writer = new OutputStreamWriter(out);
                 try {
-                    for (String perDoc:docInfo.keySet()) {
-                        writer.write(perDoc+":"+docInfo.get(perDoc)+"\n");
+                    for (String perDoc:docInfo) {
+                        writer.write(perDoc+"\n");
                     }
                     writer.write(bf);
                 } catch (IOException e) {
@@ -218,55 +218,51 @@ public class Posting {
     private void makeThePostFiles(File file) {
         List<String> fileInfo = new ArrayList<>();
         StringBuffer bf = new StringBuffer();
-
-        FileInputStream out1 ;
-        BufferedReader br1;
+        FileInputStream out1 = null;
+        BufferedReader br1=null;
         String line;
         String nextLine;
         String []term;
         String []nextTerm;
-
         try {
             out1 = new FileInputStream(file);
-            br1 =new BufferedReader(new InputStreamReader(out1));
+            br1 = new BufferedReader(new InputStreamReader(out1));
             boolean isLower = false;
             boolean isLetter = false;
             boolean first = true;
             line = br1.readLine();
             term = line.split(",\\{");
-            char d ='0';
+            char d = '0';
             char l = 'a';
-            if(Character.isLetter(term[0].charAt(0))){
+            if (Character.isLetter(term[0].charAt(0))) {
                 isLetter = true;
-                if(Character.isLowerCase(term[0].charAt(0))){
+                if (Character.isLowerCase(term[0].charAt(0))) {
                     isLower = true;
                 }
             }
-
-            bf.append(",{"+term[1]);
-            while ((nextLine=br1.readLine()) != null) {
+            bf.append(",{" + term[1]);
+            while ((nextLine = br1.readLine()) != null) {
                 nextTerm = nextLine.split(",\\{");
-                if(term[0].equalsIgnoreCase(nextTerm[0])){
-                    if(isLetter) {
+                if (term[0].equalsIgnoreCase(nextTerm[0])) {
+                    if (isLetter) {
                         if (!isLower) {
                             bf.append("{" + nextTerm[1]);
                         } else {
                             isLower = true;
                             bf.append("{" + nextTerm[1]);
                         }
-                    }else{
+                    } else {
                         bf.append("{" + nextTerm[1]);
                     }
-                }else {
+                } else {
                     if (nextTerm[0].charAt(0) == d) {
                         String tmp = term[0] + bf.toString();
                         fileInfo.add(tmp);
                         writeTheFinalFilePost(fileInfo, "sign");
                         fileInfo.clear();
                         bf.setLength(0);
-                        d=(char)(d-1);
-                    }
-                    else {
+                        d = (char) (d - 1);
+                    } else {
                         if (nextTerm[0].charAt(0) == l) {
                             if (first) {
                                 String tmp = term[0] + bf.toString();
@@ -302,10 +298,8 @@ public class Posting {
                         fileInfo.add(tmp);
                         bf = new StringBuffer();
                         bf.append(",{" + nextTerm[1]);
-                    }
-
-                    else
-                        bf.append(",{"+nextTerm[1]);
+                    } else
+                        bf.append(",{" + nextTerm[1]);
                     term = nextTerm;
                     isLower = false;
                     isLetter = false;
@@ -317,13 +311,20 @@ public class Posting {
                     }
                 }
             }
-
-            writeTheFinalFilePost(fileInfo, (char)(l-1) + " Final");
+            writeTheFinalFilePost(fileInfo, (char) (l - 1) + " Final");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
+        try {
+            br1.close();
+            out1.close();
+            file.delete();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     private void writeTheFinalFilePost(List<String>info, String namePost) {
@@ -378,6 +379,7 @@ public class Posting {
             e.printStackTrace();
         }
     }
+
 
     private String buildDictionary(String line, int index,String namePostFile) {
         String []info = line.split(",\\{");
@@ -474,6 +476,4 @@ public class Posting {
             e.printStackTrace();
         }
     }
-
-
 }

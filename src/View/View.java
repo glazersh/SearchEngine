@@ -23,9 +23,8 @@ import javax.xml.soap.Node;
 import javax.xml.soap.Text;
 import java.awt.*;
 import java.io.*;
-import java.util.Map;
-import java.util.Observer;
-import java.util.Observable;
+import java.util.*;
+import java.util.List;
 
 
 public class View  implements Observer {
@@ -106,6 +105,17 @@ public class View  implements Observer {
             withStemming=false;
 
         viewModel.startEngine(selectedFolderBrowseCollection.getAbsoluteFile(),getStopWordsPath(),PostingPath.getPath(), withStemming);
+        Set<String>lang = viewModel.getLang();
+        List<String> sortLang = new ArrayList();
+        for(String langWord:lang){
+            sortLang.add(langWord);
+        }
+        Collections.sort(sortLang);
+        cb_leng.setItems(FXCollections.observableArrayList(
+                "English",new Separator()
+        ));
+        cb_leng.getItems().addAll(sortLang);
+
     }
 
     public void setViewModel(ViewModel vm) {

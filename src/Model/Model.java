@@ -3,6 +3,7 @@ package Model;
 import java.io.File;
 import java.util.Map;
 import java.util.Observable;
+import java.util.Set;
 
 
 public class Model extends Observable {
@@ -33,5 +34,9 @@ public class Model extends Observable {
 
     public Map getMap(){
         return dataCollector.getMap();
+    }
+
+    public Set getLang(){
+        return dataCollector.getLang();
     }
 }
