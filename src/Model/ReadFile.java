@@ -41,6 +41,12 @@ public class ReadFile {
                     FileInputStream fis = new FileInputStream(file);
                     Document doc = Jsoup.parse(new String(Files.readAllBytes(file.toPath())));
                     Elements elements = doc.getElementsByTag("DOC");
+                    String docCity = doc.getElementsByTag("DOC").select("F[P=104]").text();
+                    if(docCity.equals(""))
+                        docCity = doc.getElementsByTag("HEADER").select("F[P=104]").text();
+                    if(docCity.equals(""))
+                        docCity = doc.getElementsByTag("TEXT").select("F[P=104]").text();
+               /////////////////////////////////check!////////////////////////////////////////////////
 
                     // For every doc in the file
                     // Cut all the string from <TEXT> until </TEXT>
@@ -49,7 +55,7 @@ public class ReadFile {
                         countDoc++;
                         String docText = element.getElementsByTag("TEXT").text();
                         String docName = element.getElementsByTag("DOCNO").text();
-                        String docCity = element.getElementsByTag("F P=104").text();
+                        docCity = element.getElementsByTag("F P=104").text();
                         String[] withoutSpaceText = docText.split(" "); // split the text by " "(space) into array
                         //System.out.println("~~~~~" + docName + "~~~~~~");
                         Parse.parse(withoutSpaceText, docName,docCity);
