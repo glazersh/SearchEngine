@@ -27,7 +27,8 @@ public class ReadFile {
         Parse = new ParseUnit(stopWords, PathPosting, withStemming, this.dataC);
         List<File> allFiles = null;
         int addFile = 0;
-        int counter =0;
+        int counterFiles =0;
+        int countDoc = 0;
         try {
             // Read all files from path
             allFiles = Files.walk(Paths.get(path)).
@@ -45,47 +46,37 @@ public class ReadFile {
                     // Cut all the string from <TEXT> until </TEXT>
                     // Send it to Model.ParseUnit
                     for (Element element : elements) {
-                        if(true) {
-                            String docText = element.getElementsByTag("TEXT").text();
-                            String docName = element.getElementsByTag("DOCNO").text();
-                            String docCity = element.getElementsByTag("F P=104").text();
-                            if(!docCity.equals("")){
-                                if(docCity.contains("<F P=104>")){
-                                    int x=4;
-                                }
-                            }
-                            String[] withoutSpaceText = docText.split(" "); // split the text by " "(space) into array
-                            //System.out.println("~~~~~" + docName + "~~~~~~");
-                            Parse.parse(withoutSpaceText, docName,docCity);
-
-                        }
-                        else{ // for debug
-                            int doNothing;
-                        }
+                        countDoc++;
+                        String docText = element.getElementsByTag("TEXT").text();
+                        String docName = element.getElementsByTag("DOCNO").text();
+                        String docCity = element.getElementsByTag("F P=104").text();
+                        String[] withoutSpaceText = docText.split(" "); // split the text by " "(space) into array
+                        //System.out.println("~~~~~" + docName + "~~~~~~");
+                        Parse.parse(withoutSpaceText, docName,docCity);
                     }
 
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }
-                counter++;
-
-                if(counter ==50){
+                counterFiles++;
+                if(counterFiles == 50){
                     Parse.post.fromMapToPostFiles(Parse.allWordsDic);
                     Parse.allWordsDic.clear();
                     Parse.post.writePerDoc(Parse.docInfo);
                     Parse.docInfo.clear();
-                    counter = 0;
+                    counterFiles = 0;
                     System.out.println("Insert more 50 file " + (++addFile)*50);
 //                    if(counter == 32)
 //                        break;
                 }
             }
+            System.out.println("number of Doc - "+countDoc);
             Parse.post.fromMapToPostFiles(Parse.allWordsDic);
             Parse.allWordsDic.clear();
-            Parse.post.createFileWithAllTerms(Parse.allTerm);
             Parse.post.createCapitalPost(Parse.getCapitalDictionary());
             Parse.post.setMap();
             Parse.post.startMerge();
         } catch (IOException e) { }
     }
+
 }

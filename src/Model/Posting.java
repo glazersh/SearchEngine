@@ -21,8 +21,8 @@ public class Posting {
     List<File>finalPostFileYes;
     List<File>finalPostFileNo;
     String path;
+
     boolean withStem;
-    Map<CountryInfo,String>capitalTerms;
 
     DataCollector dataCollector;
     Map<String,Integer>bigDictionary = new HashMap<>(); // for the gui
@@ -70,7 +70,7 @@ public class Posting {
         for(ATerm term:words.keySet()){
             treeDict.put(term,words.get(term));
         }
-        prepareForWriting(treeDict);
+        prepareForWriting(words);
     }
 
     // need to send it in the end !
@@ -107,17 +107,6 @@ public class Posting {
 
         StringBuffer termInfo = new StringBuffer();
         StringBuffer docNumber ;
-        for (ATerm term : wordsInDictionary.keySet()) {
-            docNumber = new StringBuffer();
-            for (String docName : wordsInDictionary.get(term).keySet()) {
-                docNumber.append("{" + docName + ":" + wordsInDictionary.get(term).get(docName));
-            }
-            termInfo.append(term.finalName+","+docNumber+"\n");
-        }
-        writeToFile(termInfo.toString());
-    }
-
-    private void writeToFile(String termTXT){
         File file;
         try {
             if(withStem) {
@@ -130,7 +119,15 @@ public class Posting {
                 //Writer writer = new OutputStreamWriter(new GZIPOutputStream(out), "UTF-8");
                 Writer writer = new OutputStreamWriter(out);
                 try {
-                    writer.write(termTXT);
+                    for (ATerm term : wordsInDictionary.keySet()) {
+                        docNumber = new StringBuffer();
+                        for (String docName : wordsInDictionary.get(term).keySet()) {
+                            docNumber.append("{" + docName + ":" + wordsInDictionary.get(term).get(docName));
+                        }
+                        String tmp = term.finalName+","+docNumber+"\n";
+                        writer.write(tmp);
+                    }
+                    writer.flush();
                     if(withStem){
                         postFilesYes.add(file);
                     }else{
@@ -150,27 +147,6 @@ public class Posting {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
-        }
-    }
-
-    // need to remove it !
-    public void createFileWithAllTerms(HashSet<String> allTerm) {
-        File file = new File(path+"\\"+"FileTerms");
-        try {
-            file.createNewFile();
-            FileOutputStream out = new FileOutputStream(file);
-            Writer writer = new OutputStreamWriter(out);
-            try {
-                for (String term : allTerm) {
-                    writer.write(term + "\n");
-                }
-            }finally {
-                writer.close();
-            }
-        } catch (FileNotFoundException e1) {
-            e1.printStackTrace();
-        } catch (IOException e1) {
-            e1.printStackTrace();
         }
     }
 
@@ -222,11 +198,20 @@ public class Posting {
                 File f1=postFilesNo.poll();
                 File f2=postFilesNo.poll();
                 mergeFile(f1,f2);
+                f1.delete();
+                f2.delete();
             }
             makeThePostFiles(postFilesNo.poll());
-
-            int x =4;
             // final here
+        }else{
+            while(postFilesYes.size() > 1){
+                File f1=postFilesYes.poll();
+                File f2=postFilesYes.poll();
+                mergeFile(f1,f2);
+                f1.delete();
+                f2.delete();
+            }
+            makeThePostFiles(postFilesYes.poll());
         }
     }
 
@@ -278,7 +263,7 @@ public class Posting {
                         fileInfo.add(tmp);
                         writeTheFinalFilePost(fileInfo, "sign");
                         fileInfo.clear();
-                        bf = new StringBuffer();
+                        bf.setLength(0);
                         d=(char)(d-1);
                     }
                     else {
@@ -302,7 +287,7 @@ public class Posting {
                             }
                             fileInfo.clear();
                             l = (char) (l + 1);
-                            bf = new StringBuffer();
+                            bf.setLength(0);
                         }
                     }
                     if (bf.length() != 0) {
@@ -328,11 +313,8 @@ public class Posting {
                         isLetter = true;
                         if (Character.isLowerCase(term[0].charAt(0))) {
                             isLower = true;
-                        }else{
-                            int x=4;
                         }
                     }
-
                 }
             }
 
@@ -342,13 +324,6 @@ public class Posting {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
-
-
-
-
-
     }
 
     private void writeTheFinalFilePost(List<String>info, String namePost) {
@@ -429,7 +404,7 @@ public class Posting {
                 out = new FileWriter(capitalPost);
                 writer = new BufferedWriter(out);
                 for (CountryInfo countryInfo : capitalDictionary.keySet()) {
-                    writer.write(countryInfo.getCapitalName() + "-" + capitalDictionary.get(countryInfo) + "\n");
+                    writer.write(capitalDictionary.get(countryInfo) + "\n");
                 }
                 writer.flush();
 
@@ -500,5 +475,5 @@ public class Posting {
         }
     }
 
-    
+
 }
