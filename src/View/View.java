@@ -1,5 +1,6 @@
 package View;
 
+import Model.Posting;
 import ViewModel.ViewModel;
 //import javafx.beans.Observable;
 import javafx.beans.value.ObservableValue;
@@ -45,6 +46,9 @@ public class View  implements Observer {
     public Button btn_showDic;
     @FXML
     Label wrongPath;
+
+    @FXML
+    public Button bn_loadDict;
     @FXML
     Label wrongPathPost;
     @FXML
@@ -55,6 +59,8 @@ public class View  implements Observer {
     public ListView lv_terms;
     ListView lv_bigDic;
     TextArea dicText;
+
+    public Button b_csv;
 
     private ViewModel viewModel;
 
@@ -95,7 +101,16 @@ public class View  implements Observer {
         lv_terms.getItems().add("dor-2");
     }
 
-
+    public void loadDict(){
+        String path;
+        if(withStemming){
+            path = PostingPath+"\\Y-DictionaryToLoad";
+        }else{
+            path = PostingPath+"\\N-DictionaryToLoad";
+        }
+        File file = new File(path);
+        viewModel.loadDic(file);
+    }
 
     public void startEngine(){
         btn_Start.setDisable(true);
@@ -141,6 +156,11 @@ public class View  implements Observer {
             BrowseCollection();
 
         }
+    }
+
+    // remove !
+    public void CSV() throws FileNotFoundException {
+        Posting.CSV();
     }
 }
 

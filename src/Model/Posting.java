@@ -8,8 +8,7 @@ import java.util.*;
 
 public class Posting {
 
-    private int numberOfFileNo = 1;
-    private int numberOfFileYes = 1;
+    private int numberOfFile = 1;
     Queue<File>theFiles;
     Queue<File> merge1;
     File postDocs;
@@ -21,11 +20,16 @@ public class Posting {
     List<File>finalPostFileYes;
     List<File>finalPostFileNo;
     String path;
+    String pathWithStem;
 
     boolean withStem;
 
     DataCollector dataCollector;
     Map<String,Integer>bigDictionary = new HashMap<>(); // for the gui
+
+    static Map<String,String> dictionaryToLoad = new HashMap<>();
+
+
 
     public Posting(String path, boolean withStem, DataCollector dataCollector) {
         theFiles = new LinkedList<>();
@@ -38,8 +42,20 @@ public class Posting {
         postFilesNo = new LinkedList<>();
 
         this.dataCollector = dataCollector;
+        this.withStem = withStem;
 
-        postDictionary = new File(path+"\\Dictionary");
+
+        File f;
+        if(withStem) {
+            f = new File(path + "\\Y");
+            pathWithStem=path+"\\Y\\";
+        }
+        else {
+            f = new File(path + "\\N");
+            pathWithStem=path+"\\N\\";
+        }
+        f.mkdirs();
+        postDictionary = new File(pathWithStem+"\\Dictionary");
         if(postDictionary.exists()){
             try {
                 postDictionary.createNewFile();
@@ -48,7 +64,7 @@ public class Posting {
             }
         }
 
-        this.withStem = withStem;
+
         this.path = path;
     }
 
@@ -70,7 +86,7 @@ public class Posting {
         for(ATerm term:words.keySet()){
             treeDict.put(term,words.get(term));
         }
-        prepareForWriting(words);
+        prepareForWriting(treeDict);
     }
 
     // need to send it in the end !
@@ -109,11 +125,7 @@ public class Posting {
         StringBuffer docNumber ;
         File file;
         try {
-            if(withStem) {
-                file = new File(path + "\\" +"Y"+numberOfFileYes++);
-            }else{
-                file = new File(path + "\\" +"N"+numberOfFileNo++);
-            }
+            file = new File(pathWithStem+numberOfFile++);
             FileOutputStream out = new FileOutputStream(file);
             try {
                 //Writer writer = new OutputStreamWriter(new GZIPOutputStream(out), "UTF-8");
@@ -169,16 +181,13 @@ public class Posting {
             FileOutputStream out = new FileOutputStream(postDocs,true);
             try {
                 //Writer writer = new OutputStreamWriter(new GZIPOutputStream(out), "UTF-8");
-                Writer writer = new OutputStreamWriter(out);
-                try {
-                    for (String perDoc:docInfo) {
-                        writer.write(perDoc+"\n");
+                try (Writer writer = new OutputStreamWriter(out)) {
+                    for (String perDoc : docInfo) {
+                        writer.write(perDoc + "\n");
                     }
                     writer.write(bf);
                 } catch (IOException e) {
                     e.printStackTrace();
-                } finally {
-                    writer.close();
                 }
             } finally {
                 out.close();
@@ -214,7 +223,7 @@ public class Posting {
             makeThePostFiles(postFilesYes.poll());
         }
     }
-
+    //////// here !!!!!!!!!!! ///// check what if no exist some letter or digit
     private void makeThePostFiles(File file) {
         List<String> fileInfo = new ArrayList<>();
         StringBuffer bf = new StringBuffer();
@@ -311,6 +320,8 @@ public class Posting {
                     }
                 }
             }
+            String tmp = term[0] + bf.toString();
+            fileInfo.add(tmp);
             writeTheFinalFilePost(fileInfo, (char) (l - 1) + " Final");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -328,6 +339,7 @@ public class Posting {
     }
 
     private void writeTheFinalFilePost(List<String>info, String namePost) {
+
         File file;
         String line;
         StringBuffer bf = new StringBuffer();
@@ -337,7 +349,7 @@ public class Posting {
             }else{
                 namePost = "N-"+namePost;
             }
-            file = new File(path + "\\" +namePost);
+            file = new File(pathWithStem +namePost);
 
             FileWriter out = new FileWriter(file);
             FileWriter outDic = new FileWriter(postDictionary,true);
@@ -350,6 +362,7 @@ public class Posting {
                         line = info.get(i);
                         bf.append(buildDictionary(line, i,namePost));
                         writer.write(line+'\n');
+
                     }
                     writer.flush();
                     writerDic.write(bf.toString());
@@ -392,6 +405,7 @@ public class Posting {
         }
         String lineInPost = nameTerm+",{"+counter+":"+docFrequency+":"+namePostFile+"/"+index+"\n";
         bigDictionary.put(nameTerm, counter);
+        dictionaryToLoad.put(nameTerm,namePostFile+"/"+index);
         return lineInPost;
 
     }
@@ -421,6 +435,42 @@ public class Posting {
         }
     }
 
+    public void writeDictionary() {
+        File file;
+        try {
+            if(withStem) {
+                file = new File(path + "\\" +"Y-DictionaryToLoad");
+            }else{
+                file = new File(path + "\\" +"N-DictionaryToLoad");
+            }
+            file.createNewFile();
+            FileOutputStream out = new FileOutputStream(file);
+            try {
+                //Writer writer = new OutputStreamWriter(new GZIPOutputStream(out), "UTF-8");
+                Writer writer = new OutputStreamWriter(out);
+                try {
+                    for(String term:dictionaryToLoad.keySet()){
+                        writer.write(term+",{"+dictionaryToLoad.get(term) + "\n");
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+                    writer.close();
+                }
+            } finally {
+                out.close();
+            }
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
     public class SortIgnoreCase implements Comparator<Object> {
         public int compare(Object o1, Object o2) {
             String s1 = (String) o1;
@@ -435,18 +485,14 @@ public class Posting {
         List<String>readF2 = readFile(f2);
         readF1.addAll(readF2);
         Collections.sort(readF1, new SortIgnoreCase());
-
         writeToFileList(readF1);
     }
 
     private void writeToFileList(List<String> readF1) {
         File file;
         try {
-            if(withStem) {
-                file = new File(path + "\\" +"Y"+numberOfFileYes++);
-            }else{
-                file = new File(path + "\\" +"N"+numberOfFileNo++);
-            }
+            file = new File(pathWithStem + numberOfFile++);
+
             FileOutputStream out = new FileOutputStream(file);
             try {
                 //Writer writer = new OutputStreamWriter(new GZIPOutputStream(out), "UTF-8");
@@ -476,4 +522,52 @@ public class Posting {
             e.printStackTrace();
         }
     }
+
+    public static void load(File file){
+        List<String> lines = new ArrayList<>();
+        dictionaryToLoad = new HashMap<>();
+        try (//GZIPInputStream gzip = new GZIPInputStream(new FileInputStream(file));
+             FileInputStream out = new FileInputStream(file);
+             BufferedReader br = new BufferedReader(new InputStreamReader(out))) {
+            String line = null;
+            while ((line = br.readLine()) != null) {
+                lines.add(line);
+            }
+            Collections.sort(lines);
+            for(String term:lines){
+                String []tmp = term.split(",\\{");
+                dictionaryToLoad.put(tmp[0],tmp[1]);
+            }
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace(System.err);
+        } catch (IOException e) {
+            e.printStackTrace(System.err);
+        }
+    }
+// for me
+    public static void CSV() throws FileNotFoundException {
+        List<String> lines = new ArrayList<>();
+        PrintWriter pw = new PrintWriter(new File("d:\\documents\\users\\dorlev\\Downloads\\corpus\\postings\\test.csv"));
+        try (//GZIPInputStream gzip = new GZIPInputStream(new FileInputStream(file));
+             FileInputStream out = new FileInputStream("d:\\documents\\users\\dorlev\\Downloads\\corpus\\postings\\Dictionary");
+             BufferedReader br = new BufferedReader(new InputStreamReader(out))) {
+            String line = null;
+            while ((line = br.readLine()) != null) {
+                lines.add(line);
+            }
+            Collections.sort(lines);
+            for(String term:lines){
+                String []tmp = term.split(",\\{");
+                pw.write(tmp[0]+","+","+","+tmp[1].split(":")[0]+"\n");
+            }
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace(System.err);
+        } catch (IOException e) {
+            e.printStackTrace(System.err);
+        }
+
+    }
+
 }

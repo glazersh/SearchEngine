@@ -12,6 +12,7 @@ import java.util.*;
 public class ParseUnit {
 
     Posting post ;
+    static int counYear = 0;
 
     Stemmer stem = new Stemmer();
 
@@ -733,6 +734,9 @@ public class ParseUnit {
             init(); // init all boolean variable
 
             String word = cutSigns(allText[i]); // cut the signs
+            if(word.startsWith("year")){
+                counYear++;
+            }
             //String secondWord = cutSigns(allText[i+1]);
 
             if ((word.length() == 1 && !isNumber(word)))
@@ -749,6 +753,9 @@ public class ParseUnit {
                         stem.stem();
                         if (stem.toString().endsWith("'") || stem.toString().endsWith("`")) {
                             word = cutSigns(stem.toString());
+                            stem.add(word.toCharArray(), word.length());
+                            stem.stem();
+                            word = stem.toString();
                         } else {
                             word = stem.toString();
                         }
@@ -762,6 +769,14 @@ public class ParseUnit {
                             if(withStem) {
                                 stem.add(word.toCharArray(), word.length());
                                 stem.stem();
+                                if (stem.toString().endsWith("'") || stem.toString().endsWith("`")) {
+                                    word = cutSigns(stem.toString());
+                                    stem.add(word.toCharArray(), word.length());
+                                    stem.stem();
+                                    word = stem.toString();
+                                } else {
+                                    word = stem.toString();
+                                }
                             }
                             term = new Word(word);
                             checkCapital(term.finalName,docName,i);
@@ -960,11 +975,17 @@ public class ParseUnit {
                 }
             }
             else{
-                termMap = new HashMap<>();
-                checkMinMaxCounter(wordsInDoc.get(term));
-                //if do not exist
-                termMap.put(docName, wordsInDoc.get(term));
-                allWordsDic.put(term, termMap);
+                if(allWordsDic.containsKey(term)){
+                    Map<String, Integer> p;
+                    p = allWordsDic.get(term);
+                    allWordsDic.get(term).put(docName,wordsInDoc.get(term));
+                }else {
+                    termMap = new HashMap<>();
+                    checkMinMaxCounter(wordsInDoc.get(term));
+                    //if do not exist
+                    termMap.put(docName, wordsInDoc.get(term));
+                    allWordsDic.put(term, termMap);
+                }
             }
         }
         //// Finish

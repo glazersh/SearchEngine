@@ -56,4 +56,7 @@ public class ViewModel extends java.util.Observable implements Observer  {
         return model.getLang();
     }
 
+    public void loadDic(File file) {
+        model.loadDict(file);
+    }
 }

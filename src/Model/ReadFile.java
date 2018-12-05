@@ -1,6 +1,7 @@
 package Model;
 
 import org.jsoup.Jsoup;
+import org.jsoup.helper.StringUtil;
 import org.jsoup.nodes.Document;
 
 import java.io.*;
@@ -47,22 +48,28 @@ public class ReadFile {
                     // Send it to Model.ParseUnit
                     for (Element element : elements) {
                         countDoc++;
-                        String docCity = element.getElementsByTag("DOC").select("F[P=104]").text(); // why F[P=104]
+                        String docCity = element.getElementsByTag("DOC").select("F[P=104]").text();
                         if(docCity.equals("")) {
                             docCity = element.getElementsByTag("HEADER").select("F[P=104]").text();
                         }
                         if(docCity.equals("")) {
                             docCity = element.getElementsByTag("TEXT").select("F[P=104]").text();
                         }
-                        if(!docCity.equalsIgnoreCase(""))
-                            docCity = docCity.split(" ")[0].toUpperCase();
+                        if(!docCity.equalsIgnoreCase("")) {
+                            docCity = docCity.split(" ")[0].toUpperCase(); // check if is just letter
+                        }
                         String docText = element.getElementsByTag("TEXT").text();
                         String docName = element.getElementsByTag("DOCNO").text();
-                        String docLanguage = element.getElementsByTag("DOC").select("F[P=105]").text();
+                        if(docText.equals("")){
+                            System.out.println(docName);
+                        }
+                        String docLanguage = element.getElementsByTag("DOC").select("F[P=105]").text().split(" ")[0];
                         if(!languages.contains(docLanguage)){
                             languages.add(docLanguage);
                         }
-                        String[] withoutSpaceText = docText.split(" "); // split the text by " "(space) into array
+                        String replace = docText.replaceAll("[()?!@#|&+*\\[\\];{}\"]+"," ");
+                        String replace2 = replace.replace("--"," ");
+                        String[] withoutSpaceText = replace2.split(" "); // split the text by " "(space) into array
                         Parse.parse(withoutSpaceText, docName,docCity);
                     }
 
@@ -71,16 +78,18 @@ public class ReadFile {
                 }
                 counterFiles++;
                 if(counterFiles == 50){
-                    Parse.post.fromMapToPostFiles(Parse.allWordsDic);
-                    Parse.post.writePerDoc(Parse.docInfo);
-                    Parse.clearDictionary();
-                    counterFiles = 0;
-                    System.out.println("Insert more 50 file " + (++addFile)*50);
+                    if(Parse.allWordsDic.size()!=0) {
+                        Parse.post.fromMapToPostFiles(Parse.allWordsDic);
+                        Parse.post.writePerDoc(Parse.docInfo);
+                        Parse.clearDictionary();
+                        counterFiles = 0;
+                        //System.out.println("Insert more 50 file " + (++addFile) * 50);
+                    }
 //                    if(counterFiles == 10)
 //                        break;
                 }
             }
-            //
+            System.out.println("Year - "+Parse.counYear);
             Parse.post.fromMapToPostFiles(Parse.allWordsDic);
             Parse.post.writePerDoc(Parse.docInfo);
             Parse.clearDictionary();
@@ -88,6 +97,7 @@ public class ReadFile {
             Parse.post.createCapitalPost(Parse.getCapitalDictionary());
             Parse.post.setMap();
             Parse.post.startMerge();
+            Parse.post.writeDictionary();
 
             dataCollector.setLang(languages);
         } catch (IOException e) { }

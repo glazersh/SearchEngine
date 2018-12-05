@@ -39,4 +39,8 @@ public class Model extends Observable {
     public Set getLang(){
         return dataCollector.getLang();
     }
+
+    public void loadDict(File file){
+        Posting.load(file);
+    }
 }

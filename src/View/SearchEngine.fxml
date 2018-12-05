@@ -44,7 +44,7 @@
             <Font name="Century Gothic" size="10.0" />
          </font>
       </Label>
-      <Button layoutX="318.0" layoutY="339.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="136.0" text="load dictionary">
+      <Button fx:id="bn_loadDict" layoutX="318.0" layoutY="339.0" mnemonicParsing="false" onAction="#loadDict" prefHeight="35.0" prefWidth="136.0" text="load dictionary">
          <font>
             <Font name="Century Gothic" size="14.0" />
          </font>
@@ -59,5 +59,6 @@
             <Font name="Century Gothic" size="10.0" />
          </font>
       </Label>
+      <Button fx:id="b_csv" layoutX="331.0" layoutY="226.0" mnemonicParsing="false" onAction="#CSV" text="load to csv" />
    </children>
 </Pane>
