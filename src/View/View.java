@@ -43,6 +43,7 @@ public class View  implements Observer {
     public Button btn_Posting;
     public Button btn_Start;
     public Button btn_showDic;
+    public Button bn_reset;
     @FXML
     Label wrongPath;
     @FXML
@@ -53,8 +54,7 @@ public class View  implements Observer {
     ChoiceBox cb_leng;
     @FXML
     public ListView lv_terms;
-    ListView lv_bigDic;
-    TextArea dicText;
+
 
     private ViewModel viewModel;
 
@@ -93,6 +93,10 @@ public class View  implements Observer {
         lv_terms.setVisible(true);
         lv_terms.getItems().add("shula-3");
         lv_terms.getItems().add("dor-2");
+    }
+
+    public void resetAll(){
+        viewModel.resetAll();
     }
 
 

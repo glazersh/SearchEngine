@@ -25,7 +25,7 @@ public class ReadFile {
     public ReadFile(String path,String stopWords, String PathPosting, boolean withStemming, DataCollector dataCollector) {
         this.dataC = dataCollector;
         Parse = new ParseUnit(stopWords, PathPosting, withStemming, this.dataC);
-        List<File> allFiles = null;
+        List<File> allFiles;
         int addFile = 0;
         int counterFiles =0;
         int countDoc = 0;
@@ -70,14 +70,14 @@ public class ReadFile {
                     e.printStackTrace();
                 }
                 counterFiles++;
-                if(counterFiles == 50){
+                if(counterFiles %2 ==0){
                     Parse.post.fromMapToPostFiles(Parse.allWordsDic);
                     Parse.post.writePerDoc(Parse.docInfo);
                     Parse.clearDictionary();
-                    counterFiles = 0;
+                    //counterFiles = 0;
                     System.out.println("Insert more 50 file " + (++addFile)*50);
-//                    if(counterFiles == 10)
-//                        break;
+                    if(counterFiles == 10)
+                        break;
                 }
             }
             //
@@ -93,4 +93,10 @@ public class ReadFile {
         } catch (IOException e) { }
     }
 
+    public void resetAll() {
+        languages.clear();
+
+        Parse.resetAll();
+
+    }
 }

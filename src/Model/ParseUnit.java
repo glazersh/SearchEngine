@@ -1,7 +1,7 @@
 package Model;
 
-import Model.IO.CountryInMemoryDB;
-import Model.IO.CountryInfo;
+import Model.IO.DBCountries;
+import Model.IO.Countries;
 import Model.Term.*;
 
 import java.io.File;
@@ -32,9 +32,9 @@ public class ParseUnit {
 
     Map<ATerm,Integer>wordsInDoc = new HashMap<>();
 
-    CountryInMemoryDB countryInMemory;
+    DBCountries countryInMemory;
 
-    Map<CountryInfo,String> capitalTerms = new HashMap<>();
+    Map<Countries,String> capitalTerms = new HashMap<>();
 
 
 
@@ -66,13 +66,13 @@ public class ParseUnit {
         StopWords(stopWords); // init all stopWords from stopWords.txt
         insertSigns(); // init all the signs
         try {
-            countryInMemory = new CountryInMemoryDB("https://restcountries.eu/rest/v2/all?fields=name;capital;population;currencies");
+            countryInMemory = new DBCountries("https://restcountries.eu/rest/v2/all?fields=name;capital;population;currencies");
         } catch (IOException e) {
             e.printStackTrace();
         }
 
     }
-
+    //converts the stop words txt to a dictionary
     private void StopWords(String path){
         Scanner file = null;
         try {
@@ -269,7 +269,7 @@ public class ParseUnit {
     }
 
     /**
-     * Term of Price
+     * converts price (above 2 words) above million dollars and under million dollars
      * @param word
      * @param allTerm
      * @param isInteger
@@ -328,6 +328,13 @@ public class ParseUnit {
         increaseCounter(term);
 
     }
+
+    /**
+     * converts price with 1 word that above million dollars and under million dollars
+     * @param word
+     * @param oneTerm
+     */
+
     private void oneTermPrice(String word, String oneTerm){
         boolean aboveM = true;
         termBeforeChanged = new StringBuffer(oneTerm);
@@ -349,7 +356,7 @@ public class ParseUnit {
     }
 
     /**
-     * Term of Number
+     * converts numbers (above 2 words) above thousand to K, above million to m, above billion to B
      * @param realword
      * @param termWords
      */
@@ -392,6 +399,12 @@ public class ParseUnit {
         }
         increaseCounter(term);
     }
+
+
+    /**
+     * converts numbers (with one word) above thousand to K, above million to m, above billion to B
+     * @param word
+     */
     private void oneTermNumber(String word) {
         if(word.contains("/"))
             term = new NumberK(word);
@@ -431,7 +444,7 @@ public class ParseUnit {
     }
 
     /**
-     * Term of Date
+     * converts dates to MM-DD or YYYY-MM format as needed
      * @param wordsTerm
      */
     private void termDate(String [] wordsTerm) {
@@ -459,6 +472,8 @@ public class ParseUnit {
         increaseCounter(term);
     }
 
+
+
     private boolean isTermNumber(String word){
         if (isNumber(word)) {
             if (word.contains(".")) {
@@ -479,19 +494,18 @@ public class ParseUnit {
         found = false;
     }
 
+    //function which specifies terms with more than 1 word to types
     private void typeTerm(String [] termWords, String word){
         // if the term is date
         if (isTermDate) {
             termDate(termWords);
             return;
         }
-
         // if the term is price
         if (isTermPrice) {
             termPrice(word, termWords, isInteger);
             return;
         }
-
         // if the term is percent
         if (isTermPercent) {
             term = new Percent(termBeforeChanged.toString());
@@ -502,6 +516,8 @@ public class ParseUnit {
         else
             termNumber(word, termWords);
     }
+
+    //function which specifies terms with 1 word to types
     private void oneWordTypeTerm(String word, String real) {
 
         // if the term is price
@@ -526,6 +542,10 @@ public class ParseUnit {
             term = new Word(real);
     }
 
+    /**
+     * our rule - dates with full format of MM-DD-YYYY and converts into MM-DD and YYYY-MM
+     * @param word
+     */
     private void termFullDate(String word) {
         String[]fullDate = word.split("/");
         String day = fullDate[0];
@@ -558,6 +578,7 @@ public class ParseUnit {
         }
     }
 
+
     private boolean isFullDate(String word) {
         if(word.length()<8)
             return false;
@@ -578,6 +599,13 @@ public class ParseUnit {
         return true;
     }
 
+    /**
+     * returns whether the string is range between and converts into word-word format
+     * @param num1String
+     * @param andString
+     * @param num2String
+     * @return
+     */
     private boolean betweenTerm(String num1String, String andString, String num2String){
         String num1 = cutSigns(num1String);
         String and = cutSigns(andString);
@@ -592,6 +620,12 @@ public class ParseUnit {
         return false;
     }
 
+    /**
+     *
+     * @param number
+     * @param kind of number
+     * @return number after converting the term range between numbers into the right format
+     */
     public String transferNumberInRange(String number, String kind){
         boolean isTrillion = false;
         double firstNumber = Double.parseDouble(number);
@@ -611,11 +645,17 @@ public class ParseUnit {
         String finalRange = TermNumber(firstNumber+"");
         if(isTrillion){
             finalRange = finalRange.replace("B","000B");
-            isTrillion = false;
         }
         return finalRange;
     }
 
+    /**
+     *
+     * @param word
+     * @param word2
+     * @param minusWord
+     * @return
+     */
     private int RangeTerm(String word, String word2, String minusWord){
         int addIndex = 0;
 
@@ -710,16 +750,16 @@ public class ParseUnit {
 
 
     /**
-     * The parser
+     * The Main parser function
      * @param allText
      * @param docName
      */
+
     public void parse(String [] allText, String docName,String cityName) {
         maxTermCounter = 0;
         counterMinTerm = 0;
         wordsInDoc = new HashMap<>();
         termInDoc=0;
-
 
         /**
          * Check every words :
@@ -729,17 +769,15 @@ public class ParseUnit {
          *               2.2 else, send to stemmer
          */
         for (int i = 0; i < allText.length; i++) {
-
-            init(); // init all boolean variable
-
-            String word = cutSigns(allText[i]); // cut the signs
+            // init all boolean variable
+            init();
+            // cut the signs
+            String word = cutSigns(allText[i]);
             //String secondWord = cutSigns(allText[i+1]);
-
+            //if the word contains one char - ignore
             if ((word.length() == 1 && !isNumber(word)))
                 continue;
-
             if (!word.equals("") && ((word.equals("Between") || (word.equals("May")  || !stopWords.contains(word.toLowerCase()))))) {
-
                 // regular text
                 if (i + 1 < allText.length && isNormalWord(word, cutSigns(allText[i + 1]))) {
 
@@ -753,9 +791,11 @@ public class ParseUnit {
                             word = stem.toString();
                         }
                     }
+
                     term = new Word(word);
                     checkCapital(term.finalName,docName,i);
                     increaseCounter(term);
+
                 } else {
                     if (i == allText.length - 1) {
                         if (isNormalWord(word, "no")) {
@@ -774,14 +814,13 @@ public class ParseUnit {
                         if(betweenTerm(allText[i+1],allText[i+2],allText[i+3]))
                             i=i+3;
                         continue;
-
                     }
+
                     if(((word.contains("-") && !word.endsWith("-") && i - 1 >= 0 && i+1 <allText.length))) {
                         int index = RangeTerm(word,allText[i+1],allText[i-1]);
                         i += index;
                         continue;
                     }
-
 
                     if (!isTermNumber(word)) {
                         word = removeComma(word);
@@ -791,18 +830,19 @@ public class ParseUnit {
                     // if word's first character is with "$"
                     // and then check if word is Number.
                     if (!isTNumber && word.charAt(0) == '$') {
-
                         allText[i] = allText[i].substring(1); // cut $
                         word = word.substring(1);
                         if (isTermNumber(word)) {
                             isTermPrice = true;
                         }
+
                         // the number is fraction
                         if (isTNumber && word.contains("/")) {
                             term = new Price(allText[i] + "Dollars");
                             increaseCounter(term);
                             continue;
                         }
+
                         // string that first character is "$"
                         if (!isTNumber) {
                             boolean flag = false;
@@ -812,9 +852,9 @@ public class ParseUnit {
                                     break;
                                 }
                             }
+
                             if(flag)
                                 continue;
-
 
                             term = new Word('$' + word);
                             increaseCounter(term);
@@ -859,9 +899,11 @@ public class ParseUnit {
 
                     int next = 0;
                     String nextWord = "";
+
                     if (i + 1 < allText.length) {
                         nextWord = cutSigns(allText[i + 1]);
                     }
+
                     while (i + 1 < allText.length && (afterNumber.contains(nextWord)) || (month.containsKey(word) && isNumber(nextWord)) || (isTNumber && month.containsKey(nextWord))) {
                         if (next == 2) {
                             if (!nextWord.equals("U.S.") && !nextWord.contains("/"))
@@ -981,6 +1023,11 @@ public class ParseUnit {
         }
     }
 
+    /**
+     * checks whether the term exists in the dictionary in lower case
+     * @param docName
+     * @param termOld
+     */
     private void checkIfExistsLower(String docName, ATerm termOld) {
         if (allWordsDic.containsKey(termOld)) {
             int counterWord = wordsInDoc.get(termOld);
@@ -994,21 +1041,25 @@ public class ParseUnit {
                 allWordsDic.get(termOld).put(docName, counterWord);
             }
         } else {
+            //if term do not exist
             termMap = new HashMap<>();
             checkMinMaxCounter(wordsInDoc.get(termOld));
-
-
-            //if do not exist
             termMap.put(docName, wordsInDoc.get(termOld));
             allWordsDic.put(termOld, termMap);
         }
     }
 
+    /**
+     * checks whether the term exists in the dictionary in upper case
+     * @param docName
+     * @param termOld
+     */
     private void checkIfExistsUpper(String docName, ATerm termOld) {
         ATerm termUp = new Word(termOld.finalName.toUpperCase());
+        //if termUp exists
         if (allWordsDic.containsKey(termUp)) {
             int counterWord = wordsInDoc.get(termOld);
-
+            //if the doc does not exists in the term dictionary
             if(allWordsDic.get(termUp).get(docName)==null){
                 checkMinMaxCounter(wordsInDoc.get(termOld));
                 allWordsDic.get(termUp).put(docName, counterWord);
@@ -1022,11 +1073,9 @@ public class ParseUnit {
                 allWordsDic.get(termUp).put(docName, counterWord);
             }
         } else {
+            //if term do not exist
             termMap = new HashMap<>();
-            //if do not exist
             checkMinMaxCounter(wordsInDoc.get(termOld));
-
-
             termMap.put(docName, wordsInDoc.get(termOld));
             allWordsDic.put(termUp, termMap);
         }
@@ -1143,7 +1192,7 @@ public class ParseUnit {
             stem.stem();
             termName = stem.toString();
         }
-        CountryInfo capitalTerm = countryInMemory.getCountryByCapital(termName.toUpperCase());
+        Countries capitalTerm = countryInMemory.getCountryByCapital(termName.toUpperCase());
         StringBuffer str = new StringBuffer(docName+":"+pos+",");
         // if is capital
         if(capitalTerm!=null){
@@ -1160,7 +1209,7 @@ public class ParseUnit {
         }
     }
 
-    public Map<CountryInfo, String> getCapitalDictionary(){
+    public Map<Countries, String> getCapitalDictionary(){
         return capitalTerms;
     }
 
@@ -1172,5 +1221,17 @@ public class ParseUnit {
     //Parse.post.fromMapToPostFiles(Parse.allWordsDic);
     private void sendMapToPost(){
         post.fromMapToPostFiles(dt.getMap());
+    }
+
+    public void resetAll() {
+        month.clear();
+        afterNumber.clear();
+        stopWords.clear();
+        signs.clear();
+        termMap.clear();
+        wordsInDoc.clear();
+        capitalTerms.clear();
+        post.resetAll();
+        countryInMemory.resetAll();
     }
 }

@@ -56,4 +56,8 @@ public class ViewModel extends java.util.Observable implements Observer  {
         return model.getLang();
     }
 
+    public void resetAll() {
+
+        model.resetAll();
+    }
 }

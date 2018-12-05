@@ -8,7 +8,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Scanner;
 
-public class HTTPWebRequest {
+public class ReadCountries {
 
     public JSONObject post(String url) throws IOException {
 
