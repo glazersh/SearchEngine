@@ -1029,16 +1029,13 @@ public class ParseUnit {
      * @param termOld
      */
     private void checkIfExistsLower(String docName, ATerm termOld) {
-        //if ternOld already exists
         if (allWordsDic.containsKey(termOld)) {
             int counterWord = wordsInDoc.get(termOld);
-            //if the doc does not exists in the term dictionary
             if(allWordsDic.get(termOld).get(docName)==null){
                 // max
                 checkMinMaxCounter(counterWord);
                 allWordsDic.get(termOld).put(docName, counterWord);
             }else{
-                //if exists, add to the exisiting dictionary
                 counterWord = wordsInDoc.get(termOld)+allWordsDic.get(termOld).get(docName);
                 checkMinMaxCounter(counterWord);
                 allWordsDic.get(termOld).put(docName, counterWord);
@@ -1068,7 +1065,6 @@ public class ParseUnit {
                 allWordsDic.get(termUp).put(docName, counterWord);
             }
             else {
-                //if exists, add to the exisiting dictionary
                 counterWord = wordsInDoc.get(termOld) + allWordsDic.get(termUp).get(docName);
                 if(maxTermCounter<counterWord){
                     maxTermCounter = counterWord;
@@ -1102,11 +1098,6 @@ public class ParseUnit {
         }
     }
 
-    /**
-     *
-     * @param beforeCut
-     * @return a word after cutting signs from the beginning or end of the word
-     */
     private String cutSigns(String beforeCut) {
         int lengthBeforeWord = beforeCut.length();
         int startCharacter=0;
@@ -1148,13 +1139,6 @@ public class ParseUnit {
         return beforeCut;
     }
 
-
-    /**
-     *
-     * @param word
-     * @return number after converting it above thousand to K, above million to m, above billion to B
-
-     */
     private String TermNumber(String word) {
         if(word.contains("/"))
             return word;
@@ -1193,8 +1177,6 @@ public class ParseUnit {
         }
     }
 
-
-    //cutting number that has .0 in the end
     private String cutDot0(double number){
         String numberInString = number+"";
         String dot0 = numberInString.substring(numberInString.length()-2);
@@ -1204,13 +1186,6 @@ public class ParseUnit {
         return String.valueOf(number);
     }
 
-
-    /**
-     * function which checks whether the term is a capital city and if so, insert to a capital dictionary
-     * @param termName
-     * @param docName
-     * @param pos
-     */
     private void checkCapital(String termName, String docName, int pos){
         if(withStem){
             stem.add(termName.toCharArray(),termName.length());
@@ -1222,7 +1197,6 @@ public class ParseUnit {
         // if is capital
         if(capitalTerm!=null){
             String pop =capitalTerm.getPopulation();
-            //converting number as needed
             String rightWord = TermNumber(pop);
             if(capitalTerms.get(capitalTerm.getCapitalName())!= null) {
                 String tmp = capitalTerms.get(capitalTerm.getCapitalName());
@@ -1248,7 +1222,7 @@ public class ParseUnit {
     private void sendMapToPost(){
         post.fromMapToPostFiles(dt.getMap());
     }
-    //function for the reset button in the gui
+
     public void resetAll() {
         month.clear();
         afterNumber.clear();
