@@ -1,6 +1,5 @@
 package View;
 
-import Model.Posting;
 import ViewModel.ViewModel;
 //import javafx.beans.Observable;
 import javafx.beans.value.ObservableValue;
@@ -44,6 +43,7 @@ public class View  implements Observer {
     public Button btn_Posting;
     public Button btn_Start;
     public Button btn_showDic;
+    public Button bn_reset;
     @FXML
     Label wrongPath;
 
@@ -57,14 +57,17 @@ public class View  implements Observer {
     ChoiceBox cb_leng;
     @FXML
     public ListView lv_terms;
-    ListView lv_bigDic;
-    TextArea dicText;
+
 
     public Button b_csv;
 
     private ViewModel viewModel;
 
     public View(){}
+
+    /**
+     * gets the path where the corpus is
+     */
     public void BrowseCollection() {
         try {
             DirectoryChooser directoryChooser = new DirectoryChooser();
@@ -81,6 +84,9 @@ public class View  implements Observer {
         }
     }
 
+    /**
+     * gets the path in which to save the postins
+     */
     public void BrowsePostingPath() {
         try {
             DirectoryChooser directoryChooser = new DirectoryChooser();
@@ -95,10 +101,15 @@ public class View  implements Observer {
         }
     }
 
+     //when asked, displays the dictionary with the terms and time it appeared in the whole corpus
     public void showDic() throws IOException {
         lv_terms.setVisible(true);
         lv_terms.getItems().add("shula-3");
         lv_terms.getItems().add("dor-2");
+    }
+
+    public void resetAll(){
+        viewModel.resetAll();
     }
 
     public void loadDict(){
@@ -112,6 +123,7 @@ public class View  implements Observer {
         viewModel.loadDic(file);
     }
 
+    // start the prosses - sends the pathing to view model which sends to model and analyzes it
     public void startEngine(){
         btn_Start.setDisable(true);
         if(lbl_Stemming.isSelected())
@@ -122,6 +134,7 @@ public class View  implements Observer {
         viewModel.startEngine(selectedFolderBrowseCollection.getAbsoluteFile(),getStopWordsPath(),PostingPath.getPath(), withStemming);
         Set<String>lang = viewModel.getLang();
         List<String> sortLang = new ArrayList();
+        //gets the languages list from the corpus and updates the option in the gui
         for(String langWord:lang){
             sortLang.add(langWord);
         }
@@ -135,12 +148,9 @@ public class View  implements Observer {
 
     public void setViewModel(ViewModel vm) {
         this.viewModel = vm;
-        bindProperties(viewModel);
     }
-    private void bindProperties(ViewModel viewModel) {
-        //  lbl_Corpus.textProperty().bind(viewModel.selectedFolderBrowseCollection.getPath());
 
-    }
+
 
     public String getStopWordsPath(){
         return selectedFolderBrowseCollection.getPath()+"\\stopWords.txt";

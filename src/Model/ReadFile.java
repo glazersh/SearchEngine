@@ -1,7 +1,6 @@
 package Model;
 
 import org.jsoup.Jsoup;
-import org.jsoup.helper.StringUtil;
 import org.jsoup.nodes.Document;
 
 import java.io.*;
@@ -26,7 +25,7 @@ public class ReadFile {
     public ReadFile(String path,String stopWords, String PathPosting, boolean withStemming, DataCollector dataCollector) {
         this.dataC = dataCollector;
         Parse = new ParseUnit(stopWords, PathPosting, withStemming, this.dataC);
-        List<File> allFiles = null;
+        List<File> allFiles;
         int addFile = 0;
         int counterFiles =0;
         int countDoc = 0;
@@ -52,21 +51,22 @@ public class ReadFile {
                         if(docCity.equals("")) {
                             docCity = element.getElementsByTag("HEADER").select("F[P=104]").text();
                         }
+
                         if(docCity.equals("")) {
                             docCity = element.getElementsByTag("TEXT").select("F[P=104]").text();
                         }
-                        if(!docCity.equalsIgnoreCase("")) {
-                            docCity = docCity.split(" ")[0].toUpperCase(); // check if is just letter
-                        }
+                        //if the city contains more than 1 word, take the first one in capital letters
+                        if(!docCity.equalsIgnoreCase(""))
+                            docCity = docCity.split(" ")[0].toUpperCase();
+
                         String docText = element.getElementsByTag("TEXT").text();
                         String docName = element.getElementsByTag("DOCNO").text();
-                        if(docText.equals("")){
-                            System.out.println(docName);
-                        }
-                        String docLanguage = element.getElementsByTag("DOC").select("F[P=105]").text().split(" ")[0];
+                        String docLanguage = element.getElementsByTag("DOC").select("F[P=105]").text();
                         if(!languages.contains(docLanguage)){
                             languages.add(docLanguage);
                         }
+                        //split the text by " "(space) into array
+                        //String[] withoutSpaceText = docText.split(" ");
                         String replace = docText.replaceAll("[()?!@#|&+*\\[\\];{}\"]+"," ");
                         String replace2 = replace.replace("--"," ");
                         String[] withoutSpaceText = replace2.split(" "); // split the text by " "(space) into array
@@ -78,18 +78,16 @@ public class ReadFile {
                 }
                 counterFiles++;
                 if(counterFiles == 50){
-                    if(Parse.allWordsDic.size()!=0) {
-                        Parse.post.fromMapToPostFiles(Parse.allWordsDic);
-                        Parse.post.writePerDoc(Parse.docInfo);
-                        Parse.clearDictionary();
-                        counterFiles = 0;
-                        //System.out.println("Insert more 50 file " + (++addFile) * 50);
-                    }
+                    Parse.post.fromMapToPostFiles(Parse.allWordsDic);
+                    Parse.post.writePerDoc(Parse.docInfo);
+                    Parse.clearDictionary();
+                    counterFiles = 0;
+                    System.out.println("Insert more 50 file " + (++addFile)*50);
 //                    if(counterFiles == 10)
 //                        break;
                 }
             }
-            System.out.println("Year - "+Parse.counYear);
+            //
             Parse.post.fromMapToPostFiles(Parse.allWordsDic);
             Parse.post.writePerDoc(Parse.docInfo);
             Parse.clearDictionary();
@@ -103,4 +101,10 @@ public class ReadFile {
         } catch (IOException e) { }
     }
 
+    public void resetAll() {
+        languages.clear();
+
+        Parse.resetAll();
+
+    }
 }

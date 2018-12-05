@@ -4,7 +4,8 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 
-public class CountryInfo {
+//saves information about the city
+public class Countries {
 
 
     private String CountryName;
@@ -12,7 +13,7 @@ public class CountryInfo {
     private String Population;
     private String Currency;
 
-    public CountryInfo(JSONObject data) throws IOException {
+    public Countries(JSONObject data) throws IOException {
 
         this.CountryName = data.get("name").toString();
         this.CapitalName = data.get("capital").toString();

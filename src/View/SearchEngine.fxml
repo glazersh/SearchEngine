@@ -20,7 +20,7 @@
       <TextField fx:id="lbl_PathPositng" layoutX="34.0" layoutY="162.0" prefHeight="17.0" prefWidth="165.0" />
       <Label fx:id="wrongPath" disable="true" layoutX="161.0" layoutY="67.0" textFill="#e40404" />
       <Button fx:id="CollectionButton" layoutX="205.0" layoutY="110.0" mnemonicParsing="false" onAction="#BrowseCollection" text="Browse files" />
-      <Button layoutX="14.0" layoutY="339.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="150.0" text="resert engine">
+      <Button fx:id="bn_reset" layoutX="14.0" layoutY="339.0" mnemonicParsing="false" onAction="#resetAll" prefHeight="35.0" prefWidth="150.0" text="resert engine">
          <font>
             <Font name="Century Gothic" size="14.0" />
          </font></Button>

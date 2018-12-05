@@ -59,4 +59,8 @@ public class ViewModel extends java.util.Observable implements Observer  {
     public void loadDic(File file) {
         model.loadDict(file);
     }
+    public void resetAll() {
+
+        model.resetAll();
+    }
 }

@@ -1,6 +1,6 @@
 package Model;
 
-import Model.IO.CountryInfo;
+import Model.IO.Countries;
 import Model.Term.ATerm;
 
 import java.io.*;
@@ -64,7 +64,7 @@ public class Posting {
             }
         }
 
-
+        this.withStem = withStem;
         this.path = path;
     }
 
@@ -223,7 +223,7 @@ public class Posting {
             makeThePostFiles(postFilesYes.poll());
         }
     }
-    //////// here !!!!!!!!!!! ///// check what if no exist some letter or digit
+
     private void makeThePostFiles(File file) {
         List<String> fileInfo = new ArrayList<>();
         StringBuffer bf = new StringBuffer();
@@ -339,7 +339,6 @@ public class Posting {
     }
 
     private void writeTheFinalFilePost(List<String>info, String namePost) {
-
         File file;
         String line;
         StringBuffer bf = new StringBuffer();
@@ -362,7 +361,6 @@ public class Posting {
                         line = info.get(i);
                         bf.append(buildDictionary(line, i,namePost));
                         writer.write(line+'\n');
-
                     }
                     writer.flush();
                     writerDic.write(bf.toString());
@@ -410,7 +408,7 @@ public class Posting {
 
     }
 
-    public void createCapitalPost(Map<CountryInfo, String> capitalDictionary) {
+    public void createCapitalPost(Map<Countries, String> capitalDictionary) {
         File capitalPost = new File(path + "\\" + "capitalPost");
         FileWriter out = null;
         try {
@@ -419,7 +417,7 @@ public class Posting {
             try {
                 out = new FileWriter(capitalPost);
                 writer = new BufferedWriter(out);
-                for (CountryInfo countryInfo : capitalDictionary.keySet()) {
+                for (Countries countryInfo : capitalDictionary.keySet()) {
                     writer.write(capitalDictionary.get(countryInfo) + "\n");
                 }
                 writer.flush();
@@ -433,6 +431,18 @@ public class Posting {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void resetAll() {
+        theFiles.clear();
+        merge1.clear();
+        postFilesNo.clear();
+        postFilesYes.clear();
+        finalPostFileNo.clear();
+        finalPostFileYes.clear();
+        bigDictionary.clear();
+
+
     }
 
     public void writeDictionary() {

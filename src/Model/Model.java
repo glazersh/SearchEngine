@@ -35,12 +35,18 @@ public class Model extends Observable {
     public Map getMap(){
         return dataCollector.getMap();
     }
-
+    //function for the language choise
     public Set getLang(){
         return dataCollector.getLang();
     }
 
     public void loadDict(File file){
         Posting.load(file);
+    }
+    //function for the reset button
+    public void resetAll() {
+
+        readFile.resetAll();
+
     }
 }
