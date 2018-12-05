@@ -25,7 +25,7 @@ public class ReadFile {
     public ReadFile(String path,String stopWords, String PathPosting, boolean withStemming, DataCollector dataCollector) {
         this.dataC = dataCollector;
         Parse = new ParseUnit(stopWords, PathPosting, withStemming, this.dataC);
-        List<File> allFiles = null;
+        List<File> allFiles;
         int addFile = 0;
         int counterFiles =0;
         int countDoc = 0;
@@ -51,18 +51,22 @@ public class ReadFile {
                         if(docCity.equals("")) {
                             docCity = element.getElementsByTag("HEADER").select("F[P=104]").text();
                         }
+
                         if(docCity.equals("")) {
                             docCity = element.getElementsByTag("TEXT").select("F[P=104]").text();
                         }
+                        //if the city contains more than 1 word, take the first one in capital letters
                         if(!docCity.equalsIgnoreCase(""))
                             docCity = docCity.split(" ")[0].toUpperCase();
+
                         String docText = element.getElementsByTag("TEXT").text();
                         String docName = element.getElementsByTag("DOCNO").text();
                         String docLanguage = element.getElementsByTag("DOC").select("F[P=105]").text();
                         if(!languages.contains(docLanguage)){
                             languages.add(docLanguage);
                         }
-                        String[] withoutSpaceText = docText.split(" "); // split the text by " "(space) into array
+                        //split the text by " "(space) into array
+                        String[] withoutSpaceText = docText.split(" ");
                         Parse.parse(withoutSpaceText, docName,docCity);
                     }
 
@@ -70,14 +74,14 @@ public class ReadFile {
                     e.printStackTrace();
                 }
                 counterFiles++;
-                if(counterFiles == 50){
+                if(counterFiles %2 ==0){
                     Parse.post.fromMapToPostFiles(Parse.allWordsDic);
                     Parse.post.writePerDoc(Parse.docInfo);
                     Parse.clearDictionary();
-                    counterFiles = 0;
+                    //counterFiles = 0;
                     System.out.println("Insert more 50 file " + (++addFile)*50);
-//                    if(counterFiles == 10)
-//                        break;
+                    if(counterFiles == 10)
+                        break;
                 }
             }
             //
@@ -93,4 +97,10 @@ public class ReadFile {
         } catch (IOException e) { }
     }
 
+    public void resetAll() {
+        languages.clear();
+
+        Parse.resetAll();
+
+    }
 }
