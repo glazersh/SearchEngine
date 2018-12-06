@@ -41,7 +41,7 @@ public class Model extends Observable {
     }
 
     public void loadDict(File file){
-        Posting.load(file);
+        Indexer.load(file);
     }
     //function for the reset button
     public void resetAll() {

@@ -1,5 +1,6 @@
 package View;
 
+import Model.Indexer;
 import ViewModel.ViewModel;
 //import javafx.beans.Observable;
 import javafx.beans.value.ObservableValue;
@@ -61,6 +62,10 @@ public class View  implements Observer {
 
     public Button b_csv;
 
+    public Label l_docs;
+    public Label l_terms;
+    public Label l_time;
+
     private ViewModel viewModel;
 
     public View(){}
@@ -90,7 +95,7 @@ public class View  implements Observer {
     public void BrowsePostingPath() {
         try {
             DirectoryChooser directoryChooser = new DirectoryChooser();
-            directoryChooser.setTitle("Please Choose Posting Path");
+            directoryChooser.setTitle("Please Choose Indexer Path");
             PostingPath = directoryChooser.showDialog((Stage)btn_Posting.getScene().getWindow());
             lbl_PathPositng.setText(PostingPath.getAbsolutePath());
             if (PostingPath != null) {
@@ -153,7 +158,7 @@ public class View  implements Observer {
 
 
     public String getStopWordsPath(){
-        return selectedFolderBrowseCollection.getPath()+"\\stopWords.txt";
+        return selectedFolderBrowseCollection.getPath()+"\\stop_words.txt";
     }
 
     public File getFile() {
@@ -170,7 +175,7 @@ public class View  implements Observer {
 
     // remove !
     public void CSV() throws FileNotFoundException {
-        Posting.CSV();
+        Indexer.CSV();
     }
 }
 

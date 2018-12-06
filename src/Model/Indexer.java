@@ -6,7 +6,7 @@ import Model.Term.ATerm;
 import java.io.*;
 import java.util.*;
 
-public class Posting {
+public class Indexer {
 
     private int numberOfFile = 1;
     Queue<File>theFiles;
@@ -20,7 +20,8 @@ public class Posting {
     List<File>finalPostFileYes;
     List<File>finalPostFileNo;
     String path;
-    String pathWithStem;
+    static String pathWithStem;
+
 
     boolean withStem;
 
@@ -31,7 +32,7 @@ public class Posting {
 
 
 
-    public Posting(String path, boolean withStem, DataCollector dataCollector) {
+    public Indexer(String path, boolean withStem, DataCollector dataCollector) {
         theFiles = new LinkedList<>();
         merge1 = new LinkedList<>();
 
@@ -558,9 +559,9 @@ public class Posting {
 // for me
     public static void CSV() throws FileNotFoundException {
         List<String> lines = new ArrayList<>();
-        PrintWriter pw = new PrintWriter(new File("d:\\documents\\users\\dorlev\\Downloads\\corpus\\postings\\test.csv"));
+        PrintWriter pw = new PrintWriter(new File(pathWithStem+"test.csv"));
         try (//GZIPInputStream gzip = new GZIPInputStream(new FileInputStream(file));
-             FileInputStream out = new FileInputStream("d:\\documents\\users\\dorlev\\Downloads\\corpus\\postings\\Dictionary");
+             FileInputStream out = new FileInputStream(pathWithStem+"Dictionary");
              BufferedReader br = new BufferedReader(new InputStreamReader(out))) {
             String line = null;
             while ((line = br.readLine()) != null) {
@@ -569,7 +570,7 @@ public class Posting {
             Collections.sort(lines);
             for(String term:lines){
                 String []tmp = term.split(",\\{");
-                pw.write(tmp[0]+","+","+","+tmp[1].split(":")[0]+"\n");
+                pw.write(tmp[0].replace(",","")+","+tmp[1].split(":")[0]+"\n");
             }
 
         } catch (FileNotFoundException e) {

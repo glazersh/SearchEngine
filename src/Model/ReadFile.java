@@ -103,7 +103,6 @@ public class ReadFile {
 
     public void resetAll() {
         languages.clear();
-
         Parse.resetAll();
 
     }

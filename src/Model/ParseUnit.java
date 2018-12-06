@@ -11,7 +11,7 @@ import java.util.*;
 
 public class ParseUnit {
 
-    Posting post ;
+    Indexer post ;
 
     Stemmer stem = new Stemmer();
 
@@ -60,7 +60,7 @@ public class ParseUnit {
     public ParseUnit(String stopWords, String PathPosting,boolean  withStemming, DataCollector dataCollector){
         this.withStem = withStemming;
         this.dt = dataCollector;
-        post = new Posting(PathPosting, withStemming, dataCollector);
+        post = new Indexer(PathPosting, withStemming, dataCollector);
         insertMonth(); // init all months
         insertAfterWords(); // init special words for our parse
         StopWords(stopWords); // init all stopWords from stopWords.txt
@@ -344,7 +344,7 @@ public class ParseUnit {
         }
         else{
             double numD = (Double.parseDouble(word)/1000000);
-            numD = Math.round(numD*100.0)/100.0;
+            //numD = Math.round(numD*100.0)/100.0;
             termBeforeChanged.replace(0,word.length(),Double.toString(numD));
             termBeforeChanged.append(" M Dollars");
         }
@@ -417,7 +417,7 @@ public class ParseUnit {
                 // 1k - 1M
                 if (numberWord < 1000000) {
                     numberWord = numberWord / 1000;
-                    numberWord = Math.round(numberWord*100.0)/100.0;
+                    //numberWord = Math.round(numberWord*100.0)/100.0;
                     termBeforeChanged = new StringBuffer(cutDot0(numberWord) + "K");
                     term = new NumberK(termBeforeChanged.toString());
 
@@ -425,14 +425,14 @@ public class ParseUnit {
                     // 1M - 1B
                     if (numberWord < 1000000000) {
                         numberWord = numberWord / 1000000;
-                        numberWord = Math.round(numberWord*100.0)/100.0;
+                        //numberWord = Math.round(numberWord*100.0)/100.0;
                         termBeforeChanged = new StringBuffer(cutDot0(numberWord) + "M");
                         term = new NumberM(termBeforeChanged.toString());
                     }
                     // over 1B
                     else {
                         numberWord = numberWord / 1000000000;
-                        numberWord = Math.round(numberWord*100.0)/100.0;
+                        //numberWord = Math.round(numberWord*100.0)/100.0;
                         termBeforeChanged = new StringBuffer(cutDot0(numberWord) + "B");
                         term = new NumberB(termBeforeChanged.toString());
                     }
@@ -959,7 +959,7 @@ public class ParseUnit {
                 char c = term.finalName.charAt(0);
                 int counterWord;
                 if (Character.isUpperCase(c)) {
-                    String tp = Character.toLowerCase(c) + term.finalName.substring(1); // the term with lowerCase
+                    String tp = term.finalName.toLowerCase();
                     ATerm a = new Word(tp);
                     if (allWordsDic.containsKey(a)) {
                         if (allWordsDic.get(a).get(docName) != null) {
@@ -1151,7 +1151,7 @@ public class ParseUnit {
             // 1k - 1M
             if (numberWord < 1000000) {
                 numberWord = numberWord / 1000;
-                numberWord = Math.round(numberWord*100.0)/100.0;
+                //numberWord = Math.round(numberWord*100.0)/100.0;
                 numberInString = cutDot0(numberWord);
                 termBeforeChanged = new StringBuffer(numberInString + "K");
                 return termBeforeChanged.toString();
@@ -1160,7 +1160,7 @@ public class ParseUnit {
                 // 1M - 1B
                 if (numberWord < 1000000000) {
                     numberWord = numberWord / 1000000;
-                    numberWord = Math.round(numberWord*100.0)/100.0;
+                    //numberWord = Math.round(numberWord*100.0)/100.0;
                     numberInString = cutDot0(numberWord);
                     termBeforeChanged = new StringBuffer(numberInString + "M");
                     return termBeforeChanged.toString();
@@ -1168,7 +1168,7 @@ public class ParseUnit {
                 // over 1B
                 else {
                     numberWord = numberWord / 1000000000;
-                    numberWord = Math.round(numberWord*100.0)/100.0;
+                    //numberWord = Math.round(numberWord*100.0)/100.0;
                     numberInString = cutDot0(numberWord);
                     termBeforeChanged = new StringBuffer(numberInString + "B");
                     return termBeforeChanged.toString();
