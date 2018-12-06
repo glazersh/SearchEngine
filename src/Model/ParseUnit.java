@@ -773,6 +773,11 @@ public class ParseUnit {
             init();
             // cut the signs
             String word = cutSigns(allText[i]);
+
+            if(word.equals("mr")){
+                System.out.println(docName);
+            }
+
             //String secondWord = cutSigns(allText[i+1]);
             //if the word contains one char - ignore
             if ((word.length() == 1 && !isNumber(word)))
@@ -956,13 +961,16 @@ public class ParseUnit {
         // after move all the terms
         for(ATerm term:wordsInDoc.keySet()){
             if(term instanceof Word ) {
+                if(term.finalName.equals("mr")){
+                    int x=4;
+                }
                 char c = term.finalName.charAt(0);
                 int counterWord;
                 if (Character.isUpperCase(c)) {
                     String tp = term.finalName.toLowerCase();
                     ATerm a = new Word(tp);
                     if (allWordsDic.containsKey(a)) {
-                        if (allWordsDic.get(a).get(docName) != null) {
+                        if (allWordsDic.get(a).containsKey(docName)) {
                             //check hoe many times appeared in this doc
                             counterWord = wordsInDoc.get(term) + allWordsDic.get(a).get(docName);
                         } else
@@ -985,7 +993,7 @@ public class ParseUnit {
                         allWordsDic.remove(a);
                         allWordsDic.put(term, p);
                         //may not be needed if checking earlier
-                        if (allWordsDic.get(term).get(docName) != null)
+                        if (allWordsDic.get(term).containsKey(docName))
                             counterWord = wordsInDoc.get(term) + allWordsDic.get(term).get(docName);
                         else
                             counterWord = wordsInDoc.get(term);
@@ -1198,7 +1206,7 @@ public class ParseUnit {
         if(capitalTerm!=null){
             String pop =capitalTerm.getPopulation();
             String rightWord = TermNumber(pop);
-            if(capitalTerms.get(capitalTerm.getCapitalName())!= null) {
+            if(capitalTerms.containsKey(capitalTerm.getCapitalName())) {
                 String tmp = capitalTerms.get(capitalTerm.getCapitalName());
                 StringBuffer value = new StringBuffer(tmp+str);
                 capitalTerms.put(capitalTerm, value.toString());
