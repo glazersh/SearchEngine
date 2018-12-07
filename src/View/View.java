@@ -2,31 +2,17 @@ package View;
 
 import Model.Indexer;
 import ViewModel.ViewModel;
-//import javafx.beans.Observable;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
-
-import javax.xml.soap.Node;
-import javax.xml.soap.Text;
-import java.awt.*;
 import java.io.*;
 import java.util.*;
 import java.util.List;
-
 
 public class View  implements Observer {
 
@@ -148,6 +134,9 @@ public class View  implements Observer {
                 "English",new Separator()
         ));
         cb_leng.getItems().addAll(sortLang);
+        l_docs.setText(viewModel.getNumberOfDocs()+"");
+        l_terms.setText(viewModel.getNumberOfTerms()+"");
+        l_time.setText(viewModel.getRunnningTime()+"");
 
     }
 

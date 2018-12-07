@@ -63,4 +63,14 @@ public class ViewModel extends java.util.Observable implements Observer  {
 
         model.resetAll();
     }
+
+    public int getNumberOfDocs(){
+        return model.getNumberOfDocs();
+    }
+    public int getNumberOfTerms(){
+        return model.getNumberOfTerms();
+    }
+    public long getRunnningTime(){
+        return model.getRunningTime();
+    }
 }

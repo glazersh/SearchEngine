@@ -21,6 +21,7 @@ public class Indexer {
     List<File>finalPostFileNo;
     String path;
     static String pathWithStem;
+    static int numberTerms = 0;
 
 
     boolean withStem;
@@ -212,7 +213,7 @@ public class Indexer {
                 f2.delete();
             }
             makeThePostFiles(postFilesNo.poll());
-            // final here
+
         }else{
             while(postFilesYes.size() > 1){
                 File f1=postFilesYes.poll();
@@ -223,6 +224,7 @@ public class Indexer {
             }
             makeThePostFiles(postFilesYes.poll());
         }
+        dataCollector.setNumberOfTerms(numberTerms);
     }
 
     private void makeThePostFiles(File file) {
@@ -255,15 +257,13 @@ public class Indexer {
                 nextTerm = nextLine.split(",\\{");
                 if (term[0].equalsIgnoreCase(nextTerm[0])) {
                     if (isLetter) {
-                        if (!isLower) {
-                            bf.append("{" + nextTerm[1]);
-                        } else {
-                            isLower = true;
-                            bf.append("{" + nextTerm[1]);
+                        if (!isLower ){
+                            if(Character.isLowerCase(nextTerm[0].charAt(0))) {
+                                isLower = true;
+                            }
                         }
-                    } else {
-                        bf.append("{" + nextTerm[1]);
                     }
+                    bf.append("{" + nextTerm[1]);
                 } else {
                     if (nextTerm[0].charAt(0) == d) {
                         String tmp = term[0] + bf.toString();
@@ -340,6 +340,7 @@ public class Indexer {
     }
 
     private void writeTheFinalFilePost(List<String>info, String namePost) {
+        numberTerms+=info.size();
         File file;
         String line;
         StringBuffer bf = new StringBuffer();
@@ -371,8 +372,7 @@ public class Indexer {
                     }else{
                         finalPostFileNo.add(file);
                     }
-                    //writer.flush();
-                    ///
+
                 } catch (IOException e) {
                     e.printStackTrace();
                 } finally {

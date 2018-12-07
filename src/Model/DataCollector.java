@@ -9,6 +9,9 @@ public class DataCollector {
     Map<String,Integer> bigDictionary;
     Set<String> lang;
     File file;
+    int numberOfDocs;
+    int numberOfTerms;
+    long runningTime = 0;
 
     public void setMap(Map<String,Integer> bigDictionary){
         this.bigDictionary = bigDictionary;
@@ -27,5 +30,27 @@ public class DataCollector {
 
     public void loadDict(File file) {
         this.file = file;
+    }
+
+    public void setNumberOfTerms(int number){
+        this.numberOfTerms = number;
+    }
+    public void setNumberOfDocs(int number){
+        this.numberOfDocs = number;
+    }
+    public void setRunningTime(long number){
+        this.runningTime = number;
+    }
+
+    public int getNumberOfDocs(){
+        return numberOfDocs;
+    }
+
+    public int getNumberOfTerms(){
+        return numberOfTerms;
+    }
+
+    public long getRunningTime(){
+        return runningTime;
     }
 }

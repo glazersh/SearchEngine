@@ -6,13 +6,16 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Font?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="View.View">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="488.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="View.View">
    <children>
       <Button fx:id="btn_Posting" layoutX="205.0" layoutY="162.0" mnemonicParsing="false" onAction="#BrowsePostingPath" text="Browse files" />
-      <Button fx:id="btn_Start" layoutX="34.0" layoutY="221.0" mnemonicParsing="false" onAction="#startEngine" prefHeight="35.0" prefWidth="165.0" text="Start engine">
+      <Button fx:id="btn_Start" layoutX="34.0" layoutY="210.0" mnemonicParsing="false" onAction="#startEngine" prefHeight="35.0" prefWidth="165.0" text="Start engine">
          <font>
             <Font name="Century Gothic Bold" size="14.0" />
          </font></Button>
@@ -20,31 +23,31 @@
       <TextField fx:id="lbl_PathPositng" layoutX="34.0" layoutY="162.0" prefHeight="28.0" prefWidth="165.0" />
       <Label fx:id="wrongPath" disable="true" layoutX="161.0" layoutY="67.0" textFill="#e40404" />
       <Button fx:id="CollectionButton" layoutX="205.0" layoutY="110.0" mnemonicParsing="false" onAction="#BrowseCollection" text="Browse files" />
-      <Button fx:id="bn_reset" layoutX="34.0" layoutY="339.0" mnemonicParsing="false" onAction="#resetAll" prefHeight="35.0" prefWidth="150.0" text="resert engine">
+      <Button fx:id="bn_reset" layoutX="34.0" layoutY="339.0" mnemonicParsing="false" onAction="#resetAll" prefHeight="35.0" prefWidth="136.0" text="resert engine">
          <font>
             <Font name="Century Gothic" size="14.0" />
          </font></Button>
-      <Button fx:id="btn_showDic" layoutX="196.0" layoutY="339.0" mnemonicParsing="false" onAction="#showDic" prefHeight="35.0" prefWidth="136.0" text="show dictionary">
+      <Button fx:id="btn_showDic" layoutX="177.0" layoutY="339.0" mnemonicParsing="false" onAction="#showDic" prefHeight="35.0" prefWidth="128.0" text="show dictionary">
          <font>
             <Font name="Century Gothic" size="14.0" />
          </font></Button>
-      <CheckBox fx:id="lbl_Stemming" layoutX="339.0" layoutY="114.0" mnemonicParsing="false" prefHeight="17.0" prefWidth="86.0" text="Stemming">
+      <CheckBox fx:id="lbl_Stemming" layoutX="313.0" layoutY="114.0" mnemonicParsing="false" prefHeight="17.0" prefWidth="86.0" text="Stemming">
          <font>
             <Font name="Century Gothic" size="12.0" />
          </font></CheckBox>
-      <ChoiceBox fx:id="cb_leng" layoutX="331.0" layoutY="162.0" prefHeight="17.0" prefWidth="103.0" />
-      <Label alignment="CENTER" layoutX="141.0" layoutY="39.0" prefHeight="35.0" prefWidth="245.0" text="Welcome to our engine">
+      <ChoiceBox fx:id="cb_leng" layoutX="305.0" layoutY="162.0" prefHeight="17.0" prefWidth="103.0" />
+      <Label alignment="CENTER" layoutX="141.0" layoutY="39.0" prefHeight="35.0" prefWidth="245.0" text="Welcome to Search engine">
          <font>
             <Font name="Impact" size="22.0" />
          </font>
       </Label>
       <ListView fx:id="lv_terms" layoutX="464.0" layoutY="6.0" prefHeight="390.0" prefWidth="136.0" visible="false" />
-      <Label layoutX="339.0" layoutY="149.0" text="choose language" textFill="#3154dd">
+      <Label layoutX="302.0" layoutY="147.0" text="choose language" textFill="#3154dd">
          <font>
             <Font name="Century Gothic" size="10.0" />
          </font>
       </Label>
-      <Button fx:id="bn_loadDict" layoutX="345.0" layoutY="339.0" mnemonicParsing="false" onAction="#loadDict" prefHeight="35.0" prefWidth="136.0" text="load dictionary">
+      <Button fx:id="bn_loadDict" layoutX="313.0" layoutY="339.0" mnemonicParsing="false" onAction="#loadDict" prefHeight="35.0" prefWidth="136.0" text="load dictionary">
          <font>
             <Font name="Century Gothic" size="14.0" />
          </font>
@@ -59,12 +62,37 @@
             <Font name="Century Gothic" size="10.0" />
          </font>
       </Label>
-      <Button fx:id="b_csv" layoutX="495.0" layoutY="344.0" mnemonicParsing="false" onAction="#CSV" text="load to csv" />
-      <Label layoutX="34.0" layoutY="274.0" prefHeight="17.0" prefWidth="35.0" text="#Doc" />
-      <Label layoutX="109.0" layoutY="274.0" text="#Term" />
-      <Label layoutX="191.0" layoutY="274.0" text="Running time" />
-      <Label fx:id="l_docs" layoutX="34.0" layoutY="306.0" text="Label" />
-      <Label fx:id="l_terms" layoutX="112.0" layoutY="306.0" text="Label" />
-      <Label fx:id="l_time" layoutX="205.0" layoutY="306.0" text="Label" />
+      <Button fx:id="b_csv" layoutX="34.0" layoutY="263.0" mnemonicParsing="false" onAction="#CSV" text="load to csv" />
+      <GridPane gridLinesVisible="true" layoutX="220.0" layoutY="210.0" prefHeight="110.0" prefWidth="229.0">
+        <columnConstraints>
+          <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+          <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" vgrow="SOMETIMES" />
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        </rowConstraints>
+         <children>
+            <Label prefHeight="18.0" prefWidth="41.0" text="Docs">
+               <font>
+                  <Font name="Century Gothic Bold" size="14.0" />
+               </font>
+            </Label>
+            <Label text="Term" GridPane.rowIndex="1">
+               <font>
+                  <Font name="Century Gothic Bold" size="14.0" />
+               </font>
+            </Label>
+            <Label text="Running time" GridPane.rowIndex="2">
+               <font>
+                  <Font name="Century Gothic Bold" size="14.0" />
+               </font>
+            </Label>
+            <Label fx:id="l_docs" text="Label" GridPane.columnIndex="1" />
+            <Label fx:id="l_terms" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <Label fx:id="l_time" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+         </children>
+      </GridPane>
    </children>
 </Pane>

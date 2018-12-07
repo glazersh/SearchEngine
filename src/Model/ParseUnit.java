@@ -63,7 +63,7 @@ public class ParseUnit {
         post = new Indexer(PathPosting, withStemming, dataCollector);
         insertMonth(); // init all months
         insertAfterWords(); // init special words for our parse
-        StopWords(stopWords); // init all stopWords from stopWords.txt
+        StopWords(stopWords); // init all stopWords from stop_words.txt
         insertSigns(); // init all the signs
         try {
             countryInMemory = new DBCountries("https://restcountries.eu/rest/v2/all?fields=name;capital;population;currencies");
@@ -961,9 +961,6 @@ public class ParseUnit {
         // after move all the terms
         for(ATerm term:wordsInDoc.keySet()){
             if(term instanceof Word ) {
-                if(term.finalName.equals("mr")){
-                    int x=4;
-                }
                 char c = term.finalName.charAt(0);
                 int counterWord;
                 if (Character.isUpperCase(c)) {

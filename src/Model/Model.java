@@ -21,7 +21,9 @@ public class Model extends Observable {
         long start = System.nanoTime();
         readFile = new ReadFile(FileCorpus,stopWords, PathPosting, withStemming, dataCollector);
         long finish = System.nanoTime();
-        System.out.println(finish - start);
+        long total = finish-start;
+        System.out.println(total);
+        dataCollector.setRunningTime(total/1000000000);
     }
 
     public void setFiles(File selectedFolderBrowseCollection) {
@@ -45,8 +47,16 @@ public class Model extends Observable {
     }
     //function for the reset button
     public void resetAll() {
-
         readFile.resetAll();
+    }
 
+    public int getNumberOfDocs(){
+        return dataCollector.getNumberOfDocs();
+    }
+    public int getNumberOfTerms(){
+        return dataCollector.getNumberOfTerms();
+    }
+    public long getRunningTime(){
+        return dataCollector.getRunningTime();
     }
 }
