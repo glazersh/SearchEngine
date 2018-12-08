@@ -1,6 +1,4 @@
 package Model;
-
-import Model.IO.Countries;
 import Model.Term.ATerm;
 
 import java.io.*;
@@ -208,7 +206,7 @@ public class Indexer {
             while(postFilesNo.size() > 1){
                 File f1=postFilesNo.poll();
                 File f2=postFilesNo.poll();
-                mergeFile(f1,f2);
+                MergeFiles(f1,f2);
                 f1.delete();
                 f2.delete();
             }
@@ -218,13 +216,117 @@ public class Indexer {
             while(postFilesYes.size() > 1){
                 File f1=postFilesYes.poll();
                 File f2=postFilesYes.poll();
-                mergeFile(f1,f2);
+                MergeFiles(f1,f2);
                 f1.delete();
                 f2.delete();
             }
             makeThePostFiles(postFilesYes.poll());
         }
         dataCollector.setNumberOfTerms(numberTerms);
+    }
+
+    private void MergeFiles(File file1, File file2) {
+        File file = new File(pathWithStem+numberOfFile++);
+        try {
+            file.createNewFile();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        List<String>lines = new ArrayList<>();
+        BufferedWriter bw = null;
+        BufferedReader br1 = null;
+        BufferedReader br2 = null;
+        FileWriter fw = null;
+        FileReader fr1 = null;
+        FileReader fr2 = null;
+
+        try {
+            fr1 = new FileReader(file1);
+            fr2 = new FileReader(file2);
+            br1 = new BufferedReader(fr1);
+            br2 = new BufferedReader(fr2);
+            fw = new FileWriter(file);
+            bw = new BufferedWriter(fw);
+
+            String sCurrentLine1;
+            String sCurrentLine2;
+            int counter = 0;
+            char stop = '0';
+            String tmp1 = "";
+            String tmp2 = "";
+
+            while(stop != 'z'+1) {
+                while((sCurrentLine1 = br1.readLine()) !=null) {
+                    if (Character.toLowerCase(sCurrentLine1.charAt(0)) != stop) {
+                        lines.add(sCurrentLine1 + "\n");
+                    }else{
+                        tmp1 = sCurrentLine1;
+                        break;
+                    }
+                }
+                while((sCurrentLine2 = br2.readLine()) !=null ) {
+                    if (sCurrentLine2.length()>0&&Character.toLowerCase(sCurrentLine2.charAt(0)) != stop) {
+                        lines.add(sCurrentLine2 + "\n");
+                    }else{
+                        tmp2 = sCurrentLine2;
+                        break;
+                    }
+                }
+                Collections.sort(lines,new SortIgnoreCase());
+                for(String l:lines){
+                    bw.write(l);
+                }
+                bw.flush();
+                lines.clear();
+                lines.add(tmp1+"\n");
+                lines.add(tmp2+"\n");
+                counter++;
+                if(counter==1)
+                    stop = 'a';
+                stop = (char)(stop+1);
+            }
+            bw.flush();
+            while((sCurrentLine1 = br1.readLine()) !=null) {
+                lines.add(sCurrentLine1 + "\n");
+            }
+            while((sCurrentLine2 = br2.readLine()) !=null ) {
+                lines.add(sCurrentLine2 + "\n");
+            }
+            Collections.sort(lines,new SortIgnoreCase());
+            for(String l:lines){
+                bw.write(l);
+            }
+            bw.flush();
+            if(withStem)
+                postFilesYes.add(file);
+            else
+                postFilesNo.add(file);
+        } catch (IOException e) {
+
+            e.printStackTrace();
+
+        } finally {
+
+            try {
+
+                if (br1 != null) {
+                    br1.close();
+                    br2.close();
+                    bw.close();
+                }
+
+                if (fr1 != null) {
+                    fr1.close();
+                    fr2.close();
+                    bw.close();
+                }
+
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
     }
 
     private void makeThePostFiles(File file) {
@@ -480,57 +582,11 @@ public class Indexer {
         }
     }
 
-
-
     public class SortIgnoreCase implements Comparator<Object> {
         public int compare(Object o1, Object o2) {
             String s1 = (String) o1;
             String s2 = (String) o2;
             return s1.toLowerCase().compareTo(s2.toLowerCase());
-        }
-    }
-
-    private void mergeFile(File f1, File f2) {
-
-        List<String>readF1 = readFile(f1);
-        List<String>readF2 = readFile(f2);
-        readF1.addAll(readF2);
-        Collections.sort(readF1, new SortIgnoreCase());
-        writeToFileList(readF1);
-    }
-
-    private void writeToFileList(List<String> readF1) {
-        File file;
-        try {
-            file = new File(pathWithStem + numberOfFile++);
-
-            FileOutputStream out = new FileOutputStream(file);
-            try {
-                //Writer writer = new OutputStreamWriter(new GZIPOutputStream(out), "UTF-8");
-                Writer writer = new OutputStreamWriter(out);
-                try {
-                    for(int i=0;i<readF1.size();i++) {
-                        writer.write(readF1.get(i) + "\n");
-                    }
-                    if(withStem){
-                        postFilesYes.add(file);
-                    }else{
-                        postFilesNo.add(file);
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } finally {
-                    writer.close();
-                }
-            } finally {
-                out.close();
-            }
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
@@ -555,30 +611,6 @@ public class Indexer {
         } catch (IOException e) {
             e.printStackTrace(System.err);
         }
-    }
-// for me
-    public static void CSV() throws FileNotFoundException {
-        List<String> lines = new ArrayList<>();
-        PrintWriter pw = new PrintWriter(new File(pathWithStem+"test.csv"));
-        try (//GZIPInputStream gzip = new GZIPInputStream(new FileInputStream(file));
-             FileInputStream out = new FileInputStream(pathWithStem+"Dictionary");
-             BufferedReader br = new BufferedReader(new InputStreamReader(out))) {
-            String line = null;
-            while ((line = br.readLine()) != null) {
-                lines.add(line);
-            }
-            Collections.sort(lines);
-            for(String term:lines){
-                String []tmp = term.split(",\\{");
-                pw.write(tmp[0].replace(",","")+","+tmp[1].split(":")[0]+"\n");
-            }
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace(System.err);
-        } catch (IOException e) {
-            e.printStackTrace(System.err);
-        }
-
     }
 
 }

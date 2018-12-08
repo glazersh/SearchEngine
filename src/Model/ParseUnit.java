@@ -522,7 +522,7 @@ public class ParseUnit {
 
         // if the term is price
         if (isTermPrice) {
-            oneTermPrice(word, real.substring(1));
+            oneTermPrice(word, real);
             return;
         }
 
@@ -774,11 +774,6 @@ public class ParseUnit {
             // cut the signs
             String word = cutSigns(allText[i]);
 
-         //   if(word.equals("mr")){
-                //System.out.println(docName);
-          //  }
-
-            //String secondWord = cutSigns(allText[i+1]);
             //if the word contains one char - ignore
             if ((word.length() == 1 && !isNumber(word)))
                 continue;
@@ -951,6 +946,9 @@ public class ParseUnit {
                     // the term is one word
                     else {
                         String another = cutSigns(allText[i]);
+                        if(isTermPrice){
+                            int x=4;
+                        }
                         oneWordTypeTerm(word, another);
                     }
                     i = i + next;
@@ -1093,6 +1091,9 @@ public class ParseUnit {
      * @param term
      */
     private void increaseCounter(ATerm term){
+        if(term.finalName.equals(" Dollars")){
+            int x=4;
+        }
         termInDoc++;
 
         if(wordsInDoc.containsKey(term)) {
