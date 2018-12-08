@@ -20,6 +20,7 @@ public class Indexer {
     String path;
     static String pathWithStem;
     static int numberTerms = 0;
+    Set<String> docSet;
 
 
     boolean withStem;
@@ -521,7 +522,8 @@ public class Indexer {
                 out = new FileWriter(capitalPost);
                 writer = new BufferedWriter(out);
                 for (String str : capitalDictionary.keySet()) {
-                    writer.write(capitalDictionary.get(str) + "\n");
+                    if(docSet.contains(str))
+                        writer.write(capitalDictionary.get(str) + "\n");
                 }
                 writer.flush();
 
@@ -581,6 +583,11 @@ public class Indexer {
             e.printStackTrace();
         }
     }
+
+    public void setDocSet(Set<String> docSet) {
+        this.docSet = docSet;
+    }
+
 
     public class SortIgnoreCase implements Comparator<Object> {
         public int compare(Object o1, Object o2) {

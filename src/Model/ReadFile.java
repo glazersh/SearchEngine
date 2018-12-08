@@ -83,23 +83,23 @@ public class ReadFile {
                     Parse.post.fromMapToPostFiles(Parse.allWordsDic);
                     Parse.post.writePerDoc(Parse.docInfo);
                     Parse.clearDictionary();
-                    counterFiles = 0;
+                    //counterFiles = 0;
                     System.out.println("Insert more 50 file " + (++addFile)*50);
-//                    if(counterFiles == 10)
-//                       break;
+                    //if(counterFiles == 10)
+                   //     break;
                 }
             }
             //
-            Parse.post.fromMapToPostFiles(Parse.allWordsDic);
-            Parse.post.writePerDoc(Parse.docInfo);
-            Parse.clearDictionary();
+            //Parse.post.fromMapToPostFiles(Parse.allWordsDic);
+            //Parse.post.writePerDoc(Parse.docInfo);
+            //Parse.clearDictionary();
 
             Parse.post.createCapitalPost(Parse.getCapitalDictionary());
             Parse.post.setMap();
             Parse.post.startMerge();
             Parse.post.writeDictionary();
-
             dataCollector.setNumberOfDocs(countDoc);
+
             dataCollector.setLang(languages);
         } catch (IOException e) { }
     }

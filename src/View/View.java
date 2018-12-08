@@ -171,6 +171,7 @@ public class View  implements Observer {
     }
 
 
+
     public String getStopWordsPath(){
         return corpusFile.getPath()+"\\stop_words.txt";
     }
@@ -183,9 +184,9 @@ public class View  implements Observer {
     public void update(java.util.Observable o, Object arg) {
         if (o == viewModel) {
             BrowseCollection();
+
         }
     }
-
 }
 
 
