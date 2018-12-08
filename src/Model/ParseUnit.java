@@ -34,7 +34,7 @@ public class ParseUnit {
 
     DBCountries countryInMemory;
 
-    Map<Countries,String> capitalTerms = new HashMap<>();
+    Map<String,String> capitalTerms = new HashMap<>();
 
 
 
@@ -774,9 +774,9 @@ public class ParseUnit {
             // cut the signs
             String word = cutSigns(allText[i]);
 
-            if(word.equals("mr")){
-                System.out.println(docName);
-            }
+         //   if(word.equals("mr")){
+                //System.out.println(docName);
+          //  }
 
             //String secondWord = cutSigns(allText[i+1]);
             //if the word contains one char - ignore
@@ -1206,15 +1206,15 @@ public class ParseUnit {
             if(capitalTerms.containsKey(capitalTerm.getCapitalName())) {
                 String tmp = capitalTerms.get(capitalTerm.getCapitalName());
                 StringBuffer value = new StringBuffer(tmp+str);
-                capitalTerms.put(capitalTerm, value.toString());
+                capitalTerms.put(capitalTerm.getCapitalName(), value.toString());
             }else{
-                String t = capitalTerm.getCountryName() +" : "+capitalTerm.getCurrency()+" : "+rightWord+" : "+str;
-                capitalTerms.put(capitalTerm,t);
+                String t = capitalTerm.getCapitalName()+ "-" +capitalTerm.getCountryName() +" : "+capitalTerm.getCurrency()+" : "+rightWord+" : "+str;
+                capitalTerms.put(capitalTerm.getCapitalName(),t);
             }
         }
     }
 
-    public Map<Countries, String> getCapitalDictionary(){
+    public Map<String, String> getCapitalDictionary(){
         return capitalTerms;
     }
 

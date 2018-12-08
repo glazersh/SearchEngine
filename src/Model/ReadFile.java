@@ -21,6 +21,7 @@ public class ReadFile {
     ParseUnit Parse ;
     DataCollector dataC;
     Set<String> languages = new HashSet<>();
+    Set<String> docSet = new HashSet<>();
 
     public ReadFile(String path,String stopWords, String PathPosting, boolean withStemming, DataCollector dataCollector) {
         this.dataC = dataCollector;
@@ -70,6 +71,7 @@ public class ReadFile {
                         String replace = docText.replaceAll("[()?!@#|&+*\\[\\];{}\"]+"," ");
                         String replace2 = replace.replace("--"," ");
                         String[] withoutSpaceText = replace2.split(" "); // split the text by " "(space) into array
+                        docSet.add(docCity);
                         Parse.parse(withoutSpaceText, docName,docCity);
                     }
 
@@ -77,14 +79,14 @@ public class ReadFile {
                     e.printStackTrace();
                 }
                 counterFiles++;
-                if(counterFiles %2==0){
+                if(counterFiles %50==0){
                     Parse.post.fromMapToPostFiles(Parse.allWordsDic);
                     Parse.post.writePerDoc(Parse.docInfo);
                     Parse.clearDictionary();
                     //counterFiles = 0;
                     System.out.println("Insert more 50 file " + (++addFile)*50);
-                    if(counterFiles == 10)
-                        break;
+                    //if(counterFiles == 10)
+                   //     break;
                 }
             }
             //

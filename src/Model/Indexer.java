@@ -409,7 +409,7 @@ public class Indexer {
 
     }
 
-    public void createCapitalPost(Map<Countries, String> capitalDictionary) {
+    public void createCapitalPost(Map<String, String> capitalDictionary) {
         File capitalPost = new File(path + "\\" + "capitalPost");
         FileWriter out = null;
         try {
@@ -418,8 +418,8 @@ public class Indexer {
             try {
                 out = new FileWriter(capitalPost);
                 writer = new BufferedWriter(out);
-                for (Countries countryInfo : capitalDictionary.keySet()) {
-                    writer.write(capitalDictionary.get(countryInfo) + "\n");
+                for (String str : capitalDictionary.keySet()) {
+                    writer.write(capitalDictionary.get(str) + "\n");
                 }
                 writer.flush();
 

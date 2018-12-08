@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Font?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="488.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="View.View">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="488.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="View.View">
    <children>
       <Button fx:id="btn_Posting" layoutX="205.0" layoutY="162.0" mnemonicParsing="false" onAction="#BrowsePostingPath" text="Browse files" />
       <Button fx:id="btn_Start" layoutX="34.0" layoutY="210.0" mnemonicParsing="false" onAction="#startEngine" prefHeight="35.0" prefWidth="165.0" text="Start engine">
@@ -63,7 +63,7 @@
          </font>
       </Label>
       <Button fx:id="b_csv" layoutX="34.0" layoutY="263.0" mnemonicParsing="false" onAction="#CSV" text="load to csv" />
-      <GridPane gridLinesVisible="true" layoutX="220.0" layoutY="210.0" prefHeight="110.0" prefWidth="229.0">
+      <GridPane gridLinesVisible="true" layoutX="220.0" layoutY="210.0" prefHeight="110.0" prefWidth="229.0" visible="false">
         <columnConstraints>
           <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
           <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
