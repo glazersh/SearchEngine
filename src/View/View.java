@@ -8,6 +8,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.GridPane;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import java.io.*;
@@ -47,7 +48,7 @@ public class View  implements Observer {
 
 
     public Button b_csv;
-
+    public GridPane dp_table;
     public Label l_docs;
     public Label l_terms;
     public Label l_time;
@@ -137,7 +138,7 @@ public class View  implements Observer {
         l_docs.setText(viewModel.getNumberOfDocs()+"");
         l_terms.setText(viewModel.getNumberOfTerms()+"");
         l_time.setText(viewModel.getRunnningTime()+"");
-
+        dp_table.setVisible(true);
     }
 
     public void setViewModel(ViewModel vm) {

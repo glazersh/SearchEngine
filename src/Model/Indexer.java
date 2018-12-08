@@ -22,6 +22,7 @@ public class Indexer {
     String path;
     static String pathWithStem;
     static int numberTerms = 0;
+    Set<String> docSet;
 
 
     boolean withStem;
@@ -419,7 +420,9 @@ public class Indexer {
                 out = new FileWriter(capitalPost);
                 writer = new BufferedWriter(out);
                 for (String str : capitalDictionary.keySet()) {
-                    writer.write(capitalDictionary.get(str) + "\n");
+                    //added
+                    if(docSet.contains(str))
+                        writer.write(capitalDictionary.get(str) + "\n");
                 }
                 writer.flush();
 
@@ -480,6 +483,9 @@ public class Indexer {
         }
     }
 
+    public void setDocSet(Set<String> docSet) {
+        this.docSet = docSet;
+    }
 
 
     public class SortIgnoreCase implements Comparator<Object> {
@@ -570,14 +576,18 @@ public class Indexer {
             Collections.sort(lines);
             for(String term:lines){
                 String []tmp = term.split(",\\{");
+                if(Integer.parseInt(tmp[1].split(":")[0]) > 1)
                 pw.write(tmp[0].replace(",","")+","+tmp[1].split(":")[0]+"\n");
             }
-
+            out.close();
+            br.close();
+            pw.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace(System.err);
         } catch (IOException e) {
             e.printStackTrace(System.err);
         }
+        System.out.println("FINISH");
 
     }
 

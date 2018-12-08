@@ -72,34 +72,39 @@ public class ReadFile {
                         String replace2 = replace.replace("--"," ");
                         String[] withoutSpaceText = replace2.split(" "); // split the text by " "(space) into array
                         docSet.add(docCity);
-                        Parse.parse(withoutSpaceText, docName,docCity);
+                        Parse.post.setDocSet(docSet);
+                        if(docName.equals("FBIS3-3366")) {
+                            System.out.println(file.toString());
+                            Parse.parse(withoutSpaceText, docName, docCity);
+                            break;
+                        }
                     }
 
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }
-                counterFiles++;
-                if(counterFiles %50==0){
-                    Parse.post.fromMapToPostFiles(Parse.allWordsDic);
-                    Parse.post.writePerDoc(Parse.docInfo);
-                    Parse.clearDictionary();
-                    //counterFiles = 0;
-                    System.out.println("Insert more 50 file " + (++addFile)*50);
+                //counterFiles++;
+                //if(counterFiles %50==0){
+                //    Parse.post.fromMapToPostFiles(Parse.allWordsDic);
+                //    Parse.post.writePerDoc(Parse.docInfo);
+                //    Parse.clearDictionary();
+                //    counterFiles = 0;
+                //    System.out.println("Insert more 50 file " + (++addFile)*50);
                     //if(counterFiles == 10)
                    //     break;
                 }
-            }
+            //}
             //
-            //Parse.post.fromMapToPostFiles(Parse.allWordsDic);
-            //Parse.post.writePerDoc(Parse.docInfo);
-            //Parse.clearDictionary();
+            Parse.post.fromMapToPostFiles(Parse.allWordsDic);
+            Parse.post.writePerDoc(Parse.docInfo);
+            Parse.clearDictionary();
 
             Parse.post.createCapitalPost(Parse.getCapitalDictionary());
             Parse.post.setMap();
             Parse.post.startMerge();
             Parse.post.writeDictionary();
             dataCollector.setNumberOfDocs(countDoc);
-
+            System.out.println(docSet.size());
             dataCollector.setLang(languages);
         } catch (IOException e) { }
     }
