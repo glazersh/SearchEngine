@@ -1,6 +1,7 @@
 package Model;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Set;
@@ -11,7 +12,6 @@ public class Model extends Observable {
     File selectedFolderBrowseCollection;
     ReadFile readFile;
     DataCollector dataCollector;
-    Map<String,Integer>bigDictionary;
 
     public Model(){
         this.dataCollector = new DataCollector();
@@ -30,33 +30,44 @@ public class Model extends Observable {
         this.selectedFolderBrowseCollection = selectedFolderBrowseCollection;
     }
 
-    public File getFiles() {
-        return selectedFolderBrowseCollection;
-    }
-
-    public Map getMap(){
-        return dataCollector.getMap();
-    }
-    //function for the language choise
-    public Set getLang(){
-        return dataCollector.getLang();
-    }
-
+    /**
+     * Load Dictionary to memory
+     * @param file
+     */
     public void loadDict(File file){
         Indexer.load(file);
     }
-    //function for the reset button
+
+    /**
+     * Reset all files and data
+     */
     public void resetAll() {
         readFile.resetAll();
+    }
+
+    //-----GETTERS-----
+
+    public Set getLang(){
+        return dataCollector.getLang();
     }
 
     public int getNumberOfDocs(){
         return dataCollector.getNumberOfDocs();
     }
+
     public int getNumberOfTerms(){
         return dataCollector.getNumberOfTerms();
     }
+
     public long getRunningTime(){
         return dataCollector.getRunningTime();
+    }
+
+    public Map getMap(){
+        return dataCollector.getMap();
+    }
+
+    public File getFiles() {
+        return selectedFolderBrowseCollection;
     }
 }

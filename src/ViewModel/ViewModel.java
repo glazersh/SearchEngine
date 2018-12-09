@@ -3,16 +3,11 @@ package ViewModel;
 import Model.Model;
 import Model.DataCollector;
 import View.View;
-import Model.ParseUnit;
-import javafx.beans.InvalidationListener;
 //import javafx.beans.Observable;
-import javafx.beans.property.StringProperty;
-import javafx.beans.value.ObservableValue;
 
 import java.io.File;
 import java.util.Map;
 import java.util.Observer;
-import java.util.Observable;
 import java.util.Set;
 
 

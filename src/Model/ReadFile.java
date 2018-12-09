@@ -18,14 +18,14 @@ import org.jsoup.select.Elements;
 public class ReadFile {
 
 
-    ParseUnit Parse ;
+    Parse Parse ;
     DataCollector dataC;
     Set<String> languages = new HashSet<>();
     Set<String> docSet = new HashSet<>();
 
     public ReadFile(String path,String stopWords, String PathPosting, boolean withStemming, DataCollector dataCollector) {
         this.dataC = dataCollector;
-        Parse = new ParseUnit(stopWords, PathPosting, withStemming, this.dataC);
+        Parse = new Parse(stopWords, PathPosting, withStemming, this.dataC);
         List<File> allFiles;
         int addFile = 0;
         int counterFiles =0;
@@ -45,7 +45,7 @@ public class ReadFile {
 
                     // For every doc in the file
                     // Cut all the string from <TEXT> until </TEXT>
-                    // Send it to Model.ParseUnit
+                    // Send it to Model.Parse
                     for (Element element : elements) {
                         countDoc++;
                         String docCity = element.getElementsByTag("DOC").select("F[P=104]").text();
@@ -83,17 +83,16 @@ public class ReadFile {
                     Parse.post.fromMapToPostFiles(Parse.allWordsDic);
                     Parse.post.writePerDoc(Parse.docInfo);
                     Parse.clearDictionary();
-                    //counterFiles = 0;
+                    counterFiles = 0;
                     System.out.println("Insert more 50 file " + (++addFile)*50);
-                    //if(counterFiles == 10)
-                   //     break;
+//                    if(counterFiles == 10)
+//                        break;
                 }
             }
-            //
-            //Parse.post.fromMapToPostFiles(Parse.allWordsDic);
-            //Parse.post.writePerDoc(Parse.docInfo);
-            //Parse.clearDictionary();
-
+            Parse.post.fromMapToPostFiles(Parse.allWordsDic);
+            Parse.post.writePerDoc(Parse.docInfo);
+            Parse.clearDictionary();
+            System.out.println("NUMBERS - "+ Parse.Numbers);
             Parse.post.createCapitalPost(Parse.getCapitalDictionary());
             Parse.post.setMap();
             Parse.post.startMerge();

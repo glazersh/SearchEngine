@@ -9,7 +9,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.*;
 
-public class ParseUnit {
+public class Parse {
 
     Indexer post ;
 
@@ -57,7 +57,7 @@ public class ParseUnit {
 
 
 
-    public ParseUnit(String stopWords, String PathPosting,boolean  withStemming, DataCollector dataCollector){
+    public Parse(String stopWords, String PathPosting, boolean  withStemming, DataCollector dataCollector){
         this.withStem = withStemming;
         this.dt = dataCollector;
         post = new Indexer(PathPosting, withStemming, dataCollector);
@@ -1084,16 +1084,12 @@ public class ParseUnit {
         }
     }
 
-
     /**
      * Function which updates the counter of the term in the doc
      * in case the term doesn't exist, insert.
      * @param term
      */
     private void increaseCounter(ATerm term){
-        if(term.finalName.equals(" Dollars")){
-            int x=4;
-        }
         termInDoc++;
 
         if(wordsInDoc.containsKey(term)) {

@@ -7,43 +7,31 @@ import java.util.*;
 public class Indexer {
 
     private int numberOfFile = 1;
-    Queue<File>theFiles;
-    Queue<File> merge1;
     File postDocs;
     File postDictionary;
-
-    Queue<File>postFilesYes;
-    Queue<File>postFilesNo;
-
-    List<File>finalPostFileYes;
-    List<File>finalPostFileNo;
-    String path;
-    static String pathWithStem;
-    static int numberTerms = 0;
+    private Queue<File>postFilesYes;
+    private Queue<File>postFilesNo;
+    private List<File>finalPostFileYes;
+    private List<File>finalPostFileNo;
+    private String path;
+    private static String pathWithStem;
+    private static int numberTerms = 0;
     Set<String> docSet;
-
-
-    boolean withStem;
-
-    DataCollector dataCollector;
+    private boolean withStem;
+    private DataCollector dataCollector;
     Map<String,Integer>bigDictionary = new HashMap<>(); // for the gui
-
     static Map<String,String> dictionaryToLoad = new HashMap<>();
 
-
-
     public Indexer(String path, boolean withStem, DataCollector dataCollector) {
-        theFiles = new LinkedList<>();
-        merge1 = new LinkedList<>();
-
         finalPostFileYes = new ArrayList<>();
         finalPostFileNo = new ArrayList<>();
 
         postFilesYes = new LinkedList<>();
         postFilesNo = new LinkedList<>();
-
+        docSet = new HashSet<>();
         this.dataCollector = dataCollector;
         this.withStem = withStem;
+        numberTerms = 0;
 
 
         File f;
@@ -90,30 +78,11 @@ public class Indexer {
         prepareForWriting(treeDict);
     }
 
-    // need to send it in the end !
+    /**
+     * Send the final Dictionary
+     */
     public void setMap(){
         dataCollector.setMap(bigDictionary);
-    }
-
-    private List<String> readFile(File file) {
-        List<String> lines = new ArrayList<>();
-
-        try (//GZIPInputStream gzip = new GZIPInputStream(new FileInputStream(file));
-             FileInputStream out = new FileInputStream(file);
-             BufferedReader br = new BufferedReader(new InputStreamReader(out))) {
-            String line = null;
-            while ((line = br.readLine()) != null) {
-                lines.add(line);
-            }
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace(System.err);
-        } catch (IOException e) {
-            e.printStackTrace(System.err);
-        }
-        return lines;
-
-
     }
 
     /**
@@ -170,14 +139,13 @@ public class Indexer {
     public void writePerDoc(List<String>docInfo){
         String bf="";
         if(postDocs==null){
-            postDocs = new File(path +"\\"+"FileDocs");
+            postDocs = new File(pathWithStem+"FileDocs");
             try {
                 postDocs.createNewFile();
             } catch (IOException e) {
-                e.printStackTrace();
+
             }
         }
-
         try {
             FileOutputStream out = new FileOutputStream(postDocs,true);
             try {
@@ -188,20 +156,23 @@ public class Indexer {
                     }
                     writer.write(bf);
                 } catch (IOException e) {
-                    e.printStackTrace();
+
                 }
             } finally {
                 out.close();
             }
         } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+
         } catch (IOException e) {
-            e.printStackTrace();
+
         }
     }
 
+    /**
+     * Start merge the files
+     */
     public void startMerge() {
         if(!withStem){
             while(postFilesNo.size() > 1){
@@ -231,15 +202,12 @@ public class Indexer {
         try {
             file.createNewFile();
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
+        } catch (IOException e) { }
         List<String>lines = new ArrayList<>();
         BufferedWriter bw = null;
         BufferedReader br1 = null;
         BufferedReader br2 = null;
-        FileWriter fw = null;
+        FileWriter fw ;
         FileReader fr1 = null;
         FileReader fr2 = null;
 
@@ -304,29 +272,24 @@ public class Indexer {
                 postFilesYes.add(file);
             else
                 postFilesNo.add(file);
-        } catch (IOException e) {
-
-            e.printStackTrace();
-
-        } finally {
-
+        } catch (IOException e) { }
+        finally {
             try {
-
                 if (br1 != null) {
                     br1.close();
+                }
+                if (br2 != null) {
                     br2.close();
+                }
+                if (bw != null) {
                     bw.close();
                 }
-
                 if (fr1 != null) {
                     fr1.close();
                     fr2.close();
                     bw.close();
                 }
-
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
+            } catch (IOException ex) { }
         }
     }
 
@@ -355,7 +318,7 @@ public class Indexer {
                     isLower = true;
                 }
             }
-            bf.append(",{" + term[1]);
+            bf.append(",{").append(term[1]);
             while ((nextLine = br1.readLine()) != null) {
                 nextTerm = nextLine.split(",\\{");
                 if (term[0].equalsIgnoreCase(nextTerm[0])) {
@@ -366,7 +329,7 @@ public class Indexer {
                             }
                         }
                     }
-                    bf.append("{" + nextTerm[1]);
+                    bf.append("{").append(nextTerm[1]);
                 } else {
                     if (nextTerm[0].charAt(0) == d) {
                         String tmp = term[0] + bf.toString();
@@ -428,16 +391,16 @@ public class Indexer {
             fileInfo.add(tmp);
             writeTheFinalFilePost(fileInfo, (char) (l - 1) + " Final");
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+
         } catch (IOException e) {
-            e.printStackTrace();
+
         }
         try {
             br1.close();
             out1.close();
             file.delete();
         } catch (IOException e) {
-            e.printStackTrace();
+
         }
 
     }
@@ -477,7 +440,7 @@ public class Indexer {
                     }
 
                 } catch (IOException e) {
-                    e.printStackTrace();
+
                 } finally {
                     writer.close();
                     writerDic.close();
@@ -487,14 +450,13 @@ public class Indexer {
                 outDic.close();
             }
         } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+
         } catch (IOException e) {
-            e.printStackTrace();
+
         }
     }
-
 
     private String buildDictionary(String line, int index,String namePostFile) {
         String []info = line.split(",\\{");
@@ -539,15 +501,32 @@ public class Indexer {
     }
 
     public void resetAll() {
-        theFiles.clear();
-        merge1.clear();
+        File file = new File(path+"\\Y");
+        if(file.exists()) {
+            File[] files = file.listFiles();
+            for (File f : files) {
+                f.delete();
+            }
+            file.delete();
+        }
+        file = new File(path+"\\N");
+        if(file.exists()) {
+            File[] files = file.listFiles();
+            for (File f : files) {
+                f.delete();
+            }
+            file.delete();
+        }
+        file = new File(path);
+        File[] files = file.listFiles();
+        for (File f : files) {
+            f.delete();
+        }
         postFilesNo.clear();
         postFilesYes.clear();
         finalPostFileNo.clear();
         finalPostFileYes.clear();
         bigDictionary.clear();
-
-
     }
 
     public void writeDictionary() {
@@ -586,16 +565,7 @@ public class Indexer {
 
     public void setDocSet(Set<String> docSet) {
         this.docSet = docSet;
-    }
-
-
-    public class SortIgnoreCase implements Comparator<Object> {
-        public int compare(Object o1, Object o2) {
-            String s1 = (String) o1;
-            String s2 = (String) o2;
-            return s1.toLowerCase().compareTo(s2.toLowerCase());
-        }
-    }
+    } // shula here ???
 
     public static void load(File file){
         List<String> lines = new ArrayList<>();
@@ -603,7 +573,7 @@ public class Indexer {
         try (//GZIPInputStream gzip = new GZIPInputStream(new FileInputStream(file));
              FileInputStream out = new FileInputStream(file);
              BufferedReader br = new BufferedReader(new InputStreamReader(out))) {
-            String line = null;
+            String line;
             while ((line = br.readLine()) != null) {
                 lines.add(line);
             }
@@ -614,10 +584,17 @@ public class Indexer {
             }
 
         } catch (FileNotFoundException e) {
-            e.printStackTrace(System.err);
+
         } catch (IOException e) {
-            e.printStackTrace(System.err);
+
         }
     }
 
+    public class SortIgnoreCase implements Comparator<Object> {
+        public int compare(Object o1, Object o2) {
+            String s1 = (String) o1;
+            String s2 = (String) o2;
+            return s1.toLowerCase().compareTo(s2.toLowerCase());
+        }
+    }
 }
