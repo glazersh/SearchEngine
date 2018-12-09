@@ -196,6 +196,7 @@ public class Indexer {
         dataCollector.setNumberOfTerms(numberTerms);
     }
 
+
     private void MergeFiles(File file1, File file2) {
         File file = new File(pathWithStem+numberOfFile++);
         try {
