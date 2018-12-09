@@ -22,7 +22,6 @@ public class Model extends Observable {
         readFile = new ReadFile(FileCorpus,stopWords, PathPosting, withStemming, dataCollector);
         long finish = System.nanoTime();
         long total = finish-start;
-        System.out.println(total);
         dataCollector.setRunningTime(total/1000000000);
     }
 

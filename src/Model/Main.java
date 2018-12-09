@@ -22,9 +22,9 @@ public class Main extends Application {
         ViewModel view_model = new ViewModel(model,MainWindow);
         MainWindow.setViewModel(view_model);
 
-        primaryStage.setTitle("Shuuuuulassssssssss Engineeeeeeeeee");
+        primaryStage.setTitle("Search Engine");
 
-        primaryStage.setScene(new Scene(root, 600, 400));
+        primaryStage.setScene(new Scene(root, 680, 400));
         primaryStage.show();
     }
 

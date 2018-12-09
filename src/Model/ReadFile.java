@@ -45,7 +45,7 @@ public class ReadFile {
 
                     // For every doc in the file
                     // Cut all the string from <TEXT> until </TEXT>
-                    // Send it to Model.Parse
+                    // Send it to Parse
                     for (Element element : elements) {
                         countDoc++;
                         String docCity = element.getElementsByTag("DOC").select("F[P=104]").text();
@@ -72,11 +72,12 @@ public class ReadFile {
                         String replace2 = replace.replace("--"," ");
                         String[] withoutSpaceText = replace2.split(" "); // split the text by " "(space) into array
                         docSet.add(docCity);
-                        Parse.parse(withoutSpaceText, docName,docCity);
+                        Parse.parse(withoutSpaceText, docName, docCity);
+
                     }
 
                 } catch (FileNotFoundException e) {
-                    e.printStackTrace();
+
                 }
                 counterFiles++;
                 if(counterFiles %50==0){
@@ -84,21 +85,18 @@ public class ReadFile {
                     Parse.post.writePerDoc(Parse.docInfo);
                     Parse.clearDictionary();
                     counterFiles = 0;
-                    System.out.println("Insert more 50 file " + (++addFile)*50);
-//                    if(counterFiles == 10)
-//                        break;
                 }
             }
             Parse.post.fromMapToPostFiles(Parse.allWordsDic);
             Parse.post.writePerDoc(Parse.docInfo);
             Parse.clearDictionary();
-            System.out.println("NUMBERS - "+ Parse.Numbers);
-            Parse.post.createCapitalPost(Parse.getCapitalDictionary());
+
             Parse.post.setMap();
             Parse.post.startMerge();
             Parse.post.writeDictionary();
+            Parse.post.setDocSet(docSet);
+            Parse.post.createCapitalPost(Parse.getCapitalDictionary());
             dataCollector.setNumberOfDocs(countDoc);
-
             dataCollector.setLang(languages);
         } catch (IOException e) { }
     }

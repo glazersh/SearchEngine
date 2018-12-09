@@ -2,6 +2,7 @@ package Model;
 import Model.Term.ATerm;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class Indexer {
@@ -90,8 +91,6 @@ public class Indexer {
      * @param wordsInDictionary
      */
     private void prepareForWriting(Map<ATerm,Map<String,Integer>> wordsInDictionary) {
-
-        StringBuffer termInfo = new StringBuffer();
         StringBuffer docNumber ;
         File file;
         try {
@@ -99,7 +98,7 @@ public class Indexer {
             FileOutputStream out = new FileOutputStream(file);
             try {
                 //Writer writer = new OutputStreamWriter(new GZIPOutputStream(out), "UTF-8");
-                Writer writer = new OutputStreamWriter(out);
+                Writer writer = new OutputStreamWriter(out, StandardCharsets.UTF_8);
                 try {
                     for (ATerm term : wordsInDictionary.keySet()) {
                         docNumber = new StringBuffer();
@@ -124,11 +123,11 @@ public class Indexer {
                 out.close();
             }
         } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+
         } catch (IOException e) {
-            e.printStackTrace();
+
         }
     }
 
@@ -150,7 +149,7 @@ public class Indexer {
             FileOutputStream out = new FileOutputStream(postDocs,true);
             try {
                 //Writer writer = new OutputStreamWriter(new GZIPOutputStream(out), "UTF-8");
-                try (Writer writer = new OutputStreamWriter(out)) {
+                try (Writer writer = new OutputStreamWriter(out, StandardCharsets.UTF_8)) {
                     for (String perDoc : docInfo) {
                         writer.write(perDoc + "\n");
                     }
@@ -228,7 +227,7 @@ public class Indexer {
 
             while(stop != 'z'+1) {
                 while((sCurrentLine1 = br1.readLine()) !=null) {
-                    if (Character.toLowerCase(sCurrentLine1.charAt(0)) != stop) {
+                    if (sCurrentLine1.length()>0 && Character.toLowerCase(sCurrentLine1.charAt(0)) != stop) {
                         lines.add(sCurrentLine1 + "\n");
                     }else{
                         tmp1 = sCurrentLine1;
@@ -304,10 +303,12 @@ public class Indexer {
         String []nextTerm;
         try {
             out1 = new FileInputStream(file);
-            br1 = new BufferedReader(new InputStreamReader(out1));
+            br1 = new BufferedReader(new InputStreamReader(out1, StandardCharsets.UTF_8));
             boolean isLower = false;
             boolean isLetter = false;
             boolean first = true;
+            boolean letter = false;
+            boolean needChange = true;
             line = br1.readLine();
             term = line.split(",\\{");
             char d = '0';
@@ -339,26 +340,35 @@ public class Indexer {
                         bf.setLength(0);
                         d = (char) (d - 1);
                     } else {
-                        if (nextTerm[0].charAt(0) == l) {
-                            if (first) {
-                                String tmp = term[0] + bf.toString();
-                                fileInfo.add(tmp);
-                                writeTheFinalFilePost(fileInfo, "numbers Final");
-                                first = false;
-                            } else {
-                                if (isLetter) {
-                                    if (isLower) {
-                                        term[0] = term[0].toLowerCase();
-                                    } else {
-                                        term[0] = term[0].toUpperCase();
-                                    }
-                                }
-                                String tmp = term[0] + bf.toString();
-                                fileInfo.add(tmp);
-                                writeTheFinalFilePost(fileInfo, (char) (l - 1) + " Final");
-                            }
+                        if (first && Character.toLowerCase(nextTerm[0].charAt(0)) == 'a') {
+                            String tmp = term[0] + bf.toString();
+                            fileInfo.add(tmp);
+                            writeTheFinalFilePost(fileInfo, "numbers Final");
+                            first = false;
+                            letter = true;
                             fileInfo.clear();
-                            l = (char) (l + 1);
+                            //l = (char) (Character.toLowerCase(nextTerm[0].charAt(0))+1);
+                            bf.setLength(0);
+                        }
+                        if(letter &&Character.toLowerCase(nextTerm[0].charAt(0)) != l){
+
+                            if (isLetter) {
+                                if (isLower) {
+                                    term[0] = term[0].toLowerCase();
+                                } else {
+                                    term[0] = term[0].toUpperCase();
+                                }
+                            }
+                            String tmp = term[0] + bf.toString();
+                            fileInfo.add(tmp);
+                            writeTheFinalFilePost(fileInfo,  (l) + " Final");
+                            fileInfo.clear();
+                            if(l!='z')
+                                l = (Character.toLowerCase(nextTerm[0].charAt(0)));
+                            else {
+                                needChange = false;
+                                break;
+                            }
                             bf.setLength(0);
                         }
                     }
@@ -373,9 +383,9 @@ public class Indexer {
                         String tmp = term[0] + bf.toString();
                         fileInfo.add(tmp);
                         bf = new StringBuffer();
-                        bf.append(",{" + nextTerm[1]);
+                        bf.append(",{").append(nextTerm[1]);
                     } else
-                        bf.append(",{" + nextTerm[1]);
+                        bf.append(",{").append(nextTerm[1]);
                     term = nextTerm;
                     isLower = false;
                     isLetter = false;
@@ -387,17 +397,24 @@ public class Indexer {
                     }
                 }
             }
-            String tmp = term[0] + bf.toString();
-            fileInfo.add(tmp);
-            writeTheFinalFilePost(fileInfo, (char) (l - 1) + " Final");
+            if(needChange) {
+                String tmp = term[0] + bf.toString();
+                fileInfo.add(tmp);
+                writeTheFinalFilePost(fileInfo, (l) + " Final");
+            }
+
         } catch (FileNotFoundException e) {
 
         } catch (IOException e) {
 
         }
         try {
-            br1.close();
-            out1.close();
+            if (br1 != null) {
+                br1.close();
+            }
+            if (out1 != null) {
+                out1.close();
+            }
             file.delete();
         } catch (IOException e) {
 
@@ -467,9 +484,9 @@ public class Indexer {
         for(int i=0;i<docsInfo.length;i++){
             counter+=Integer.parseInt(docsInfo[i].split(":")[1]);
         }
-        String lineInPost = nameTerm+",{"+counter+":"+docFrequency+":"+namePostFile+"/"+index+"\n";
+        String lineInPost = nameTerm+",{"+counter+":"+docFrequency+":"+namePostFile+"/"+(index+1)+"\n";
         bigDictionary.put(nameTerm, counter);
-        dictionaryToLoad.put(nameTerm,namePostFile+"/"+index);
+        dictionaryToLoad.put(nameTerm,namePostFile+"/"+(index+1));
         return lineInPost;
 
     }
@@ -484,19 +501,23 @@ public class Indexer {
                 out = new FileWriter(capitalPost);
                 writer = new BufferedWriter(out);
                 for (String str : capitalDictionary.keySet()) {
-                    if(docSet.contains(str))
+                    if(docSet.contains(str.toUpperCase()))
                         writer.write(capitalDictionary.get(str) + "\n");
                 }
                 writer.flush();
 
             } catch (IOException e) {
-                e.printStackTrace();
+
             }finally {
-                writer.close();
-                out.close();
+                if (writer != null) {
+                    writer.close();
+                }
+                if (out != null) {
+                    out.close();
+                }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+
         }
     }
 
@@ -541,13 +562,13 @@ public class Indexer {
             FileOutputStream out = new FileOutputStream(file);
             try {
                 //Writer writer = new OutputStreamWriter(new GZIPOutputStream(out), "UTF-8");
-                Writer writer = new OutputStreamWriter(out);
+                Writer writer = new OutputStreamWriter(out, StandardCharsets.UTF_8);
                 try {
                     for(String term:dictionaryToLoad.keySet()){
                         writer.write(term+",{"+dictionaryToLoad.get(term) + "\n");
                     }
                 } catch (IOException e) {
-                    e.printStackTrace();
+
                 } finally {
                     writer.close();
                 }
@@ -555,24 +576,24 @@ public class Indexer {
                 out.close();
             }
         } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+
         } catch (IOException e) {
-            e.printStackTrace();
+
         }
     }
 
     public void setDocSet(Set<String> docSet) {
         this.docSet = docSet;
-    } // shula here ???
+    }
 
     public static void load(File file){
         List<String> lines = new ArrayList<>();
         dictionaryToLoad = new HashMap<>();
         try (//GZIPInputStream gzip = new GZIPInputStream(new FileInputStream(file));
              FileInputStream out = new FileInputStream(file);
-             BufferedReader br = new BufferedReader(new InputStreamReader(out))) {
+             BufferedReader br = new BufferedReader(new InputStreamReader(out, StandardCharsets.UTF_8))) {
             String line;
             while ((line = br.readLine()) != null) {
                 lines.add(line);

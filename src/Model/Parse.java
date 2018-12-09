@@ -946,9 +946,6 @@ public class Parse {
                     // the term is one word
                     else {
                         String another = cutSigns(allText[i]);
-                        if(isTermPrice){
-                            int x=4;
-                        }
                         oneWordTypeTerm(word, another);
                     }
                     i = i + next;
@@ -1220,10 +1217,6 @@ public class Parse {
         allWordsDic.clear();
     }
 
-    //Parse.post.fromMapToPostFiles(Parse.allWordsDic);
-    private void sendMapToPost(){
-        post.fromMapToPostFiles(dt.getMap());
-    }
 
     public void resetAll() {
         month.clear();
