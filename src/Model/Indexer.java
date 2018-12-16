@@ -79,6 +79,11 @@ public class Indexer {
         prepareForWriting(treeDict);
     }
 
+
+    public Set getCitiesMap(){
+        return docSet;
+    }
+
     /**
      * Send the final Dictionary
      */

@@ -24,6 +24,8 @@ public class Parse {
     Map<String,Integer> termMap;
 
     List<String> docInfo = new ArrayList<>(); // clear
+    Map <String, String> CitiesMap = new HashMap<>();
+    Set <String> citiesSet;
 
 
     ATerm term;
@@ -61,6 +63,7 @@ public class Parse {
         this.withStem = withStemming;
         this.dt = dataCollector;
         post = new Indexer(PathPosting, withStemming, dataCollector);
+        citiesSet = post.getCitiesMap();
         insertMonth(); // init all months
         insertAfterWords(); // init special words for our parse
         StopWords(stopWords); // init all stopWords from stop_words.txt
@@ -984,6 +987,7 @@ public class Parse {
                         //maybe no need to remove just put
                         allWordsDic.remove(a);
                         allWordsDic.put(term, p);
+                        CheckCities(term, docName);
                         //may not be needed if checking earlier
                         if (allWordsDic.get(term).containsKey(docName))
                             counterWord = wordsInDoc.get(term) + allWordsDic.get(term).get(docName);
@@ -1007,12 +1011,30 @@ public class Parse {
                 //if do not exist
                 termMap.put(docName, wordsInDoc.get(term));
                 allWordsDic.put(term, termMap);
+                CheckCities(term, docName);
             }
         }
         //// Finish
 
         docInfo.add(docName+","+maxTermCounter+","+wordsInDoc.size()+","+termInDoc+","+cityName);
         //post.writePerDoc(docName,cityName,wordsInDoc.size(),maxTermCounter,counterMinTerm);
+
+    }
+    private void setCitiesMap(Set<String> set){
+
+    }
+
+
+    private void CheckCities(ATerm term, String docName) {
+        if(citiesSet.contains(term.finalName)){
+            if(CitiesMap.containsKey(term.finalName)){
+                String tmp = CitiesMap.get(term.finalName);
+                CitiesMap.put(term.finalName, tmp + "," + docName);
+            }
+        }
+
+
+
 
     }
 
@@ -1046,6 +1068,7 @@ public class Parse {
             checkMinMaxCounter(wordsInDoc.get(termOld));
             termMap.put(docName, wordsInDoc.get(termOld));
             allWordsDic.put(termOld, termMap);
+            CheckCities(termOld, docName);
         }
     }
 
@@ -1078,6 +1101,9 @@ public class Parse {
             checkMinMaxCounter(wordsInDoc.get(termOld));
             termMap.put(docName, wordsInDoc.get(termOld));
             allWordsDic.put(termUp, termMap);
+            CheckCities(termUp, docName);
+
+
         }
     }
 
