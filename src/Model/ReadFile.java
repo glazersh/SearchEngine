@@ -66,7 +66,7 @@ public class ReadFile {
                         if(!languages.contains(docLanguage)){
                             languages.add(docLanguage);
                         }
-                        if(!docCity.equalsIgnoreCase("") && !docSet.contains(docCity))
+                        if(!docCity.equalsIgnoreCase(""))
                             docSet.add(docCity);
                         Parse.parse(docText, docName, docCity, true);
 
