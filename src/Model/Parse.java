@@ -3,6 +3,7 @@ package Model;
 import Model.IO.DBCountries;
 import Model.IO.Countries;
 import Model.Term.*;
+import javafx.util.Pair;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -14,6 +15,7 @@ public class Parse {
     Indexer post ;
 
     Stemmer stem = new Stemmer();
+
 
     Map<String,String> month= new HashMap<>();
     HashSet<String> afterNumber = new HashSet<>();
@@ -61,6 +63,8 @@ public class Parse {
     private int pos;
     private PriorityQueue<ATerm>entityTerms;
     List <String>entityDoc;
+    Map <String,Pair<ATerm,Integer>> setPerDoc;
+
 
     public Parse(String stopWords, String PathPosting, boolean  withStemming, DataCollector dataCollector){
         this.withStem = withStemming;
@@ -88,6 +92,7 @@ public class Parse {
             }
         });
         entityDoc = new ArrayList<>();
+        setPerDoc = new HashMap<>();
         try {
             countryInMemory = new DBCountries("https://restcountries.eu/rest/v2/all?fields=name;capital;population;currencies");
         } catch (IOException e) {
@@ -979,10 +984,14 @@ public class Parse {
                 }
             }
         }
-
+        // setPerDoc
         // after move all the terms
         for(ATerm term:wordsInDoc.keySet()){
             if(term instanceof Word ) {
+                if(term.finalName.equalsIgnoreCase("PARTY"))
+                {
+                    int x= 4;
+                }
                 char c = term.finalName.charAt(0);
                 int counterWord;
                 if (Character.isUpperCase(c)) {
@@ -1003,6 +1012,7 @@ public class Parse {
                         allWordsDic.get(a).put(docName, counterWord);
                     } else {
                         checkIfExistsUpper(docName, term);
+
                     }
                 } else {
                     String tp = term.finalName.toUpperCase();
@@ -1029,6 +1039,10 @@ public class Parse {
                     } else {
                         checkIfExistsLower(docName, term);
                     }
+                    if(setPerDoc.containsKey(term.finalName.toUpperCase())){
+                        Pair<ATerm,Integer>remove = new Pair<>(term,1);
+                        setPerDoc.put(term.finalName.toUpperCase(),remove);
+                    }
                 }
             }
             else{
@@ -1046,7 +1060,8 @@ public class Parse {
         StringBuffer bf = new StringBuffer();
         while(!entityTerms.isEmpty()){
             ATerm tmp = entityTerms.poll();
-            bf.append(":"+tmp.finalName);
+            if(setPerDoc.get(tmp.finalName).getValue()==0)
+                bf.append(":"+tmp.finalName);
         }
         entityDoc.add(docName+",{"+bf.toString());
     }
@@ -1101,6 +1116,7 @@ public class Parse {
      */
     private void checkIfExistsUpper(String docName, ATerm termOld) {
         ATerm termUp = new Word(termOld.finalName.toUpperCase());
+        termUp.setPosition(termOld.getPosition());
         //if termUp exists
         if (allWordsDic.containsKey(termUp)) {
             int counterWord = wordsInDoc.get(termOld);
@@ -1130,11 +1146,19 @@ public class Parse {
             CheckCities(termUp, docName);
             termUp.setTF(wordsInDoc.get(termOld));
             termUp.setPosition(termOld.getPosition());
+            entityTerms.add(termUp);
+            Pair<ATerm,Integer> isEntity = new Pair<>(termUp,0);
+            setPerDoc.put(termUp.finalName,isEntity);
         }
-
-
-        if(termUp.finalName.equalsIgnoreCase("PARTY")) {
-            int x = 4;
+        if(setPerDoc.containsKey(termUp.finalName)){
+            if(setPerDoc.get(termUp.finalName).getValue()==0) {
+                setPerDoc.get(termUp.finalName).getKey().setTF(termUp.getTf());
+                if (setPerDoc.get(termUp.finalName).getKey().getPosition() > termUp.getPosition()) {
+                    setPerDoc.get(termUp.finalName).getKey().setPosition(termUp.getPosition());
+                }
+            }
+        }else {
+            entityTerms.add(termUp);
         }
 
     }

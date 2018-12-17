@@ -22,6 +22,7 @@ public class Indexer {
     private DataCollector dataCollector;
     Map<String,Integer>bigDictionary = new HashMap<>(); // for the gui
     static Map<String,String> dictionaryToLoad = new HashMap<>();
+    Map <String,String> citiesMap;
 
     public Indexer(String path, boolean withStem, DataCollector dataCollector) {
         finalPostFileYes = new ArrayList<>();
@@ -33,6 +34,7 @@ public class Indexer {
         this.dataCollector = dataCollector;
         this.withStem = withStem;
         numberTerms = 0;
+        citiesMap = new HashMap<>();
 
 
         File f;
@@ -338,7 +340,7 @@ public class Indexer {
                     }
                     bf.append("{").append(nextTerm[1]);
                 } else {
-                    if (nextTerm[0].charAt(0) == d) {
+                    if (!nextTerm[0].equals("") && nextTerm[0].charAt(0) == d) {
                         String tmp = term[0] + bf.toString();
                         fileInfo.add(tmp);
                         writeTheFinalFilePost(fileInfo, "sign");
@@ -346,15 +348,17 @@ public class Indexer {
                         bf.setLength(0);
                         d = (char) (d - 1);
                     } else {
-                        if (first && Character.toLowerCase(nextTerm[0].charAt(0)) == 'a') {
-                            String tmp = term[0] + bf.toString();
-                            fileInfo.add(tmp);
-                            writeTheFinalFilePost(fileInfo, "numbers Final");
-                            first = false;
-                            letter = true;
-                            fileInfo.clear();
-                            //l = (char) (Character.toLowerCase(nextTerm[0].charAt(0))+1);
-                            bf.setLength(0);
+                        if(nextTerm[0].equals("")) {
+                            if (first && Character.toLowerCase(nextTerm[0].charAt(0)) == 'a') {
+                                String tmp = term[0] + bf.toString();
+                                fileInfo.add(tmp);
+                                writeTheFinalFilePost(fileInfo, "numbers Final");
+                                first = false;
+                                letter = true;
+                                fileInfo.clear();
+                                //l = (char) (Character.toLowerCase(nextTerm[0].charAt(0))+1);
+                                bf.setLength(0);
+                            }
                         }
                         if(letter &&Character.toLowerCase(nextTerm[0].charAt(0)) != l){
 
@@ -615,6 +619,43 @@ public class Indexer {
         } catch (IOException e) {
 
         }
+    }
+
+    public void setCitiesMap(Map<String,String> citiesMap) {
+        this.citiesMap = citiesMap;
+    }
+
+    public void createMap() {
+
+        File CitiesPost = new File(path + "\\" + "CitiesPost");
+        FileWriter out = null;
+        try {
+            CitiesPost.createNewFile();
+            BufferedWriter writer = null;
+            try {
+                out = new FileWriter(CitiesPost);
+                writer = new BufferedWriter(out);
+                for (String str : citiesMap.keySet()) {
+                    writer.write(citiesMap.get(str) + "\n");
+                }
+                writer.flush();
+
+            } catch (IOException e) {
+
+            }finally {
+                if (writer != null) {
+                    writer.close();
+                }
+                if (out != null) {
+                    out.close();
+                }
+            }
+        } catch (IOException e) {
+
+        }
+
+
+
     }
 
     public class SortIgnoreCase implements Comparator<Object> {

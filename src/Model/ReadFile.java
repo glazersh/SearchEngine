@@ -7,9 +7,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.jsoup.nodes.Element;
@@ -22,6 +20,7 @@ public class ReadFile {
     DataCollector dataC;
     Set<String> languages = new HashSet<>();
     Set<String> docSet = new HashSet<>();
+    Map<String,String>citiesMap = new HashMap<>();
 
     public ReadFile(String path,String stopWords, String PathPosting, boolean withStemming, DataCollector dataCollector) {
         this.dataC = dataCollector;
@@ -66,8 +65,15 @@ public class ReadFile {
                         if(!languages.contains(docLanguage)){
                             languages.add(docLanguage);
                         }
-                        if(!docCity.equalsIgnoreCase(""))
+                        if(!docCity.equalsIgnoreCase("")) {
                             docSet.add(docCity);
+                            if(citiesMap.containsKey(docCity)){
+                                String tmp = citiesMap.get(docCity);
+                                citiesMap.put(docCity,tmp+docName+":");
+                            }else{
+                                citiesMap.put(docCity,docCity+",{"+docName+":");
+                            }
+                        }
                         Parse.parse(docText, docName, docCity, true);
 
                     }
@@ -76,11 +82,13 @@ public class ReadFile {
 
                 }
                 counterFiles++;
-                if(counterFiles %2==0){
+                if(counterFiles %50==0){
                     Parse.post.fromMapToPostFiles(Parse.allWordsDic);
                     Parse.post.writePerDoc(Parse.docInfo);
                     Parse.clearDictionary();
                     counterFiles = 0;
+                    break;
+
                 }
             }
             Parse.post.fromMapToPostFiles(Parse.allWordsDic);
@@ -91,6 +99,8 @@ public class ReadFile {
             Parse.post.startMerge();
             Parse.post.writeDictionary();
             Parse.post.setDocSet(docSet);
+            Parse.post.setCitiesMap(citiesMap);
+            Parse.post.createMap();
             Parse.post.createCapitalPost(Parse.getCapitalDictionary());
             dataCollector.setNumberOfDocs(countDoc);
             dataCollector.setLang(languages);
