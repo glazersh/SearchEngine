@@ -54,6 +54,7 @@ public class Parse {
     int termInDoc = 0;
 
     boolean withStem;
+    boolean inIndex ;
 
     DataCollector dt ;
 
@@ -754,15 +755,19 @@ public class Parse {
 
     /**
      * The Main parser function
-     * @param allText
+     * @param text
      * @param docName
      */
 
-    public void parse(String [] allText, String docName,String cityName) {
+    public void parse(String text, String docName,String cityName, boolean inIndex) {
         maxTermCounter = 0;
         counterMinTerm = 0;
         wordsInDoc = new HashMap<>();
+        this.inIndex = inIndex;
         termInDoc=0;
+        String replace = text.replaceAll("[()?!@#|&+*\\[\\];{}\"]+"," ");
+        String replace2 = replace.replace("--"," ");
+        String[] allText = replace2.split(" "); // split the text by " "(space) into array
 
         /**
          * Check every words :
@@ -1113,13 +1118,17 @@ public class Parse {
      * @param term
      */
     private void increaseCounter(ATerm term){
-        termInDoc++;
-
-        if(wordsInDoc.containsKey(term)) {
-            Integer tmp = wordsInDoc.get(term);
-            wordsInDoc.put(term, tmp + 1);
+        if(inIndex) {
+            termInDoc++;
+            if (wordsInDoc.containsKey(term)) {
+                Integer tmp = wordsInDoc.get(term);
+                wordsInDoc.put(term, tmp + 1);
+            } else {
+                // insert here the position in the doc
+                wordsInDoc.put(term, 1);
+            }
         }else{
-            wordsInDoc.put(term,1);
+            // insert here to Dictionary only for the query
         }
     }
 

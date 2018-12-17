@@ -78,7 +78,7 @@
                   <Font name="Century Gothic Bold" size="14.0" />
                </font>
             </Label>
-            <Label text="Term" GridPane.rowIndex="1">
+            <Label text="Terms" GridPane.rowIndex="1">
                <font>
                   <Font name="Century Gothic Bold" size="14.0" />
                </font>
@@ -88,9 +88,9 @@
                   <Font name="Century Gothic Bold" size="14.0" />
                </font>
             </Label>
-            <Label fx:id="l_docs" text="Label" GridPane.columnIndex="1" />
-            <Label fx:id="l_terms" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-            <Label fx:id="l_time" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            <Label fx:id="l_docs" GridPane.columnIndex="1" />
+            <Label fx:id="l_terms" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <Label fx:id="l_time" GridPane.columnIndex="1" GridPane.rowIndex="2" />
          </children>
       </GridPane>
       <ListView fx:id="lv_dictionary" layoutX="464.0" layoutY="4.0" prefHeight="390.0" prefWidth="200.0" />

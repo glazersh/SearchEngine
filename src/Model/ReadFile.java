@@ -66,13 +66,9 @@ public class ReadFile {
                         if(!languages.contains(docLanguage)){
                             languages.add(docLanguage);
                         }
-                        //split the text by " "(space) into array
-                        //String[] withoutSpaceText = docText.split(" ");
-                        String replace = docText.replaceAll("[()?!@#|&+*\\[\\];{}\"]+"," ");
-                        String replace2 = replace.replace("--"," ");
-                        String[] withoutSpaceText = replace2.split(" "); // split the text by " "(space) into array
-                        docSet.add(docCity);
-                        Parse.parse(withoutSpaceText, docName, docCity);
+                        if(!docCity.equalsIgnoreCase("") && !docSet.contains(docCity))
+                            docSet.add(docCity);
+                        Parse.parse(docText, docName, docCity, true);
 
                     }
 
@@ -80,7 +76,7 @@ public class ReadFile {
 
                 }
                 counterFiles++;
-                if(counterFiles %50==0){
+                if(counterFiles %2==0){
                     Parse.post.fromMapToPostFiles(Parse.allWordsDic);
                     Parse.post.writePerDoc(Parse.docInfo);
                     Parse.clearDictionary();
