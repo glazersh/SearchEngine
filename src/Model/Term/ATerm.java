@@ -2,7 +2,10 @@ package Model.Term;
 
 public abstract class ATerm {
 
-    int weight;
+
+
+    private int position;
+    private int tf;
     public String finalName;
 
 
@@ -28,6 +31,22 @@ public abstract class ATerm {
         int hash = finalName.hashCode();
         result = 31 * result + hash;
         return result;
+    }
+
+    public void setPosition(int pos){
+        this.position = pos;
+    }
+
+    public void setTF(int tf){
+        this.tf = tf;
+    }
+
+    public int getPosition() {
+        return position;
+    }
+
+    public int getTf() {
+        return tf;
     }
 
 }

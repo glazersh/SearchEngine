@@ -57,8 +57,10 @@ public class Parse {
     boolean inIndex ;
 
     DataCollector dt ;
-
-
+///////////////////////////////
+    private int pos;
+    private PriorityQueue<ATerm>entityTerms;
+    List <String>entityDoc;
 
     public Parse(String stopWords, String PathPosting, boolean  withStemming, DataCollector dataCollector){
         this.withStem = withStemming;
@@ -69,6 +71,23 @@ public class Parse {
         insertAfterWords(); // init special words for our parse
         StopWords(stopWords); // init all stopWords from stop_words.txt
         insertSigns(); // init all the signs
+        entityTerms  = new PriorityQueue<>(new Comparator<ATerm>() {
+            @Override
+            public int compare(ATerm o1, ATerm o2) {
+                if(o1.getTf()<o2.getTf())
+                    return 1;
+                if(o1.getTf()>o2.getTf())
+                    return -1;
+                else{
+                    if(o1.getPosition() < o2.getPosition())
+                        return -1;
+                    if(o1.getPosition() > o2.getPosition())
+                        return 1;
+                }
+                return 0;
+            }
+        });
+        entityDoc = new ArrayList<>();
         try {
             countryInMemory = new DBCountries("https://restcountries.eu/rest/v2/all?fields=name;capital;population;currencies");
         } catch (IOException e) {
@@ -776,18 +795,18 @@ public class Parse {
          *               2.1 if true, continue
          *               2.2 else, send to stemmer
          */
-        for (int i = 0; i < allText.length; i++) {
+        for (pos = 0; pos < allText.length; pos++) {
             // init all boolean variable
             init();
             // cut the signs
-            String word = cutSigns(allText[i]);
+            String word = cutSigns(allText[pos]);
 
             //if the word contains one char - ignore
             if ((word.length() == 1 && !isNumber(word)))
                 continue;
             if (!word.equals("") && ((word.equals("Between") || (word.equals("May")  || !stopWords.contains(word.toLowerCase()))))) {
                 // regular text
-                if (i + 1 < allText.length && isNormalWord(word, cutSigns(allText[i + 1]))) {
+                if (pos + 1 < allText.length && isNormalWord(word, cutSigns(allText[pos + 1]))) {
 
                     // stemmer
                     if(withStem) {
@@ -801,32 +820,32 @@ public class Parse {
                     }
 
                     term = new Word(word);
-                    checkCapital(term.finalName,docName,i);
+                    checkCapital(term.finalName,docName,pos);
                     increaseCounter(term);
 
                 } else {
-                    if (i == allText.length - 1) {
+                    if (pos == allText.length - 1) {
                         if (isNormalWord(word, "no")) {
                             if(withStem) {
                                 stem.add(word.toCharArray(), word.length());
                                 stem.stem();
                             }
                             term = new Word(word);
-                            checkCapital(term.finalName,docName,i);
+                            checkCapital(term.finalName,docName,pos);
                             increaseCounter(term);
                             continue;
                         }
                     }
 
-                    if ((i + 3 < allText.length && word.equals("Between"))) {
-                        if(betweenTerm(allText[i+1],allText[i+2],allText[i+3]))
-                            i=i+3;
+                    if ((pos + 3 < allText.length && word.equals("Between"))) {
+                        if(betweenTerm(allText[pos+1],allText[pos+2],allText[pos+3]))
+                            pos=pos+3;
                         continue;
                     }
 
-                    if(((word.contains("-") && !word.endsWith("-") && i - 1 >= 0 && i+1 <allText.length))) {
-                        int index = RangeTerm(word,allText[i+1],allText[i-1]);
-                        i += index;
+                    if(((word.contains("-") && !word.endsWith("-") && pos - 1 >= 0 && pos+1 <allText.length))) {
+                        int index = RangeTerm(word,allText[pos+1],allText[pos-1]);
+                        pos += index;
                         continue;
                     }
 
@@ -838,7 +857,7 @@ public class Parse {
                     // if word's first character is with "$"
                     // and then check if word is Number.
                     if (!isTNumber && word.charAt(0) == '$') {
-                        allText[i] = allText[i].substring(1); // cut $
+                        allText[pos] = allText[pos].substring(1); // cut $
                         word = word.substring(1);
                         if (isTermNumber(word)) {
                             isTermPrice = true;
@@ -846,7 +865,7 @@ public class Parse {
 
                         // the number is fraction
                         if (isTNumber && word.contains("/")) {
-                            term = new Price(allText[i] + "Dollars");
+                            term = new Price(allText[pos] + "Dollars");
                             increaseCounter(term);
                             continue;
                         }
@@ -908,27 +927,27 @@ public class Parse {
                     int next = 0;
                     String nextWord = "";
 
-                    if (i + 1 < allText.length) {
-                        nextWord = cutSigns(allText[i + 1]);
+                    if (pos + 1 < allText.length) {
+                        nextWord = cutSigns(allText[pos + 1]);
                     }
 
-                    while (i + 1 < allText.length && (afterNumber.contains(nextWord)) || (month.containsKey(word) && isNumber(nextWord)) || (isTNumber && month.containsKey(nextWord))) {
+                    while (pos + 1 < allText.length && (afterNumber.contains(nextWord)) || (month.containsKey(word) && isNumber(nextWord)) || (isTNumber && month.containsKey(nextWord))) {
                         if (next == 2) {
                             if (!nextWord.equals("U.S.") && !nextWord.contains("/"))
                                 break;
                         }
                         next++;
-                        i = i + 1;
-                        if (i + 1 < allText.length) {
-                            nextWord = cutSigns(allText[i + 1]);
+                        pos = pos + 1;
+                        if (pos + 1 < allText.length) {
+                            nextWord = cutSigns(allText[pos + 1]);
                         } else
                             break;
                     }
-                    i = i - next;
-                    if (next > 0 && i + next < allText.length) {
+                    pos = pos - next;
+                    if (next > 0 && pos + next < allText.length) {
                         String[] termWords = new String[next + 1];
                         for (int j = 0; j < next + 1; j++) {
-                            String wordTmp = cutSigns(allText[i + j]);
+                            String wordTmp = cutSigns(allText[pos + j]);
                             if ((wordTmp.equalsIgnoreCase("Dollars"))) {
                                 isTermPrice = true;
                                 found = true;
@@ -953,10 +972,10 @@ public class Parse {
                     }
                     // the term is one word
                     else {
-                        String another = cutSigns(allText[i]);
+                        String another = cutSigns(allText[pos]);
                         oneWordTypeTerm(word, another);
                     }
-                    i = i + next;
+                    pos = pos + next;
                 }
             }
         }
@@ -973,16 +992,18 @@ public class Parse {
                         if (allWordsDic.get(a).containsKey(docName)) {
                             //check hoe many times appeared in this doc
                             counterWord = wordsInDoc.get(term) + allWordsDic.get(a).get(docName);
-                        } else
+                        } else {
                             counterWord = wordsInDoc.get(term);
+                        }
                         // max
                         if(maxTermCounter<counterWord){
                             maxTermCounter = counterWord;
                         }
 
                         allWordsDic.get(a).put(docName, counterWord);
-                    } else
+                    } else {
                         checkIfExistsUpper(docName, term);
+                    }
                 } else {
                     String tp = term.finalName.toUpperCase();
                     ATerm a = new Word(tp);
@@ -1022,13 +1043,13 @@ public class Parse {
         //// Finish
 
         docInfo.add(docName+","+maxTermCounter+","+wordsInDoc.size()+","+termInDoc+","+cityName);
-        //post.writePerDoc(docName,cityName,wordsInDoc.size(),maxTermCounter,counterMinTerm);
-
+        StringBuffer bf = new StringBuffer();
+        while(!entityTerms.isEmpty()){
+            ATerm tmp = entityTerms.poll();
+            bf.append(":"+tmp.finalName);
+        }
+        entityDoc.add(docName+",{"+bf.toString());
     }
-    private void setCitiesMap(Set<String> set){
-
-    }
-
 
     private void CheckCities(ATerm term, String docName) {
         if(citiesSet.contains(term.finalName)){
@@ -1037,10 +1058,6 @@ public class Parse {
                 CitiesMap.put(term.finalName, tmp + "," + docName);
             }
         }
-
-
-
-
     }
 
     private void checkMinMaxCounter( int numTermInDoc ){
@@ -1091,6 +1108,7 @@ public class Parse {
             if(allWordsDic.get(termUp).get(docName)==null){
                 checkMinMaxCounter(wordsInDoc.get(termOld));
                 allWordsDic.get(termUp).put(docName, counterWord);
+
             }
             else {
                 counterWord = wordsInDoc.get(termOld) + allWordsDic.get(termUp).get(docName);
@@ -1100,6 +1118,9 @@ public class Parse {
 
                 allWordsDic.get(termUp).put(docName, counterWord);
             }
+
+            termUp.setTF(counterWord);
+
         } else {
             //if term do not exist
             termMap = new HashMap<>();
@@ -1107,9 +1128,15 @@ public class Parse {
             termMap.put(docName, wordsInDoc.get(termOld));
             allWordsDic.put(termUp, termMap);
             CheckCities(termUp, docName);
-
-
+            termUp.setTF(wordsInDoc.get(termOld));
+            termUp.setPosition(termOld.getPosition());
         }
+
+
+        if(termUp.finalName.equalsIgnoreCase("PARTY")) {
+            int x = 4;
+        }
+
     }
 
     /**
@@ -1124,8 +1151,8 @@ public class Parse {
                 Integer tmp = wordsInDoc.get(term);
                 wordsInDoc.put(term, tmp + 1);
             } else {
-                // insert here the position in the doc
                 wordsInDoc.put(term, 1);
+                term.setPosition(this.pos);
             }
         }else{
             // insert here to Dictionary only for the query
