@@ -1023,7 +1023,6 @@ public class Parse {
                         //maybe no need to remove just put
                         allWordsDic.remove(a);
                         allWordsDic.put(term, p);
-                        CheckCities(term, docName);
                         //may not be needed if checking earlier
                         if (allWordsDic.get(term).containsKey(docName))
                             counterWord = wordsInDoc.get(term) + allWordsDic.get(term).get(docName);
@@ -1051,7 +1050,6 @@ public class Parse {
                 //if do not exist
                 termMap.put(docName, wordsInDoc.get(term));
                 allWordsDic.put(term, termMap);
-                CheckCities(term, docName);
             }
         }
         //// Finish
@@ -1066,14 +1064,6 @@ public class Parse {
         entityDoc.add(docName+",{"+bf.toString());
     }
 
-    private void CheckCities(ATerm term, String docName) {
-        if(citiesSet.contains(term.finalName)){
-            if(CitiesMap.containsKey(term.finalName)){
-                String tmp = CitiesMap.get(term.finalName);
-                CitiesMap.put(term.finalName, tmp + "," + docName);
-            }
-        }
-    }
 
     private void checkMinMaxCounter( int numTermInDoc ){
         //max
@@ -1105,7 +1095,6 @@ public class Parse {
             checkMinMaxCounter(wordsInDoc.get(termOld));
             termMap.put(docName, wordsInDoc.get(termOld));
             allWordsDic.put(termOld, termMap);
-            CheckCities(termOld, docName);
         }
     }
 
@@ -1143,7 +1132,6 @@ public class Parse {
             checkMinMaxCounter(wordsInDoc.get(termOld));
             termMap.put(docName, wordsInDoc.get(termOld));
             allWordsDic.put(termUp, termMap);
-            CheckCities(termUp, docName);
             termUp.setTF(wordsInDoc.get(termOld));
             termUp.setPosition(termOld.getPosition());
             entityTerms.add(termUp);

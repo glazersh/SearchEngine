@@ -87,7 +87,7 @@ public class ReadFile {
                     Parse.post.writePerDoc(Parse.docInfo);
                     Parse.clearDictionary();
                     counterFiles = 0;
-                    break;
+
 
                 }
             }
