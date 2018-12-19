@@ -12,26 +12,30 @@ public class Searcher {
     private String query;
     private Parse parse;
     private List<ATerm> termsInQuery;
+    private List<String> docsRelevant;
 
     private String path;
+    private TmpSearcher tmpSearcher;
 
-    static Map<String,String> dictionaryToLoad;
-    static Map<String,String> docsFilesToLoad ;
-    static Map<String,String> citiesToLoad ;
-
-
+    Map<String,String> dictionaryToLoad;
+    Map<String,String> docsFilesToLoad ;
+    Map<String,String> citiesToLoad ;
 
 
     public Searcher(ReadFile readFile){
         this.readFile = readFile;
         parse = readFile.getParse();
         termsInQuery = new ArrayList<>();
-
         this.path = readFile.dataC.getPostPath();
+
         loadCitiesDocs();
         loadDictionary();
         loadFileDocs();
-        int x=4;
+
+    }
+
+    public void createTmpSearcher(){
+        tmpSearcher = new TmpSearcher(dictionaryToLoad, docsFilesToLoad, citiesToLoad, termsInQuery, docsRelevant, path);
     }
 
     public void getQuery(String query){
