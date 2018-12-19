@@ -11,6 +11,7 @@ public class Model extends Observable {
 
     File selectedFolderBrowseCollection;
     ReadFile readFile;
+    Searcher search;
     DataCollector dataCollector;
 
     public Model(){
@@ -21,8 +22,14 @@ public class Model extends Observable {
         long start = System.nanoTime();
         readFile = new ReadFile(FileCorpus,stopWords, PathPosting, withStemming, dataCollector);
         long finish = System.nanoTime();
+
         long total = finish-start;
         dataCollector.setRunningTime(total/1000000000);
+        if(withStemming)
+            dataCollector.setPostPath(PathPosting+"\\Y\\");
+        else
+            dataCollector.setPostPath(PathPosting+"\\N\\");
+        search = new Searcher(readFile); // check
     }
 
     public void setFiles(File selectedFolderBrowseCollection) {
@@ -68,5 +75,9 @@ public class Model extends Observable {
 
     public File getFiles() {
         return selectedFolderBrowseCollection;
+    }
+
+    public void readQuery(String query) {
+        readFile.Parse.parse(query,"","",false);
     }
 }

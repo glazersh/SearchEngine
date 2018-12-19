@@ -12,6 +12,16 @@ public class DataCollector {
     int numberOfTerms;
     long runningTime = 0;
 
+    public String getPostPath() {
+        return postPath;
+    }
+
+    public void setPostPath(String postPath) {
+        this.postPath = postPath;
+    }
+
+    String postPath;
+
     public void setMap(Map<String,Integer> bigDictionary){
         this.bigDictionary = bigDictionary;
     }

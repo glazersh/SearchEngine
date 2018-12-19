@@ -564,9 +564,9 @@ public class Indexer {
         File file;
         try {
             if(withStem) {
-                file = new File(path + "\\" +"Y-DictionaryToLoad");
+                file = new File(pathWithStem + "\\" +"Y-DictionaryToLoad");
             }else{
-                file = new File(path + "\\" +"N-DictionaryToLoad");
+                file = new File(pathWithStem + "\\" +"N-DictionaryToLoad");
             }
             file.createNewFile();
             FileOutputStream out = new FileOutputStream(file);
@@ -627,7 +627,7 @@ public class Indexer {
 
     public void createMap() {
 
-        File CitiesPost = new File(path + "\\" + "CitiesPost");
+        File CitiesPost = new File(pathWithStem + "\\" + "CitiesPost");
         FileWriter out = null;
         try {
             CitiesPost.createNewFile();
