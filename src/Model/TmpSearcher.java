@@ -20,11 +20,13 @@ public class TmpSearcher {
     Map<String,String> docCitiesToLoad;
     Map<String,String> docFilesToLoad;
 
-    public TmpSearcher(ReadFile readFile){
-        this.readFile = readFile;
-        this.dictionaryToLoad = Searcher.dictionaryToLoad;
-        this.docCitiesToLoad = Searcher.citiesToLoad;
-        this.docFilesToLoad = Searcher.docsFilesToLoad;
+    public TmpSearcher(Map<String,String> dictionaryToLoad, Map<String,String> docsFilesToLoad, Map<String,String> citiesToLoad,List<ATerm>  termsInQuery,  List<String>docsRelevant,String path){
+        this.postingPath = path;
+        this.dictionaryToLoad = dictionaryToLoad;
+        this.docCitiesToLoad = citiesToLoad;
+        this.docFilesToLoad = docsFilesToLoad;
+        this.DocsList = docsRelevant;
+        this.queryList = termsInQuery;
 
     }
 
