@@ -22,15 +22,18 @@ public class TmpSearcher {
 
     public TmpSearcher(ReadFile readFile){
         this.readFile = readFile;
+        this.dictionaryToLoad = Searcher.dictionaryToLoad;
+        this.docCitiesToLoad = Searcher.citiesToLoad;
+        this.docFilesToLoad = Searcher.docsFilesToLoad;
+
     }
+
+
 
     public void getFromDocPost(String docName) {
         DocData docData = new DocData(docName);
         String[] DocInfo = docFilesToLoad.get(docName).split(",");
-
-
-
-
+        docData.setDocLength(Integer.parseInt(DocInfo[2]));
 
 
 
@@ -49,15 +52,4 @@ public class TmpSearcher {
     }
 
 
-    public void setDictionaryToLoad(Map<String, String> dictionaryToLoad) {
-        this.dictionaryToLoad = dictionaryToLoad;
-    }
-
-    public void setDocCitiesToLoad(Map<String, String> docCitiesToLoad) {
-        this.docCitiesToLoad = docCitiesToLoad;
-    }
-
-    public void setDocFilesToLoad(Map<String, String> docFilesToLoad) {
-        this.docFilesToLoad = docFilesToLoad;
-    }
 }
