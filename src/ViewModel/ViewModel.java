@@ -30,9 +30,7 @@ public class ViewModel extends java.util.Observable implements Observer  {
 
         model.setFiles(MainWindow.getFile());
     }
-    public void startEngine(File fCorpus, String stopWords, String PathPosting, Boolean withStemming){
-        model.readCorpus(fCorpus.getPath(),stopWords, PathPosting,withStemming);
-    }
+
 
     public Map getMap(){
         return model.getMap();
@@ -67,6 +65,14 @@ public class ViewModel extends java.util.Observable implements Observer  {
     }
     public long getRunnningTime(){
         return model.getRunningTime();
+    }
+
+    public void startEngine(File fCorpus, String stopWords, String PathPosting, Boolean withStemming){
+        model.readCorpus(fCorpus.getPath(),stopWords, PathPosting,withStemming);
+    }
+
+    public void startEngineQuery(String query) {
+        model.readQuery(query);
     }
 
     public void doTheRanker(String postingPath) {

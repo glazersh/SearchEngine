@@ -52,6 +52,10 @@ public class View  implements Observer {
     private String corpusPath="";
     private String postingPath="";
 
+    //partB
+    public Button b_query;
+    public TextField tf_query;
+
     public View(){}
 
     /**
@@ -184,6 +188,14 @@ public class View  implements Observer {
             BrowsePostingPath();
         }
     }
+
+    /////////////////////////// part B //////////////////
+
+    public void query(){
+        String Query = tf_query.getText();
+        viewModel.startEngineQuery(Query);
+    }
+
 }
 
 

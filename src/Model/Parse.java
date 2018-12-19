@@ -64,6 +64,8 @@ public class Parse {
     private PriorityQueue<ATerm>entityTerms;
     List <String>entityDoc;
     Map <String,Pair<ATerm,Integer>> setPerDoc;
+    List<ATerm>finalTermsQuery;
+
 
 
     public Parse(String stopWords, String PathPosting, boolean  withStemming, DataCollector dataCollector){
@@ -788,6 +790,9 @@ public class Parse {
         counterMinTerm = 0;
         wordsInDoc = new HashMap<>();
         this.inIndex = inIndex;
+        if(!inIndex) {
+            finalTermsQuery = new ArrayList<>();
+        }
         termInDoc=0;
         String replace = text.replaceAll("[()?!@#|&+*\\[\\];{}\"]+"," ");
         String replace2 = replace.replace("--"," ");
@@ -984,84 +989,90 @@ public class Parse {
                 }
             }
         }
-        // setPerDoc
-        // after move all the terms
-        for(ATerm term:wordsInDoc.keySet()){
-            if(term instanceof Word ) {
-                if(term.finalName.equalsIgnoreCase("PARTY"))
-                {
-                    int x= 4;
-                }
-                char c = term.finalName.charAt(0);
-                int counterWord;
-                if (Character.isUpperCase(c)) {
-                    String tp = term.finalName.toLowerCase();
-                    ATerm a = new Word(tp);
-                    if (allWordsDic.containsKey(a)) {
-                        if (allWordsDic.get(a).containsKey(docName)) {
-                            //check hoe many times appeared in this doc
-                            counterWord = wordsInDoc.get(term) + allWordsDic.get(a).get(docName);
+
+        if(inIndex) {
+            // setPerDoc
+            // after move all the terms
+            for (ATerm term : wordsInDoc.keySet()) {
+
+                if (term instanceof Word) {
+                    char c = term.finalName.charAt(0);
+                    int counterWord;
+                    if (Character.isUpperCase(c)) {
+                        String tp = term.finalName.toLowerCase();
+                        ATerm a = new Word(tp);
+                        if (allWordsDic.containsKey(a)) {
+                            if (allWordsDic.get(a).containsKey(docName)) {
+                                //check hoe many times appeared in this doc
+                                counterWord = wordsInDoc.get(term) + allWordsDic.get(a).get(docName);
+                            } else {
+                                counterWord = wordsInDoc.get(term);
+                            }
+                            // max
+                            if (maxTermCounter < counterWord) {
+                                maxTermCounter = counterWord;
+                            }
+
+                            allWordsDic.get(a).put(docName, counterWord);
                         } else {
-                            counterWord = wordsInDoc.get(term);
-                        }
-                        // max
-                        if(maxTermCounter<counterWord){
-                            maxTermCounter = counterWord;
-                        }
+                            checkIfExistsUpper(docName, term);
 
-                        allWordsDic.get(a).put(docName, counterWord);
+                        }
                     } else {
-                        checkIfExistsUpper(docName, term);
+                        String tp = term.finalName.toUpperCase();
+                        ATerm a = new Word(tp);
+                        if (allWordsDic.containsKey(a)) {
+                            Map<String, Integer> p;
+                            p = allWordsDic.get(a);
+                            //maybe no need to remove just put
+                            allWordsDic.remove(a);
+                            allWordsDic.put(term, p);
+                            //may not be needed if checking earlier
+                            if (allWordsDic.get(term).containsKey(docName))
+                                counterWord = wordsInDoc.get(term) + allWordsDic.get(term).get(docName);
+                            else
+                                counterWord = wordsInDoc.get(term);
+                            // max
+                            if (maxTermCounter < counterWord) {
+                                maxTermCounter = counterWord;
+                            }
 
+                            allWordsDic.get(term).put(docName, counterWord);
+
+                        } else {
+                            checkIfExistsLower(docName, term);
+                        }
+                        if (setPerDoc.containsKey(term.finalName.toUpperCase())) {
+                            Pair<ATerm, Integer> remove = new Pair<>(term, 1);
+                            setPerDoc.put(term.finalName.toUpperCase(), remove);
+                        }
                     }
                 } else {
-                    String tp = term.finalName.toUpperCase();
-                    ATerm a = new Word(tp);
-                    if (allWordsDic.containsKey(a)) {
-                        Map<String, Integer> p;
-                        p = allWordsDic.get(a);
-                        //maybe no need to remove just put
-                        allWordsDic.remove(a);
-                        allWordsDic.put(term, p);
-                        //may not be needed if checking earlier
-                        if (allWordsDic.get(term).containsKey(docName))
-                            counterWord = wordsInDoc.get(term) + allWordsDic.get(term).get(docName);
-                        else
-                            counterWord = wordsInDoc.get(term);
-                        // max
-                        if(maxTermCounter<counterWord){
-                            maxTermCounter = counterWord;
-                        }
 
-                        allWordsDic.get(term).put(docName, counterWord);
-
-                    } else {
-                        checkIfExistsLower(docName, term);
-                    }
-                    if(setPerDoc.containsKey(term.finalName.toUpperCase())){
-                        Pair<ATerm,Integer>remove = new Pair<>(term,1);
-                        setPerDoc.put(term.finalName.toUpperCase(),remove);
-                    }
+                    termMap = new HashMap<>();
+                    checkMinMaxCounter(wordsInDoc.get(term));
+                    //if do not exist
+                    termMap.put(docName, wordsInDoc.get(term));
+                    allWordsDic.put(term, termMap);
                 }
             }
-            else{
-                termMap = new HashMap<>();
-                checkMinMaxCounter(wordsInDoc.get(term));
-                //if do not exist
-                termMap.put(docName, wordsInDoc.get(term));
-                allWordsDic.put(term, termMap);
-            }
-        }
-        //// Finish
+            //// Finish
 
-        docInfo.add(docName+","+maxTermCounter+","+wordsInDoc.size()+","+termInDoc+","+cityName);
-        StringBuffer bf = new StringBuffer();
-        while(!entityTerms.isEmpty()){
-            ATerm tmp = entityTerms.poll();
-            if(setPerDoc.get(tmp.finalName).getValue()==0)
-                bf.append(":"+tmp.finalName);
+            docInfo.add(docName + "," + maxTermCounter + "," + wordsInDoc.size() + "," + termInDoc + "," + cityName);
+            StringBuffer bf = new StringBuffer();
+            while (!entityTerms.isEmpty()) {
+                ATerm tmp = entityTerms.poll();
+                if (setPerDoc.get(tmp.finalName).getValue() == 0)
+                    bf.append(":" + tmp.finalName);
+            }
+            entityDoc.add(docName + ",{" + bf.toString());
+        }else{
+            // for query only
         }
-        entityDoc.add(docName+",{"+bf.toString());
+    }
+
+    public List<ATerm>queryFinalTerms(){
+        return this.finalTermsQuery;
     }
 
 
@@ -1167,7 +1178,7 @@ public class Parse {
                 term.setPosition(this.pos);
             }
         }else{
-            // insert here to Dictionary only for the query
+            finalTermsQuery.add(term);
         }
     }
 

@@ -96,5 +96,7 @@
       <ListView fx:id="lv_dictionary" layoutX="464.0" layoutY="4.0" prefHeight="390.0" prefWidth="200.0" />
       <Label fx:id="l_info" layoutY="386.0" prefHeight="17.0" prefWidth="464.0" />
       <Label fx:id="l_warning" layoutX="34.0" layoutY="257.0" textFill="RED" visible="false" />
+      <TextField fx:id="tf_query" layoutX="28.0" layoutY="282.0" />
+      <Button fx:id="b_query" layoutX="206.0" layoutY="282.0" mnemonicParsing="false" onAction="#query" text="Button" />
    </children>
 </Pane>

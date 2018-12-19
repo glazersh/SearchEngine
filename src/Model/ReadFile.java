@@ -82,18 +82,19 @@ public class ReadFile {
 
                 }
                 counterFiles++;
-                if(counterFiles %50==0){
+                if(counterFiles %2==0){
                     Parse.post.fromMapToPostFiles(Parse.allWordsDic);
                     Parse.post.writePerDoc(Parse.docInfo);
                     Parse.clearDictionary();
-                    //counterFiles = 0;
+                    if(counterFiles==10)
+                        break;
 
 
                 }
             }
-            Parse.post.fromMapToPostFiles(Parse.allWordsDic);
-            Parse.post.writePerDoc(Parse.docInfo);
-            Parse.clearDictionary();
+            //Parse.post.fromMapToPostFiles(Parse.allWordsDic);
+            //Parse.post.writePerDoc(Parse.docInfo);
+            //Parse.clearDictionary();
 
             Parse.post.setMap();
             Parse.post.startMerge();
@@ -111,5 +112,9 @@ public class ReadFile {
         languages.clear();
         Parse.resetAll();
 
+    }
+
+    public Parse getParse(){
+        return Parse;
     }
 }
