@@ -43,7 +43,7 @@ public class Searcher {
         loadDictionary();
         loadFileDocs();
         this.termsInQuery = query;
-        docsRelevant = new ArrayList<>();
+        docsRelevant = new HashSet();
         for(int i=0;i<query.size();i++){
             String pointer = dictionaryToLoad.get(query.get(i).finalName).split(":")[2];
             String df = readFromPost(pointer);
@@ -53,14 +53,6 @@ public class Searcher {
 
     }
 
-    private List IntersectionFiles(List[] allDocsForAllTerms) {
-        List <String> mergeFiles = new ArrayList<>();
-
-
-
-
-        return mergeFiles;
-    }
 
     private List <String> splitDocsName(String df) {
         List <String> docNames = new ArrayList();
