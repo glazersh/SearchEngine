@@ -12,7 +12,7 @@ public class Searcher {
     private DataCollector dc;
 
     private List<ATerm> termsInQuery;
-    private List<String> docsRelevant;
+    private Set<String> docsRelevant;
     private String path;
 
     private Set allDocsForAllTerms;
