@@ -12,6 +12,7 @@ public class Model extends Observable {
     File selectedFolderBrowseCollection;
     ReadFile readFile;
     DataCollector dataCollector;
+    TmpSearcher tmpSearcher;
 
     public Model(){
         this.dataCollector = new DataCollector();
@@ -23,6 +24,10 @@ public class Model extends Observable {
         long finish = System.nanoTime();
         long total = finish-start;
         dataCollector.setRunningTime(total/1000000000);
+
+
+        this.tmpSearcher = new TmpSearcher(readFile);
+
     }
 
     public void setFiles(File selectedFolderBrowseCollection) {
@@ -68,5 +73,10 @@ public class Model extends Observable {
 
     public File getFiles() {
         return selectedFolderBrowseCollection;
+    }
+
+    public void doTheRanker(String postingPath) {
+
+        tmpSearcher.setPostingPath(postingPath);
     }
 }

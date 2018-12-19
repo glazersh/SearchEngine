@@ -86,7 +86,7 @@ public class ReadFile {
                     Parse.post.fromMapToPostFiles(Parse.allWordsDic);
                     Parse.post.writePerDoc(Parse.docInfo);
                     Parse.clearDictionary();
-                    counterFiles = 0;
+                    //counterFiles = 0;
 
 
                 }

@@ -627,7 +627,7 @@ public class Indexer {
 
     public void createMap() {
 
-        File CitiesPost = new File(path + "\\" + "CitiesPost");
+        File CitiesPost = new File(pathWithStem + "\\" + "CitiesPost");
         FileWriter out = null;
         try {
             CitiesPost.createNewFile();

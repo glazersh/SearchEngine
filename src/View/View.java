@@ -14,6 +14,7 @@ import java.io.*;
 import java.util.*;
 import java.util.List;
 
+
 public class View  implements Observer {
 
     @FXML
@@ -157,6 +158,10 @@ public class View  implements Observer {
             gd_info.setVisible(true);
             b_Start.setDisable(false);
             l_info.setText("The process is done !");
+
+
+            /////////////////////////////////////////////////////////////////
+            viewModel.doTheRanker(postingPath);
         }
     }
 

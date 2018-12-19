@@ -68,4 +68,10 @@ public class ViewModel extends java.util.Observable implements Observer  {
     public long getRunnningTime(){
         return model.getRunningTime();
     }
+
+    public void doTheRanker(String postingPath) {
+        model.doTheRanker(postingPath);
+
+
+    }
 }
