@@ -4,25 +4,18 @@ import java.util.List;
 
 public class DocData {
     String DocName;
-    int docWeight;
-    String city;    List<Integer> freqList;
+    String city;
+    List<Integer> freqList;
     int docLength;
     List<Integer>numberOfDocPerTerm;
-    List<Integer>Jaccard;
+    List<Double>Jaccard;
+    double sumBM25;
 
 
     public DocData(String docName) {
         this.DocName = docName;
     }
 
-
-    public int getDocWeight() {
-        return docWeight;
-    }
-
-    public void setDocWeight(int docWeight) {
-        this.docWeight = docWeight;
-    }
 
     public String getCity() {
         return city;
@@ -36,8 +29,8 @@ public class DocData {
         return freqList;
     }
 
-    public void setFreqList(List<Integer> freqList) {
-        this.freqList = freqList;
+    public void addToFreqList(int num) {
+        this.freqList.add(num);
     }
 
     public int getDocLength() {
@@ -52,16 +45,24 @@ public class DocData {
         return numberOfDocPerTerm;
     }
 
-    public void setNumberOfDocPerTerm(List<Integer> numberOfDocPerTerm) {
-        this.numberOfDocPerTerm = numberOfDocPerTerm;
+    public void addNumberOfDocPerTerm(int num) {
+        this.numberOfDocPerTerm.add(num);
     }
 
-    public List<Integer> getJaccard() {
+    public List<Double> getJaccard() {
         return Jaccard;
     }
 
-    public void setJaccard(List<Integer> jaccard) {
+    public void setJaccard(List<Double> jaccard) {
         this.Jaccard = jaccard;
+    }
+
+    public double getSumBM25() {
+        return sumBM25;
+    }
+
+    public void setSumBM25(double sumBM25) {
+        this.sumBM25 = sumBM25;
     }
 
 
