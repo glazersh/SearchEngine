@@ -75,9 +75,4 @@ public class ViewModel extends java.util.Observable implements Observer  {
         model.readQuery(query);
     }
 
-    public void doTheRanker(String postingPath) {
-        model.doTheRanker(postingPath);
-
-
-    }
 }

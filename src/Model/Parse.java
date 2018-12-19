@@ -13,6 +13,7 @@ import java.util.*;
 public class Parse {
 
     Indexer post ;
+    Searcher search;
 
     Stemmer stem = new Stemmer();
 
@@ -72,6 +73,7 @@ public class Parse {
         this.withStem = withStemming;
         this.dt = dataCollector;
         post = new Indexer(PathPosting, withStemming, dataCollector);
+        search = new Searcher(dataCollector);
         citiesSet = post.getCitiesMap();
         insertMonth(); // init all months
         insertAfterWords(); // init special words for our parse
@@ -1067,14 +1069,9 @@ public class Parse {
             }
             entityDoc.add(docName + ",{" + bf.toString());
         }else{
-            // for query only
+            search.getQuery(finalTermsQuery);
         }
     }
-
-    public List<ATerm>queryFinalTerms(){
-        return this.finalTermsQuery;
-    }
-
 
     private void checkMinMaxCounter( int numTermInDoc ){
         //max

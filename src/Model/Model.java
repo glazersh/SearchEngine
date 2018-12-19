@@ -11,7 +11,7 @@ public class Model extends Observable {
 
     File selectedFolderBrowseCollection;
     ReadFile readFile;
-    Searcher search;
+
     DataCollector dataCollector;
 
 
@@ -30,7 +30,7 @@ public class Model extends Observable {
             dataCollector.setPostPath(PathPosting+"\\Y\\");
         else
             dataCollector.setPostPath(PathPosting+"\\N\\");
-        search = new Searcher(readFile); // check
+
 
 
 

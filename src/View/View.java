@@ -165,7 +165,7 @@ public class View  implements Observer {
 
 
             /////////////////////////////////////////////////////////////////
-            viewModel.doTheRanker(postingPath);
+
         }
     }
 
