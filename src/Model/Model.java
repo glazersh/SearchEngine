@@ -13,7 +13,7 @@ public class Model extends Observable {
     ReadFile readFile;
     Searcher search;
     DataCollector dataCollector;
-    TmpSearcher tmpSearcher;
+
 
     public Model(){
         this.dataCollector = new DataCollector();
@@ -33,7 +33,7 @@ public class Model extends Observable {
         search = new Searcher(readFile); // check
 
 
-        this.tmpSearcher = new TmpSearcher(readFile);
+
 
     }
 
@@ -86,8 +86,4 @@ public class Model extends Observable {
         readFile.Parse.parse(query,"","",false);
     }
 
-    public void doTheRanker(String postingPath) {
-
-        tmpSearcher.setPostingPath(postingPath);
-    }
 }
