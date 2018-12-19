@@ -1,19 +1,24 @@
 package Model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class DocData {
-    String DocName;
-    String city;
-    List<Integer> freqList;
-    int docLength;
-    List<Integer>numberOfDocPerTerm;
-    List<Double>Jaccard;
-    double sumBM25;
+    private String DocName;
+    private String city;
+    private List<Integer> freqList;
+    private int docLength;
+    private List<Integer>numberOfDocPerTerm;
+    private List<Double>Jaccard;
+    private double sumBM25;
 
 
     public DocData(String docName) {
         this.DocName = docName;
+        this.numberOfDocPerTerm = new ArrayList<>();
+        this.Jaccard = new ArrayList<>();
+        this.freqList = new ArrayList<>();
+
     }
 
 

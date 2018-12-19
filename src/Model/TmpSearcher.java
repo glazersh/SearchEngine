@@ -27,6 +27,7 @@ public class TmpSearcher {
         this.docFilesToLoad = docsFilesToLoad;
         this.DocsList = docsRelevant;
         this.queryList = termsInQuery;
+        this.FinalListDocs = new ArrayList<>();
     }
 
     public void start() {
@@ -46,34 +47,41 @@ public class TmpSearcher {
         DocData docData = new DocData(docName);
         String[] DocInfo = docFilesToLoad.get(docName).split(",");
         docData.setDocLength(Integer.parseInt(DocInfo[2]));
-        docData.setCity(DocInfo[3]);
+        if(DocInfo.length==4) {
+            docData.setCity(DocInfo[3]);
+        }
+        else
+            docData.setCity("");
+
         for (ATerm term:queryList) {
             String[] termInfo = dictionaryToLoad.get(term.finalName).split(":");
             //number of docs the term occur in all corpus
-            docData.addNumberOfDocPerTerm(Integer.parseInt(termInfo[1]));
+            int intToAdd = Integer.parseInt(termInfo[1]);
+            docData.addNumberOfDocPerTerm(intToAdd);
             String[] TermPos = termInfo[2].split("/");
             int termPos = Integer.parseInt(TermPos[1]);
             ///open post where the term is
-            dictionaryToLoad = new HashMap<>();
             try (//GZIPInputStream gzip = new GZIPInputStream(new FileInputStream(file));
                  FileInputStream out = new FileInputStream(postingPath+"\\" + TermPos[0]);
                  BufferedReader br = new BufferedReader(new InputStreamReader(out, StandardCharsets.UTF_8))) {
                 String line;
                 int counter=0;
                 while ((line = br.readLine()) != null) {
-                    if(counter == termPos)
+                    if(counter == termPos-1)
                         break;
+                    counter++;
                 }
                 //split the term from the documents
                 String termData = line.split(",\\{")[1];
-                ////split to array of documents
+                //split to array of documents
                 String[] DocsInTermOccur = termData.split("\\{");
                 for (int i = 0; i<DocsInTermOccur.length;i++) {
                     String DocNameInPost = DocsInTermOccur[i].split(":")[0];
                     //if twe found the relevant doc
-                    if(DocNameInPost.equals(docName))
+                    if(DocNameInPost.equals(docName)) {
                         docData.addToFreqList(Integer.parseInt(DocsInTermOccur[i].split(":")[1]));
                         break;
+                    }
                 }
 
             } catch (FileNotFoundException e) {

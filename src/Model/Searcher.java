@@ -34,7 +34,7 @@ public class Searcher {
 
     public void createTmpSearcher(){
         tmpSearcher = new TmpSearcher(dictionaryToLoad, docsFilesToLoad, citiesToLoad, termsInQuery, docsRelevant, path);
-        
+        tmpSearcher.start();
     }
 
     public void getQuery(List<ATerm> query){
