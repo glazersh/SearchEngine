@@ -12,10 +12,9 @@ public class Searcher {
     private DataCollector dc;
 
     private List<ATerm> termsInQuery;
-    private List<String> docsRelevant;
+    private Set docsRelevant;
     private String path;
 
-    private Set allDocsForAllTerms;
 
     Map<String,String> dictionaryToLoad;
     Map<String,String> docsFilesToLoad ;
@@ -33,8 +32,7 @@ public class Searcher {
     }
 
     public void createTmpSearcher(){
-        tmpSearcher = new TmpSearcher(dictionaryToLoad, docsFilesToLoad, citiesToLoad, termsInQuery, docsRelevant, path);
-        
+        //tmpSearcher = new TmpSearcher(dictionaryToLoad, docsFilesToLoad, citiesToLoad, termsInQuery, docsRelevant, path);
     }
 
     public void getQuery(List<ATerm> query){
@@ -43,24 +41,15 @@ public class Searcher {
         loadDictionary();
         loadFileDocs();
         this.termsInQuery = query;
-        docsRelevant = new ArrayList<>();
+        docsRelevant = new HashSet();
         for(int i=0;i<query.size();i++){
             String pointer = dictionaryToLoad.get(query.get(i).finalName).split(":")[2];
             String df = readFromPost(pointer);
             docsRelevant.addAll(splitDocsName(df));
         }
         createTmpSearcher();
-
     }
 
-    private List IntersectionFiles(List[] allDocsForAllTerms) {
-        List <String> mergeFiles = new ArrayList<>();
-
-
-
-
-        return mergeFiles;
-    }
 
     private List <String> splitDocsName(String df) {
         List <String> docNames = new ArrayList();
