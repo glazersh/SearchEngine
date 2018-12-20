@@ -58,18 +58,24 @@ public class Searcher {
         }
         this.path = dc.getPostPath();
         docsRelevant = new HashSet();
+        boolean found ;
         for(int i=0;i<query.size();i++){
+            found = false;
             String pointer = "";
-            if(dictionaryToLoad.containsKey(query.get(i).finalName.toUpperCase()) || dictionaryToLoad.containsKey(query.get(i).finalName.toLowerCase())) {
+            if(dictionaryToLoad.containsKey(query.get(i).finalName.toUpperCase()) ) {
                 pointer = dictionaryToLoad.get(query.get(i).finalName.toUpperCase()).split(":")[2];
                 termsInQuery.add(query.get(i).finalName.toUpperCase());
+                found = true;
             }
-            if(dictionaryToLoad.containsKey(query.get(i).finalName.toLowerCase())){
+            if(!found && dictionaryToLoad.containsKey(query.get(i).finalName.toLowerCase())){
                 pointer = dictionaryToLoad.get(query.get(i).finalName.toLowerCase()).split(":")[2];
                 termsInQuery.add(query.get(i).finalName.toLowerCase());
+                found = true;
             }
-            String df = readFromPost(pointer);
-            docsRelevant.addAll(splitDocsName(df));
+            if(found) {
+                String df = readFromPost(pointer);
+                docsRelevant.addAll(splitDocsName(df));
+            }
         }
         createTmpSearcher();
 
