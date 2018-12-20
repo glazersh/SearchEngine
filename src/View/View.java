@@ -160,6 +160,7 @@ public class View  implements Observer {
             l_time.setText(viewModel.getRunnningTime() + "");
             gd_info.setVisible(true);
             b_Start.setDisable(false);
+            loadDict();
             l_info.setText("The process is done !");
 
 
