@@ -48,9 +48,9 @@ public class Model extends Observable {
 
     /**
      * Load Dictionary to memory
-     * @param file
+     * @param path
      */
-    public void loadDict(File file){
+    public void loadDict(String  path){
         List<String> lines = new ArrayList<>();
         dictionaryToLoad = new HashMap<>();
 
@@ -58,7 +58,7 @@ public class Model extends Observable {
         FileReader fr = null;
 
         try {
-            fr = new FileReader(PathPosting+"\\Dictionary");
+            fr = new FileReader(path+"\\Dictionary");
             br = new BufferedReader(fr);
             String line;
 
@@ -84,8 +84,8 @@ public class Model extends Observable {
 
             }
         }
-        loadCitiesDocs();
-        loadFileDocs();
+
+        loadFileDocs(path);
 
 
     }
@@ -93,7 +93,7 @@ public class Model extends Observable {
     /**
      * Load fileDocs
      */
-    public void loadFileDocs(){
+    public void loadFileDocs(String path){
         List<String> lines = new ArrayList<>();
         docsFilesToLoad = new HashMap<>();
 
@@ -101,7 +101,7 @@ public class Model extends Observable {
         FileReader fr = null;
 
         try{
-            fr = new FileReader(PathPosting+"\\fileDocs");
+            fr = new FileReader(path+"\\FileDocs");
             br = new BufferedReader(fr);
             String line;
 
@@ -127,13 +127,14 @@ public class Model extends Observable {
 
             }
         }
+        loadCitiesDocs(path);
 
     }
 
     /**
      * Load cities
      */
-    public void loadCitiesDocs(){
+    public void loadCitiesDocs(String path){
         List<String> lines = new ArrayList<>();
         citiesToLoad = new HashMap<>();
 
@@ -141,7 +142,7 @@ public class Model extends Observable {
         FileReader fr = null;
 
         try {
-            fr = new FileReader(PathPosting + "\\CitiesPost");
+            fr = new FileReader(path + "\\CitiesPost");
             br = new BufferedReader(fr);
             String line;
 

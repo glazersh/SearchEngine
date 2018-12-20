@@ -124,12 +124,11 @@ public class View  implements Observer {
     public void loadDict(){
         String path;
         if(withStemming){
-            path = PostingPath+"\\Y-DictionaryToLoad";
+            path = PostingPath+"\\Y\\";
         }else{
-            path = PostingPath+"\\N-DictionaryToLoad";
+            path = PostingPath+"\\N\\";
         }
-        File file = new File(path);
-        viewModel.loadDic(file);
+        viewModel.loadDic(path);
         l_info.setText("The dictionary is loaded");
     }
 
