@@ -82,11 +82,11 @@ public class ReadFile {
 
                 }
                 counterFiles++;
-                if(counterFiles %1==0){
+                if(counterFiles %2==0){
                     Parse.post.fromMapToPostFiles(Parse.allWordsDic);
                     Parse.post.writePerDoc(Parse.docInfo);
                     Parse.clearDictionary();
-                    if(counterFiles==1)
+                    if(counterFiles==10)
                         break;
 
 
