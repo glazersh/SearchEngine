@@ -11,6 +11,9 @@ public class DataCollector {
     int numberOfDocs;
     int numberOfTerms;
     long runningTime = 0;
+    Map<String,String> dictionaryToLoad;
+    Map<String,String> citiesToLoad;
+    Map<String,String> docsFilesToLoad;
 
     public String getPostPath() {
         return postPath;
@@ -60,5 +63,13 @@ public class DataCollector {
 
     public long getRunningTime(){
         return runningTime;
+    }
+
+
+
+    public void setAllDicToLoad(Map<String, String> docsFilesToLoad, Map<String, String> dictionaryToLoad, Map<String, String> citiesToLoad) {
+        this.dictionaryToLoad=dictionaryToLoad;
+        this.docsFilesToLoad=docsFilesToLoad;
+        this.citiesToLoad=citiesToLoad;
     }
 }

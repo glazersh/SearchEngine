@@ -15,9 +15,9 @@ public class Searcher {
     private Set<String> docsRelevant;
     private String path;
 
-    Map<String,String> dictionaryToLoad;
-    Map<String,String> docsFilesToLoad ;
-    Map<String,String> citiesToLoad ;
+    private Map<String,String> dictionaryToLoad;
+    private Map<String,String> docsFilesToLoad ;
+    private Map<String,String> citiesToLoad ;
 
 
     public Searcher(DataCollector dataCollector){

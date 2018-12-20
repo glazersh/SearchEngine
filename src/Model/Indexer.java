@@ -21,7 +21,10 @@ public class Indexer {
     private boolean withStem;
     private DataCollector dataCollector;
     Map<String,Integer>bigDictionary = new HashMap<>(); // for the gui
-    static Map<String,String> dictionaryToLoad = new HashMap<>();
+    Map<String,String> dictionaryToLoad = new HashMap<>();
+    Map<String,String> citiesToLoad = new HashMap<>();
+    Map<String,String> docsFilesToLoad = new HashMap<>();
+
     Map <String,String> citiesMap;
 
     public Indexer(String path, boolean withStem, DataCollector dataCollector) {
@@ -598,32 +601,8 @@ public class Indexer {
         this.docSet = docSet;
     }
 
-    public static void load(File file){
-        List<String> lines = new ArrayList<>();
-        dictionaryToLoad = new HashMap<>();
-        try (//GZIPInputStream gzip = new GZIPInputStream(new FileInputStream(file));
-             FileInputStream out = new FileInputStream(file);
-             BufferedReader br = new BufferedReader(new InputStreamReader(out, StandardCharsets.UTF_8))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                lines.add(line);
-            }
-            Collections.sort(lines);
-            for(String term:lines){
-                String []tmp = term.split(",\\{");
-                dictionaryToLoad.put(tmp[0],tmp[1]);
-            }
 
-        } catch (FileNotFoundException e) {
 
-        } catch (IOException e) {
-
-        }
-    }
-
-    public void setCitiesMap(Map<String,String> citiesMap) {
-        this.citiesMap = citiesMap;
-    }
 
     public void createMap() {
 
@@ -656,6 +635,10 @@ public class Indexer {
 
 
 
+    }
+
+    public void setCitiesMap(Map<String, String> citiesMap) {
+        this.citiesMap = citiesMap;
     }
 
     public class SortIgnoreCase implements Comparator<Object> {

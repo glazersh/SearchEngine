@@ -1,18 +1,22 @@
 package Model;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
-import java.util.Map;
-import java.util.Observable;
-import java.util.Set;
+import java.util.*;
 
 
 public class Model extends Observable {
 
     File selectedFolderBrowseCollection;
     ReadFile readFile;
+    String PathPosting;
 
     DataCollector dataCollector;
+    Map<String,String> dictionaryToLoad = new HashMap<>();
+    Map<String,String> citiesToLoad = new HashMap<>();
+    Map<String,String> docsFilesToLoad = new HashMap<>();
 
 
     public Model(){
@@ -20,6 +24,7 @@ public class Model extends Observable {
     }
 
     public void readCorpus(String FileCorpus, String stopWords, String PathPosting, Boolean withStemming) {
+        this.PathPosting = PathPosting;
         long start = System.nanoTime();
         readFile = new ReadFile(FileCorpus,stopWords, PathPosting, withStemming, dataCollector);
         long finish = System.nanoTime();
@@ -32,10 +37,10 @@ public class Model extends Observable {
             dataCollector.setPostPath(PathPosting+"\\N\\");
 
 
-
-
-
     }
+
+
+
 
     public void setFiles(File selectedFolderBrowseCollection) {
         this.selectedFolderBrowseCollection = selectedFolderBrowseCollection;
@@ -46,8 +51,129 @@ public class Model extends Observable {
      * @param file
      */
     public void loadDict(File file){
-        Indexer.load(file);
+        List<String> lines = new ArrayList<>();
+        dictionaryToLoad = new HashMap<>();
+
+        BufferedReader br = null;
+        FileReader fr = null;
+
+        try {
+            fr = new FileReader(PathPosting+"\\Dictionary");
+            br = new BufferedReader(fr);
+            String line;
+
+            while ((line = br.readLine()) != null) {
+                lines.add(line);
+            }
+            Collections.sort(lines);
+            for(String term:lines){
+                String []tmp = term.split(",\\{");
+                dictionaryToLoad.put(tmp[0],tmp[1]);
+            }
+
+        } catch (IOException e) {
+
+        } finally {
+            try {
+                if (br != null)
+                    br.close();
+
+                if (fr != null)
+                    fr.close();
+            } catch (IOException ex) {
+
+            }
+        }
+        loadCitiesDocs();
+        loadFileDocs();
+
+
     }
+
+    /**
+     * Load fileDocs
+     */
+    public void loadFileDocs(){
+        List<String> lines = new ArrayList<>();
+        docsFilesToLoad = new HashMap<>();
+
+        BufferedReader br = null;
+        FileReader fr = null;
+
+        try{
+            fr = new FileReader(PathPosting+"\\fileDocs");
+            br = new BufferedReader(fr);
+            String line;
+
+            while ((line = br.readLine()) != null) {
+                lines.add(line);
+            }
+
+            for(String term:lines){
+                String []tmp = term.split(",",2);
+                docsFilesToLoad.put(tmp[0],tmp[1]);
+            }
+
+        } catch (IOException e) {
+
+        } finally {
+            try {
+                if (br != null)
+                    br.close();
+
+                if (fr != null)
+                    fr.close();
+            } catch (IOException ex) {
+
+            }
+        }
+
+    }
+
+    /**
+     * Load cities
+     */
+    public void loadCitiesDocs(){
+        List<String> lines = new ArrayList<>();
+        citiesToLoad = new HashMap<>();
+
+        BufferedReader br = null;
+        FileReader fr = null;
+
+        try {
+            fr = new FileReader(PathPosting + "\\CitiesPost");
+            br = new BufferedReader(fr);
+            String line;
+
+            while ((line = br.readLine()) != null) {
+                lines.add(line);
+            }
+
+            for(String term:lines){
+                String []tmp = term.split(",");
+                citiesToLoad.put(tmp[0],tmp[1]);
+            }
+
+        } catch (IOException e) {
+
+        } finally {
+            try {
+                if (br != null)
+                    br.close();
+
+                if (fr != null)
+                    fr.close();
+            } catch (IOException ex) {
+
+            }
+        }
+
+
+        dataCollector.setAllDicToLoad(docsFilesToLoad,dictionaryToLoad,citiesToLoad);
+
+
+    }
+
 
     /**
      * Reset all files and data

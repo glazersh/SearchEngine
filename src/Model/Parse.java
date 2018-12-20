@@ -72,8 +72,9 @@ public class Parse {
     public Parse(String stopWords, String PathPosting, boolean  withStemming, DataCollector dataCollector){
         this.withStem = withStemming;
         this.dt = dataCollector;
-        post = new Indexer(PathPosting, withStemming, dataCollector);
         search = new Searcher(dataCollector);
+        post = new Indexer(PathPosting, withStemming, dataCollector);
+
         citiesSet = post.getCitiesMap();
         insertMonth(); // init all months
         insertAfterWords(); // init special words for our parse
