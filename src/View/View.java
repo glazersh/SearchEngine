@@ -44,7 +44,7 @@ public class View  implements Observer {
 
     public GridPane gd_info;
 
-    private Boolean withStemming;
+    private Boolean withStemming=true;
     private File corpusFile;
     private File PostingPath;
 
@@ -56,7 +56,9 @@ public class View  implements Observer {
     public Button b_query;
     public TextField tf_query;
 
-    public View(){}
+    public View(){
+
+    }
 
     /**
      * gets the path where the corpus is
@@ -119,15 +121,20 @@ public class View  implements Observer {
     /**
      * Load Dictionary to memory
      */
-    public void loadDict(){
+    public void loadDict() {
         String path;
-        if(withStemming){
-            path = PostingPath+"\\Y\\";
-        }else{
-            path = PostingPath+"\\N\\";
+        if (postingPath.equals("") || corpusPath.equals("")) {
+            l_warning.setVisible(true);
+            l_warning.setText("Empty path");
+        } else {
+            if (withStemming) {
+                path = PostingPath + "\\Y\\";
+            } else {
+                path = PostingPath + "\\N\\";
+            }
+            viewModel.loadDic(path);
+            l_info.setText("The dictionary is loaded");
         }
-        viewModel.loadDic(path);
-        l_info.setText("The dictionary is loaded");
     }
 
     /**
