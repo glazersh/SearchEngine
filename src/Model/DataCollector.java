@@ -14,6 +14,7 @@ public class DataCollector {
     long runningTime = 0;
 
 
+
     double averageNumOfDocs;
 
     private Map<String,String> dictionaryToLoad;
