@@ -15,7 +15,7 @@ public class DocData {
 
     public DocData(String docName) {
         this.DocName = docName;
-        this.numberOfDocPerTerm = new ArrayList<>();;
+        this.numberOfDocPerTerm = new ArrayList<>();
         this.freqList = new ArrayList<>();
 
     }

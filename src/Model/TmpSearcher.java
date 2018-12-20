@@ -13,14 +13,14 @@ public class TmpSearcher {
     List<ATerm> queryList;
     List<DocData> FinalListDocs;
     Ranker ranker;
+    DataCollector dataCollector;
 
 
     Map<String, String> dictionaryToLoad;
     Map<String, String> docCitiesToLoad;
     Map<String, String> docFilesToLoad;
 
-    public TmpSearcher(Map<String, String> dictionaryToLoad, Map<String, String> docsFilesToLoad, Map<String, String> citiesToLoad, List<ATerm> termsInQuery, Set<String> docsRelevant, String path) {
-        ranker = new Ranker();
+    public TmpSearcher(Map<String, String> dictionaryToLoad, Map<String, String> docsFilesToLoad, Map<String, String> citiesToLoad, List<ATerm> termsInQuery, Set<String> docsRelevant, String path, DataCollector dataCollector) {
         this.postingPath = path;
         this.dictionaryToLoad = dictionaryToLoad;
         this.docCitiesToLoad = citiesToLoad;
@@ -28,15 +28,21 @@ public class TmpSearcher {
         this.DocsList = docsRelevant;
         this.queryList = termsInQuery;
         this.FinalListDocs = new ArrayList<>();
+        this.dataCollector = dataCollector;
+        this.ranker = new Ranker(dataCollector);
+
     }
 
-    public void start() {
+    public List<DocData> start() {
         for (String str : DocsList) {
             DocData docData = getFromDocPost(str);
             FinalListDocs.add(docData);
         }
 
-        ranker.setDocDataList(FinalListDocs);
+        for (DocData docdata:FinalListDocs) {
+           ranker.start(docdata);
+        }
+       return FinalListDocs;
 
 
     }
