@@ -351,7 +351,7 @@ public class Indexer {
                         bf.setLength(0);
                         d = (char) (d - 1);
                     } else {
-                        if(nextTerm[0].equals("")) {
+                        if(!nextTerm[0].equals("")) {
                             if (first && Character.toLowerCase(nextTerm[0].charAt(0)) == 'a') {
                                 String tmp = term[0] + bf.toString();
                                 fileInfo.add(tmp);
