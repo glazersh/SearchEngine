@@ -108,11 +108,17 @@ public class Model extends Observable {
             while ((line = br.readLine()) != null) {
                 lines.add(line);
             }
-
+            List<String>docCounter = new ArrayList<>();
             for(String term:lines){
                 String []tmp = term.split(",",2);
-                docsFilesToLoad.put(tmp[0],tmp[1]);
+                if(tmp.length==2)
+                    docsFilesToLoad.put(tmp[0],tmp[1]);
+                else{
+                    docCounter.add(tmp[0]);
+                }
             }
+            dataCollector.setNumberOfDocs(Integer.parseInt(docCounter.get(0)));
+            dataCollector.setAverageNumOfDocs(Double.parseDouble(docCounter.get(1)));
 
         } catch (IOException e) {
 
@@ -210,7 +216,11 @@ public class Model extends Observable {
     }
 
     public void readQuery(String query) {
-        readFile.Parse.parse(query,"","",false);
+
+        Parse = new Parse(stopWords, PathPosting, withStemming, this.dataC);
+
+
+        Parse.parse(query,"","",false);
     }
 
     public List<String> getDocsName() {

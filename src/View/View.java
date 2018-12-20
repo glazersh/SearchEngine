@@ -44,7 +44,7 @@ public class View  implements Observer {
 
     public GridPane gd_info;
 
-    private Boolean withStemming=true;
+    private Boolean withStemming=false;
     private File corpusFile;
     private File PostingPath;
 

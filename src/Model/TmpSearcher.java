@@ -85,15 +85,18 @@ public class TmpSearcher {
                 String termData = line.split(",\\{")[1];
                 //split to array of documents
                 String[] DocsInTermOccur = termData.split("\\{");
+                boolean found = false;
                 for (int i = 0; i < DocsInTermOccur.length; i++) {
                     String DocNameInPost = DocsInTermOccur[i].split(":")[0];
                     //if twe found the relevant doc
                     if (DocNameInPost.equals(docName)) {
                         docData.addToFreqList(Integer.parseInt(DocsInTermOccur[i].split(":")[1]));
+                        found = true;
                         break;
                     }
                 }
-                docData.addToFreqList(0);
+                if(!found)
+                    docData.addToFreqList(0);
             } catch (IOException e) {
             } finally {
                 try {

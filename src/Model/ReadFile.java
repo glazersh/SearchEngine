@@ -92,9 +92,11 @@ public class ReadFile {
 
                 }
             }
-            //Parse.post.fromMapToPostFiles(Parse.allWordsDic);
-            //Parse.post.writePerDoc(Parse.docInfo);
-            //Parse.clearDictionary();
+            if(Parse.docInfo.size()!=0) {
+                Parse.post.fromMapToPostFiles(Parse.allWordsDic);
+                Parse.post.writePerDoc(Parse.docInfo);
+                Parse.clearDictionary();
+            }
 
             Parse.post.setMap();
             Parse.post.startMerge();
@@ -105,6 +107,10 @@ public class ReadFile {
             Parse.post.createCapitalPost(Parse.getCapitalDictionary());
             dataCollector.setNumberOfDocs(countDoc);
             dataCollector.setAverageNumOfDocs(Parse.avgDocs/countDoc);
+            List<String>docCounter = new ArrayList<>();
+            docCounter.add(countDoc+"");
+            docCounter.add(Parse.avgDocs/countDoc+"");
+            Parse.post.writePerDoc(docCounter);
             dataCollector.setLang(languages);
         } catch (IOException e) { }
     }
