@@ -40,7 +40,15 @@ public class Searcher {
 
     public void createTmpSearcher(){
         tmpSearcher = new TmpSearcher(dictionaryToLoad, docsFilesToLoad, citiesToLoad, termsInQuery, docsRelevant, path);
-        tmpSearcher.start();
+        //List<DocData> listOfDocs = tmpSearcher.start();
+        //addListToQueue(listOfDocs);
+    }
+
+    private void addListToQueue(List<DocData> listOfDocs) {
+        for(DocData doc:listOfDocs){
+            addNewDocToQueue(doc);
+        }
+        getRelevantDocs();
     }
 
     public void getQuery(List<ATerm> query){
@@ -114,10 +122,27 @@ public class Searcher {
         return sCurrentLine;
     }
 
+    /**
+     * add new doc to queue
+     * @param newDoc
+     */
     public void addNewDocToQueue(DocData newDoc){
         returnsDocs.add(newDoc);
     }
 
-    public List getDoc
+    /**
+     * @return list of docs name (max 50 docs)
+     */
+    public void getRelevantDocs(){
+
+        List<String>docsName = new ArrayList<>();
+        int counter = 0;
+        while(!returnsDocs.isEmpty() && counter < 50){
+            docsName.add(returnsDocs.poll().getDocName());
+            counter++;
+        }
+        dc.setRelevantDocs(docsName);
+
+    }
 
 }

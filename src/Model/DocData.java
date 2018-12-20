@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DocData {
+
+
     private String DocName;
     private String city;
     private List<Integer> freqList;
@@ -20,6 +22,9 @@ public class DocData {
 
     }
 
+    public String getDocName() {
+        return DocName;
+    }
 
     public String getCity() {
         return city;

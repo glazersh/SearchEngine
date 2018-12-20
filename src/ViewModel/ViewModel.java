@@ -6,6 +6,7 @@ import View.View;
 //import javafx.beans.Observable;
 
 import java.io.File;
+import java.util.List;
 import java.util.Map;
 import java.util.Observer;
 import java.util.Set;
@@ -75,4 +76,7 @@ public class ViewModel extends java.util.Observable implements Observer  {
         model.readQuery(query);
     }
 
+    public List<String> getDocsName() {
+        return model.getDocsName();
+    }
 }
