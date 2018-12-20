@@ -11,9 +11,27 @@ public class DataCollector {
     int numberOfDocs;
     int numberOfTerms;
     long runningTime = 0;
-    Map<String,String> dictionaryToLoad;
-    Map<String,String> citiesToLoad;
-    Map<String,String> docsFilesToLoad;
+
+    private Map<String,String> dictionaryToLoad;
+    private Map<String,String> citiesToLoad;
+    private Map<String,String> docsFilesToLoad;
+
+
+
+    public Map<String, String> getDictionaryToLoad() {
+        return dictionaryToLoad;
+    }
+
+
+    public Map<String, String> getCitiesToLoad() {
+        return citiesToLoad;
+    }
+
+
+    public Map<String, String> getDocsFilesToLoad() {
+        return docsFilesToLoad;
+    }
+
 
     public String getPostPath() {
         return postPath;

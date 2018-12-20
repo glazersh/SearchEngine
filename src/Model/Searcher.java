@@ -24,10 +24,6 @@ public class Searcher {
         this.dc=dataCollector;
         termsInQuery = new ArrayList<>();
         this.path = dc.getPostPath();
-        loadCitiesDocs();
-        loadDictionary();
-        loadFileDocs();
-
     }
 
     public void createTmpSearcher(){
@@ -36,10 +32,11 @@ public class Searcher {
     }
 
     public void getQuery(List<ATerm> query){
+
+        if(dictionaryToLoad == null){
+            initAllDict();
+        }
         this.path = dc.getPostPath();
-        loadCitiesDocs();
-        loadDictionary();
-        loadFileDocs();
         this.termsInQuery = query;
         docsRelevant = new HashSet();
         for(int i=0;i<query.size();i++){
@@ -51,6 +48,11 @@ public class Searcher {
 
     }
 
+    private void initAllDict() {
+        dictionaryToLoad = dc.getDictionaryToLoad();
+        docsFilesToLoad = dc.getDocsFilesToLoad();
+        citiesToLoad = dc.getCitiesToLoad();
+    }
 
     private List <String> splitDocsName(String df) {
         List <String> docNames = new ArrayList();
@@ -99,125 +101,5 @@ public class Searcher {
         }
         return sCurrentLine;
     }
-
-    /**
-     * Load Dictionary
-     */
-    public void loadDictionary(){
-        List<String> lines = new ArrayList<>();
-        dictionaryToLoad = new HashMap<>();
-
-        BufferedReader br = null;
-        FileReader fr = null;
-
-        try {
-            fr = new FileReader(path+"\\Dictionary");
-            br = new BufferedReader(fr);
-            String line;
-
-            while ((line = br.readLine()) != null) {
-                lines.add(line);
-            }
-            Collections.sort(lines);
-            for(String term:lines){
-                String []tmp = term.split(",\\{");
-                dictionaryToLoad.put(tmp[0],tmp[1]);
-            }
-
-        } catch (IOException e) {
-
-        } finally {
-            try {
-                if (br != null)
-                    br.close();
-
-                if (fr != null)
-                    fr.close();
-            } catch (IOException ex) {
-
-            }
-        }
-    }
-
-    /**
-     * Load fileDocs
-     */
-    public void loadFileDocs(){
-        List<String> lines = new ArrayList<>();
-        docsFilesToLoad = new HashMap<>();
-
-        BufferedReader br = null;
-        FileReader fr = null;
-
-        try{
-            fr = new FileReader(path+"\\fileDocs");
-            br = new BufferedReader(fr);
-            String line;
-
-            while ((line = br.readLine()) != null) {
-                lines.add(line);
-            }
-
-            for(String term:lines){
-                String []tmp = term.split(",",2);
-                docsFilesToLoad.put(tmp[0],tmp[1]);
-            }
-
-        } catch (IOException e) {
-
-        } finally {
-            try {
-                if (br != null)
-                    br.close();
-
-                if (fr != null)
-                    fr.close();
-            } catch (IOException ex) {
-
-            }
-        }
-
-    }
-
-    /**
-     * Load cities
-     */
-    public void loadCitiesDocs(){
-        List<String> lines = new ArrayList<>();
-        citiesToLoad = new HashMap<>();
-
-        BufferedReader br = null;
-        FileReader fr = null;
-
-        try {
-            fr = new FileReader(path + "\\CitiesPost");
-            br = new BufferedReader(fr);
-            String line;
-
-            while ((line = br.readLine()) != null) {
-                lines.add(line);
-            }
-
-            for(String term:lines){
-                String []tmp = term.split(",");
-                citiesToLoad.put(tmp[0],tmp[1]);
-            }
-
-        } catch (IOException e) {
-
-        } finally {
-            try {
-                if (br != null)
-                    br.close();
-
-                if (fr != null)
-                    fr.close();
-            } catch (IOException ex) {
-
-            }
-        }
-    }
-
-
 
 }
