@@ -15,8 +15,6 @@ public class Searcher {
     private Set<String> docsRelevant;
     private String path;
 
-    private Set allDocsForAllTerms;
-
     Map<String,String> dictionaryToLoad;
     Map<String,String> docsFilesToLoad ;
     Map<String,String> citiesToLoad ;
@@ -86,7 +84,6 @@ public class Searcher {
                 numLine++;
             }
 
-
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -104,15 +101,20 @@ public class Searcher {
     }
 
     /**
-     * Load dictionary
+     * Load Dictionary
      */
     public void loadDictionary(){
         List<String> lines = new ArrayList<>();
         dictionaryToLoad = new HashMap<>();
-        try (//GZIPInputStream gzip = new GZIPInputStream(new FileInputStream(file));
-             FileInputStream out = new FileInputStream(path+"\\Dictionary");
-             BufferedReader br = new BufferedReader(new InputStreamReader(out, StandardCharsets.UTF_8))) {
+
+        BufferedReader br = null;
+        FileReader fr = null;
+
+        try {
+            fr = new FileReader(path+"\\Dictionary");
+            br = new BufferedReader(fr);
             String line;
+
             while ((line = br.readLine()) != null) {
                 lines.add(line);
             }
@@ -122,10 +124,18 @@ public class Searcher {
                 dictionaryToLoad.put(tmp[0],tmp[1]);
             }
 
-        } catch (FileNotFoundException e) {
-
         } catch (IOException e) {
 
+        } finally {
+            try {
+                if (br != null)
+                    br.close();
+
+                if (fr != null)
+                    fr.close();
+            } catch (IOException ex) {
+
+            }
         }
     }
 
@@ -135,24 +145,38 @@ public class Searcher {
     public void loadFileDocs(){
         List<String> lines = new ArrayList<>();
         docsFilesToLoad = new HashMap<>();
-        try (//GZIPInputStream gzip = new GZIPInputStream(new FileInputStream(file));
-             FileInputStream out = new FileInputStream(path+"\\fileDocs");
-             BufferedReader br = new BufferedReader(new InputStreamReader(out, StandardCharsets.UTF_8))) {
+
+        BufferedReader br = null;
+        FileReader fr = null;
+
+        try{
+            fr = new FileReader(path+"\\fileDocs");
+            br = new BufferedReader(fr);
             String line;
+
             while ((line = br.readLine()) != null) {
                 lines.add(line);
             }
-            Collections.sort(lines);
+
             for(String term:lines){
                 String []tmp = term.split(",",2);
                 docsFilesToLoad.put(tmp[0],tmp[1]);
             }
 
-        } catch (FileNotFoundException e) {
-
         } catch (IOException e) {
 
+        } finally {
+            try {
+                if (br != null)
+                    br.close();
+
+                if (fr != null)
+                    fr.close();
+            } catch (IOException ex) {
+
+            }
         }
+
     }
 
     /**
@@ -161,23 +185,36 @@ public class Searcher {
     public void loadCitiesDocs(){
         List<String> lines = new ArrayList<>();
         citiesToLoad = new HashMap<>();
-        try (//GZIPInputStream gzip = new GZIPInputStream(new FileInputStream(file));
-             FileInputStream out = new FileInputStream(path+"\\CitiesPost");
-             BufferedReader br = new BufferedReader(new InputStreamReader(out, StandardCharsets.UTF_8))) {
+
+        BufferedReader br = null;
+        FileReader fr = null;
+
+        try {
+            fr = new FileReader(path + "\\CitiesPost");
+            br = new BufferedReader(fr);
             String line;
+
             while ((line = br.readLine()) != null) {
                 lines.add(line);
             }
-            Collections.sort(lines);
+
             for(String term:lines){
                 String []tmp = term.split(",");
                 citiesToLoad.put(tmp[0],tmp[1]);
             }
 
-        } catch (FileNotFoundException e) {
-
         } catch (IOException e) {
 
+        } finally {
+            try {
+                if (br != null)
+                    br.close();
+
+                if (fr != null)
+                    fr.close();
+            } catch (IOException ex) {
+
+            }
         }
     }
 
