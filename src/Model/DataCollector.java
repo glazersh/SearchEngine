@@ -12,6 +12,9 @@ public class DataCollector {
     int numberOfTerms;
     long runningTime = 0;
 
+
+    double averageNumOfDocs;
+
     private Map<String,String> dictionaryToLoad;
     private Map<String,String> citiesToLoad;
     private Map<String,String> docsFilesToLoad;
@@ -30,6 +33,14 @@ public class DataCollector {
 
     public Map<String, String> getDocsFilesToLoad() {
         return docsFilesToLoad;
+    }
+
+    public double getAverageNumOfDocs() {
+        return averageNumOfDocs;
+    }
+
+    public void setAverageNumOfDocs(double averageNumOfDocs) {
+        this.averageNumOfDocs = averageNumOfDocs;
     }
 
 

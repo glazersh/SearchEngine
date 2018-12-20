@@ -9,14 +9,13 @@ public class DocData {
     private List<Integer> freqList;
     private int docLength;
     private List<Integer>numberOfDocPerTerm;
-    private List<Double>Jaccard;
+    private double Jaccard;
     private double sumBM25;
 
 
     public DocData(String docName) {
         this.DocName = docName;
-        this.numberOfDocPerTerm = new ArrayList<>();
-        this.Jaccard = new ArrayList<>();
+        this.numberOfDocPerTerm = new ArrayList<>();;
         this.freqList = new ArrayList<>();
 
     }
@@ -54,11 +53,11 @@ public class DocData {
         this.numberOfDocPerTerm.add(num);
     }
 
-    public List<Double> getJaccard() {
+    public double getJaccard() {
         return Jaccard;
     }
 
-    public void setJaccard(List<Double> jaccard) {
+    public void setJaccard(double jaccard) {
         this.Jaccard = jaccard;
     }
 
