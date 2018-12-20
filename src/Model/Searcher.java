@@ -19,11 +19,23 @@ public class Searcher {
     private Map<String,String> docsFilesToLoad ;
     private Map<String,String> citiesToLoad ;
 
+    private PriorityQueue<DocData> returnsDocs;
+
 
     public Searcher(DataCollector dataCollector){
         this.dc=dataCollector;
         termsInQuery = new ArrayList<>();
         this.path = dc.getPostPath();
+        returnsDocs = new PriorityQueue(new Comparator<DocData>() {
+            @Override
+            public int compare(DocData o1, DocData o2) {
+                if(o1.getSumBM25()*0.9 + o1.getJaccard()*0.1 > o2.getSumBM25()*0.9 + o2.getJaccard()*0.1)
+                    return -1;
+                else
+                    return 1;
+            }
+        });
+
     }
 
     public void createTmpSearcher(){
@@ -101,5 +113,11 @@ public class Searcher {
         }
         return sCurrentLine;
     }
+
+    public void addNewDocToQueue(DocData newDoc){
+        returnsDocs.add(newDoc);
+    }
+
+    public List getDoc
 
 }
