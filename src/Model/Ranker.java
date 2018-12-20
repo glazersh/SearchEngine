@@ -14,6 +14,8 @@ public class Ranker {
     public Ranker(DataCollector dataCollector){
      IDFperDoc = new ArrayList<>();
      this.dataCollector = dataCollector;
+     numberOfDocs = dataCollector.getNumberOfDocs();
+     averageNumOfDocs = dataCollector.getAverageNumOfDocs();
     }
 
 
@@ -60,11 +62,11 @@ public class Ranker {
         double BM25 =0;
 
         for (int num=0; num<docData.getNumberOfDocPerTerm().size(); num++){
-                upNum = docData.getFreqList().indexOf(num)*(K+1);
+                upNum = docData.getFreqList().get(num)*(K+1);
                 double tmpNum = docData.getDocLength()/dataCollector.getAverageNumOfDocs();
-                downNum = docData.getFreqList().indexOf(num)+K*(1-B+(B*tmpNum));
+                downNum = docData.getFreqList().get(num)+K*(1-B+(B*tmpNum));
 
-            BM25 +=  IDFperDoc.indexOf(num)*(upNum/downNum);
+            BM25 +=  IDFperDoc.get(num)*(upNum/downNum);
         }
 
         docData.setSumBM25(BM25);

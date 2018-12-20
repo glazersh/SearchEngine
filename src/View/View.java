@@ -203,11 +203,12 @@ public class View  implements Observer {
     public void query(){
         String Query = tf_query.getText();
         viewModel.startEngineQuery(Query);
-    }
-
-    public void getDocs(){
+        lv_returndocs.getItems().clear();
         List<String> docsName = viewModel.getDocsName();
-        lv_returndocs.getItems().addAll(docsName);
+        int index = 1;
+        for (String doc:docsName) {
+            lv_returndocs.getItems().add(index++ +". "+doc);
+        }
     }
 
 }

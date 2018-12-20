@@ -10,7 +10,7 @@ import java.util.*;
 public class TmpSearcher {
     Set<String> DocsList;
     String postingPath;
-    List<ATerm> queryList;
+    List<String> queryList;
     List<DocData> FinalListDocs;
     Ranker ranker;
     DataCollector dataCollector;
@@ -20,7 +20,7 @@ public class TmpSearcher {
     Map<String, String> docCitiesToLoad;
     Map<String, String> docFilesToLoad;
 
-    public TmpSearcher(Map<String, String> dictionaryToLoad, Map<String, String> docsFilesToLoad, Map<String, String> citiesToLoad, List<ATerm> termsInQuery, Set<String> docsRelevant, String path, DataCollector dataCollector) {
+    public TmpSearcher(Map<String, String> dictionaryToLoad, Map<String, String> docsFilesToLoad, Map<String, String> citiesToLoad, List<String> termsInQuery, Set<String> docsRelevant, String path, DataCollector dataCollector) {
         this.postingPath = path;
         this.dictionaryToLoad = dictionaryToLoad;
         this.docCitiesToLoad = citiesToLoad;
@@ -58,8 +58,8 @@ public class TmpSearcher {
         } else
             docData.setCity("");
 
-        for (ATerm term : queryList) {
-            String[] termInfo = dictionaryToLoad.get(term.finalName).split(":");
+        for (String term : queryList) {
+            String[] termInfo = dictionaryToLoad.get(term).split(":");
             //number of docs the term occur in all corpus
             int intToAdd = Integer.parseInt(termInfo[1]);
             docData.addNumberOfDocPerTerm(intToAdd);
@@ -93,6 +93,7 @@ public class TmpSearcher {
                         break;
                     }
                 }
+                docData.addToFreqList(0);
             } catch (IOException e) {
             } finally {
                 try {

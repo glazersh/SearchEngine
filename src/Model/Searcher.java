@@ -11,7 +11,7 @@ public class Searcher {
     private TmpSearcher tmpSearcher;
     private DataCollector dc;
 
-    private List<ATerm> termsInQuery;
+    private List<String> termsInQuery;
     private Set<String> docsRelevant;
     private String path;
 
@@ -40,8 +40,8 @@ public class Searcher {
 
     public void createTmpSearcher(){
         tmpSearcher = new TmpSearcher(dictionaryToLoad, docsFilesToLoad, citiesToLoad, termsInQuery, docsRelevant, path,dc);
-        //List<DocData> listOfDocs = tmpSearcher.start();
-        //addListToQueue(listOfDocs);
+        List<DocData> listOfDocs = tmpSearcher.start();
+        addListToQueue(listOfDocs);
     }
 
     private void addListToQueue(List<DocData> listOfDocs) {
@@ -57,10 +57,17 @@ public class Searcher {
             initAllDict();
         }
         this.path = dc.getPostPath();
-        this.termsInQuery = query;
         docsRelevant = new HashSet();
         for(int i=0;i<query.size();i++){
-            String pointer = dictionaryToLoad.get(query.get(i).finalName).split(":")[2];
+            String pointer = "";
+            if(dictionaryToLoad.containsKey(query.get(i).finalName.toUpperCase()) || dictionaryToLoad.containsKey(query.get(i).finalName.toLowerCase())) {
+                pointer = dictionaryToLoad.get(query.get(i).finalName.toUpperCase()).split(":")[2];
+                termsInQuery.add(query.get(i).finalName.toUpperCase());
+            }
+            if(dictionaryToLoad.containsKey(query.get(i).finalName.toLowerCase())){
+                pointer = dictionaryToLoad.get(query.get(i).finalName.toLowerCase()).split(":")[2];
+                termsInQuery.add(query.get(i).finalName.toLowerCase());
+            }
             String df = readFromPost(pointer);
             docsRelevant.addAll(splitDocsName(df));
         }
@@ -141,6 +148,7 @@ public class Searcher {
             docsName.add(returnsDocs.poll().getDocName());
             counter++;
         }
+        returnsDocs.clear();
         dc.setRelevantDocs(docsName);
 
     }
