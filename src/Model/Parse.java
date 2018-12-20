@@ -66,6 +66,7 @@ public class Parse {
     List <String>entityDoc;
     Map <String,Pair<ATerm,Integer>> setPerDoc;
     List<ATerm>finalTermsQuery;
+    double avgDocs = 0;
 
 
 
@@ -1060,7 +1061,7 @@ public class Parse {
                 }
             }
             //// Finish
-
+            avgDocs+=termInDoc;
             docInfo.add(docName + "," + maxTermCounter + "," + wordsInDoc.size() + "," + termInDoc + "," + cityName);
             StringBuffer bf = new StringBuffer();
             while (!entityTerms.isEmpty()) {

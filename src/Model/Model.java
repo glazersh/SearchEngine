@@ -213,4 +213,7 @@ public class Model extends Observable {
         readFile.Parse.parse(query,"","",false);
     }
 
+    public List<String> getDocsName() {
+        return dataCollector.getDocs();
+    }
 }

@@ -104,6 +104,7 @@ public class ReadFile {
             Parse.post.createMap();
             Parse.post.createCapitalPost(Parse.getCapitalDictionary());
             dataCollector.setNumberOfDocs(countDoc);
+            dataCollector.setAverageNumOfDocs(Parse.avgDocs/countDoc);
             dataCollector.setLang(languages);
         } catch (IOException e) { }
     }

@@ -1,6 +1,7 @@
 package Model;
 
 import java.io.File;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -19,6 +20,9 @@ public class DataCollector {
     private Map<String,String> dictionaryToLoad;
     private Map<String,String> citiesToLoad;
     private Map<String,String> docsFilesToLoad;
+
+    private List<String>docsName;
+
 
 
 
@@ -102,4 +106,13 @@ public class DataCollector {
         this.docsFilesToLoad=docsFilesToLoad;
         this.citiesToLoad=citiesToLoad;
     }
+
+    public List<String>getDocs(){
+        return docsName;
+    }
+
+    public void setRelevantDocs(List<String>relevantDocs){
+        docsName = relevantDocs;
+    }
+
 }

@@ -56,6 +56,8 @@ public class View  implements Observer {
     public Button b_query;
     public TextField tf_query;
 
+    public ListView lv_returndocs;
+
     public View(){
 
     }
@@ -167,6 +169,7 @@ public class View  implements Observer {
             l_time.setText(viewModel.getRunnningTime() + "");
             gd_info.setVisible(true);
             b_Start.setDisable(false);
+            loadDict();
             l_info.setText("The process is done !");
 
 
@@ -200,6 +203,11 @@ public class View  implements Observer {
     public void query(){
         String Query = tf_query.getText();
         viewModel.startEngineQuery(Query);
+    }
+
+    public void getDocs(){
+        List<String> docsName = viewModel.getDocsName();
+        lv_returndocs.getItems().addAll(docsName);
     }
 
 }

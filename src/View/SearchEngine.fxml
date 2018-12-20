@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Font?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="667.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="View.View">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="568.0" prefWidth="795.0" xmlns="http://javafx.com/javafx/8.0.131" xmlns:fx="http://javafx.com/fxml/1" fx:controller="View.View">
    <children>
       <Button fx:id="b_postPath" layoutX="205.0" layoutY="162.0" mnemonicParsing="false" onAction="#BrowsePostingPath" text="Browse files" />
       <Button fx:id="b_Start" layoutX="34.0" layoutY="210.0" mnemonicParsing="false" onAction="#startEngine" prefHeight="35.0" prefWidth="165.0" text="Start engine">
@@ -23,11 +23,11 @@
       <TextField fx:id="tf_postingPath" layoutX="34.0" layoutY="162.0" prefHeight="28.0" prefWidth="165.0" />
       <Label fx:id="wrongPath" disable="true" layoutX="161.0" layoutY="67.0" textFill="#e40404" />
       <Button fx:id="b_corpusPath" layoutX="205.0" layoutY="110.0" mnemonicParsing="false" onAction="#BrowseCollection" text="Browse files" />
-      <Button fx:id="b_reset" layoutX="34.0" layoutY="339.0" mnemonicParsing="false" onAction="#resetAll" prefHeight="35.0" prefWidth="136.0" text="resert engine">
+      <Button fx:id="b_reset" layoutX="34.0" layoutY="501.0" mnemonicParsing="false" onAction="#resetAll" prefHeight="35.0" prefWidth="136.0" text="resert engine">
          <font>
             <Font name="Century Gothic" size="14.0" />
          </font></Button>
-      <Button fx:id="b_showDic" layoutX="177.0" layoutY="339.0" mnemonicParsing="false" onAction="#showDic" prefHeight="35.0" prefWidth="128.0" text="show dictionary">
+      <Button fx:id="b_showDic" layoutX="194.0" layoutY="501.0" mnemonicParsing="false" onAction="#showDic" prefHeight="35.0" prefWidth="128.0" text="show dictionary">
          <font>
             <Font name="Century Gothic" size="14.0" />
          </font></Button>
@@ -47,7 +47,7 @@
             <Font name="Century Gothic" size="10.0" />
          </font>
       </Label>
-      <Button fx:id="b_loadDict" layoutX="313.0" layoutY="339.0" mnemonicParsing="false" onAction="#loadDict" prefHeight="35.0" prefWidth="136.0" text="load dictionary">
+      <Button fx:id="b_loadDict" layoutX="340.0" layoutY="501.0" mnemonicParsing="false" onAction="#loadDict" prefHeight="35.0" prefWidth="136.0" text="load dictionary">
          <font>
             <Font name="Century Gothic" size="14.0" />
          </font>
@@ -93,10 +93,11 @@
             <Label fx:id="l_time" GridPane.columnIndex="1" GridPane.rowIndex="2" />
          </children>
       </GridPane>
-      <ListView fx:id="lv_dictionary" layoutX="464.0" layoutY="4.0" prefHeight="390.0" prefWidth="200.0" />
+      <ListView fx:id="lv_dictionary" layoutX="464.0" layoutY="4.0" prefHeight="259.0" prefWidth="128.0" />
       <Label fx:id="l_info" layoutY="386.0" prefHeight="17.0" prefWidth="464.0" />
       <Label fx:id="l_warning" layoutX="34.0" layoutY="257.0" textFill="RED" visible="false" />
-      <TextField fx:id="tf_query" layoutX="28.0" layoutY="282.0" />
-      <Button fx:id="b_query" layoutX="206.0" layoutY="282.0" mnemonicParsing="false" onAction="#query" text="Button" />
+      <TextField fx:id="tf_query" layoutX="28.0" layoutY="391.0" />
+      <Button fx:id="b_query" layoutX="194.0" layoutY="391.0" mnemonicParsing="false" onAction="#query" text="run" />
+      <ListView fx:id="lv_returndocs" layoutX="500.0" layoutY="302.0" prefHeight="234.0" prefWidth="103.0" />
    </children>
 </Pane>
