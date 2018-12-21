@@ -641,6 +641,42 @@ public class Indexer {
         this.citiesMap = citiesMap;
     }
 
+    public void setEntitiesPost(List<String> entityDoc) {
+        File EntitiesPost = new File(pathWithStem + "\\" + "Entities");
+        FileWriter out = null;
+        try {
+            EntitiesPost.createNewFile();
+            BufferedWriter writer = null;
+            try {
+                out = new FileWriter(EntitiesPost);
+                writer = new BufferedWriter(out);
+                for (String str : entityDoc) {
+                    writer.write(str + "\n");
+                }
+                writer.flush();
+
+            } catch (IOException e) {
+
+            }finally {
+                if (writer != null) {
+                    writer.close();
+                }
+                if (out != null) {
+                    out.close();
+                }
+            }
+        } catch (IOException e) {
+
+        }
+
+
+
+
+
+
+
+    }
+
     public class SortIgnoreCase implements Comparator<Object> {
         public int compare(Object o1, Object o2) {
             String s1 = (String) o1;

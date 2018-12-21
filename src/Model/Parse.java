@@ -67,6 +67,7 @@ public class Parse {
     Map <String,Pair<ATerm,Integer>> setPerDoc;
     List<ATerm>finalTermsQuery;
     double avgDocs = 0;
+    DataCollector dataCollector;
 
 
 
@@ -75,6 +76,7 @@ public class Parse {
         this.dt = dataCollector;
         search = new Searcher(dataCollector);
         post = new Indexer(PathPosting, withStemming, dataCollector);
+        this.dataCollector = dataCollector;
 
         citiesSet = post.getCitiesMap();
         insertMonth(); // init all months
@@ -1075,6 +1077,10 @@ public class Parse {
         }
     }
 
+
+
+
+
     private void checkMinMaxCounter( int numTermInDoc ){
         //max
         if(maxTermCounter<numTermInDoc){
@@ -1158,6 +1164,7 @@ public class Parse {
         }else {
             entityTerms.add(termUp);
         }
+
 
     }
 
@@ -1312,5 +1319,15 @@ public class Parse {
         capitalTerms.clear();
         post.resetAll();
         countryInMemory.resetAll();
+    }
+
+    public void setEntityPost() {
+       dataCollector.setEntityPost(entityDoc) ;
+
+    }
+
+    public List<String> getEntities() {
+        return dataCollector.getEntities();
+
     }
 }

@@ -36,11 +36,13 @@ public class TmpSearcher {
     public List<DocData> start() {
         for (String str : DocsList) {
             DocData docData = getFromDocPost(str);
+            getEntities(str, docData);
             FinalListDocs.add(docData);
         }
 
         for (DocData docdata:FinalListDocs) {
            ranker.start(docdata);
+
         }
        return FinalListDocs;
 
@@ -49,7 +51,6 @@ public class TmpSearcher {
 
 
     public DocData getFromDocPost(String docName) {
-
         DocData docData = new DocData(docName);
         String[] DocInfo = docFilesToLoad.get(docName).split(",");
         docData.setDocLength(Integer.parseInt(DocInfo[2]));
@@ -114,7 +115,56 @@ public class TmpSearcher {
 
 
         }
+
         return docData;
+    }
+
+
+
+    public void getEntities(String docName,DocData docData){
+        FileInputStream out = null;
+        BufferedReader br = null;
+        try {//GZIPInputStream gzip = new GZIPInputStream(new FileInputStream(file));
+            out = new FileInputStream(postingPath + "\\Entities");
+            br = new BufferedReader(new InputStreamReader(out, StandardCharsets.UTF_8));
+
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] docInfo = line.split(",\\{");
+                if (docInfo[0].equals(docName)) {
+                    splitEntities(docInfo[1], docData);
+                    break;
+                }
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (out != null)
+                    out.close();
+
+                if (br != null)
+                    br.close();
+            } catch (IOException ex) {
+
+            }
+        }
+
+    }
+
+    private void splitEntities(String strEntities, DocData docData) {
+        String[] entities= strEntities.split(":");
+        int counter=0;
+        for(int i=0; i<entities.length || counter<5;i++){
+            if(dictionaryToLoad.containsKey(entities[i])){
+                docData.addToTopEntities(entities[i]);
+                counter++;
+            }
+        }
+
+
     }
 
 }

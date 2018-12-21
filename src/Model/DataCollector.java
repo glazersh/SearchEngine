@@ -14,7 +14,6 @@ public class DataCollector {
     long runningTime = 0;
 
 
-
     double averageNumOfDocs;
 
     private Map<String,String> dictionaryToLoad;
@@ -23,7 +22,13 @@ public class DataCollector {
 
     private List<String>docsName;
 
+    /////////////added
+    List <String>entityDoc;
 
+
+    public void insertToEntitiesDoc(String str){
+        entityDoc.add(str);
+    }
 
 
     public Map<String, String> getDictionaryToLoad() {
@@ -115,4 +120,14 @@ public class DataCollector {
         docsName = relevantDocs;
     }
 
+
+
+    public void setEntityPost(List<String> entityDoc) {
+        this.entityDoc = entityDoc;
+
+    }
+
+    public List<String> getEntities() {
+        return entityDoc;
+    }
 }

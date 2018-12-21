@@ -1,5 +1,7 @@
 package Model;
 
+import Model.Term.ATerm;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,13 +15,20 @@ public class DocData {
     private List<Integer>numberOfDocPerTerm;
     private double Jaccard;
     private double sumBM25;
+    List<String>TopEntities;
 
 
     public DocData(String docName) {
         this.DocName = docName;
         this.numberOfDocPerTerm = new ArrayList<>();
         this.freqList = new ArrayList<>();
+        TopEntities = new ArrayList<>();
 
+    }
+
+
+    public void addToTopEntities(String str){
+        TopEntities.add(str);
     }
 
     public String getDocName() {
