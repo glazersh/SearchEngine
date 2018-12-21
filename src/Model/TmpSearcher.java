@@ -14,36 +14,46 @@ public class TmpSearcher {
     List<DocData> FinalListDocs;
     Ranker ranker;
     DataCollector dataCollector;
+    List<DocData> ListDocs;
 
 
     Map<String, String> dictionaryToLoad;
     Map<String, String> docCitiesToLoad;
     Map<String, String> docFilesToLoad;
 
-    public TmpSearcher(Map<String, String> dictionaryToLoad, Map<String, String> docsFilesToLoad, Map<String, String> citiesToLoad, List<String> termsInQuery, Set<String> docsRelevant, String path, DataCollector dataCollector) {
+    public TmpSearcher(Map<String, String> dictionaryToLoad, Map<String, String> docsFilesToLoad, Map<String, String> citiesToLoad, List<String> termsInQuery, String path, DataCollector dataCollector) {
         this.postingPath = path;
         this.dictionaryToLoad = dictionaryToLoad;
         this.docCitiesToLoad = citiesToLoad;
         this.docFilesToLoad = docsFilesToLoad;
-        this.DocsList = docsRelevant;
         this.queryList = termsInQuery;
         this.FinalListDocs = new ArrayList<>();
         this.dataCollector = dataCollector;
         this.ranker = new Ranker(dataCollector);
+        this.ListDocs = new ArrayList<>();
 
+    }
+
+    public void setDocsList(Set<String> docsList){
+        this.DocsList=docsList;
     }
 
     public List<DocData> start() {
         for (String str : DocsList) {
             DocData docData = getFromDocPost(str);
-            getEntities(str, docData);
-            FinalListDocs.add(docData);
+            ListDocs.add(docData);
         }
 
-        for (DocData docdata:FinalListDocs) {
+        for (DocData docdata:ListDocs) {
            ranker.start(docdata);
+           //////may change
+           if(docdata.getSumBM25()>2) {
+               getEntities(docdata.getDocName(), docdata);
+               FinalListDocs.add(docdata);
 
+           }
         }
+
        return FinalListDocs;
 
 
@@ -109,11 +119,7 @@ public class TmpSearcher {
                 } catch (IOException ex) {
 
                 }
-
-
             }
-
-
         }
 
         return docData;
@@ -131,7 +137,7 @@ public class TmpSearcher {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] docInfo = line.split(",\\{");
-                if (docInfo[0].equals(docName)) {
+                if (docInfo[0].equals(docName) && docInfo.length!=1) {
                     splitEntities(docInfo[1], docData);
                     break;
                 }

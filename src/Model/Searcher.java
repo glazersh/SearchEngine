@@ -39,7 +39,8 @@ public class Searcher {
     }
 
     public void createTmpSearcher(){
-        tmpSearcher = new TmpSearcher(dictionaryToLoad, docsFilesToLoad, citiesToLoad, termsInQuery, docsRelevant, path,dc);
+        tmpSearcher = new TmpSearcher(dictionaryToLoad, docsFilesToLoad, citiesToLoad, termsInQuery, path,dc);
+        tmpSearcher.setDocsList(docsRelevant);
         List<DocData> listOfDocs = tmpSearcher.start();
         addListToQueue(listOfDocs);
     }

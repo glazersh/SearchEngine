@@ -111,8 +111,10 @@ public class ReadFile {
             Parse.post.setCitiesMap(citiesMap);
             Parse.post.createMap();
             Parse.post.createCapitalPost(Parse.getCapitalDictionary());
+            /////
             Parse.setEntityPost();
             Parse.post.setEntitiesPost(Parse.getEntities());
+            ///////
             dataC.setNumberOfDocs(countDoc);
             dataC.setAverageNumOfDocs(Parse.avgDocs/countDoc);
             List<String>docCounter = new ArrayList<>();
