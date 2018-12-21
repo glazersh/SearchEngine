@@ -202,7 +202,7 @@ public class View  implements Observer {
 
     public void query(){
         String Query = tf_query.getText();
-        viewModel.startEngineQuery(Query);
+        viewModel.startEngineQuery(Query, getStopWordsPath(),withStemming);
         lv_returndocs.getItems().clear();
         List<String> docsName = viewModel.getDocsName();
         int index = 1;

@@ -51,7 +51,7 @@ public class ViewModel extends java.util.Observable implements Observer  {
     }
 
     public void loadDic(String path) {
-        model.loadDict(path);
+        model.loadAllDictionary(path);
     }
     public void resetAll() {
 
@@ -72,8 +72,8 @@ public class ViewModel extends java.util.Observable implements Observer  {
         model.readCorpus(fCorpus.getPath(),stopWords, PathPosting,withStemming);
     }
 
-    public void startEngineQuery(String query) {
-        model.readQuery(query);
+    public void startEngineQuery(String query, String StopWordsPath,boolean withStemming) {
+        model.readQuery(query,StopWordsPath,withStemming);
     }
 
     public List<String> getDocsName() {

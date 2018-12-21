@@ -21,20 +21,27 @@ public class ReadFile {
     Set<String> languages = new HashSet<>();
     Set<String> docSet = new HashSet<>();
     Map<String,String>citiesMap = new HashMap<>();
+    List<File> allFiles;
+    int addFile = 0;
+    int counterFiles = 0;
+    int countDoc = 0;
 
     public ReadFile(String path,String stopWords, String PathPosting, boolean withStemming, DataCollector dataCollector) {
         this.dataC = dataCollector;
         Parse = new Parse(stopWords, PathPosting, withStemming, this.dataC);
-        List<File> allFiles;
-        int addFile = 0;
-        int counterFiles =0;
-        int countDoc = 0;
+
         try {
             // Read all files from path
             allFiles = Files.walk(Paths.get(path)).
                     filter(Files::isRegularFile).
                     map(Path::toFile).
                     collect(Collectors.toList());
+        } catch (IOException e1) {
+
+        }
+    }
+
+    public void start(){
 
             for (File file : allFiles) {
                 try {
@@ -78,20 +85,19 @@ public class ReadFile {
 
                     }
 
-                } catch (FileNotFoundException e) {
+                }  catch (IOException e1) {
 
                 }
                 counterFiles++;
-                if(counterFiles %2==0){
+                if(counterFiles %50==0){
                     Parse.post.fromMapToPostFiles(Parse.allWordsDic);
                     Parse.post.writePerDoc(Parse.docInfo);
                     Parse.clearDictionary();
-                    if(counterFiles==10)
-                        break;
-
-
+//                    if(counterFiles==10)
+//                        break;
                 }
             }
+
             if(Parse.docInfo.size()!=0) {
                 Parse.post.fromMapToPostFiles(Parse.allWordsDic);
                 Parse.post.writePerDoc(Parse.docInfo);
@@ -105,14 +111,14 @@ public class ReadFile {
             Parse.post.setCitiesMap(citiesMap);
             Parse.post.createMap();
             Parse.post.createCapitalPost(Parse.getCapitalDictionary());
-            dataCollector.setNumberOfDocs(countDoc);
-            dataCollector.setAverageNumOfDocs(Parse.avgDocs/countDoc);
+            dataC.setNumberOfDocs(countDoc);
+            dataC.setAverageNumOfDocs(Parse.avgDocs/countDoc);
             List<String>docCounter = new ArrayList<>();
             docCounter.add(countDoc+"");
             docCounter.add(Parse.avgDocs/countDoc+"");
             Parse.post.writePerDoc(docCounter);
-            dataCollector.setLang(languages);
-        } catch (IOException e) { }
+            dataC.setLang(languages);
+
     }
 
     public void resetAll() {

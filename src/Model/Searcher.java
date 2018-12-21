@@ -56,6 +56,7 @@ public class Searcher {
         if(dictionaryToLoad == null){
             initAllDict();
         }
+        termsInQuery = new ArrayList<>();
         this.path = dc.getPostPath();
         docsRelevant = new HashSet();
         boolean found ;
@@ -74,7 +75,12 @@ public class Searcher {
             }
             if(found) {
                 String df = readFromPost(pointer);
-                docsRelevant.addAll(splitDocsName(df));
+                if(docsRelevant.size()==0){
+                    docsRelevant.addAll(splitDocsName(df));
+                }else{
+                    docsRelevant.retainAll(splitDocsName(df));
+                }
+
             }
         }
         createTmpSearcher();
@@ -125,7 +131,6 @@ public class Searcher {
             try {
                 if (br != null)
                     br.close();
-
                 if (fr != null)
                     fr.close();
             } catch (IOException ex) {

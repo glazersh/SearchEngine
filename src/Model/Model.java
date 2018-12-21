@@ -11,12 +11,13 @@ public class Model extends Observable {
 
     File selectedFolderBrowseCollection;
     ReadFile readFile;
+    Parse parse;
     String PathPosting;
 
     DataCollector dataCollector;
-    Map<String,String> dictionaryToLoad = new HashMap<>();
-    Map<String,String> citiesToLoad = new HashMap<>();
-    Map<String,String> docsFilesToLoad = new HashMap<>();
+    Map<String,String> dictionaryToLoad ;
+    Map<String,String> citiesToLoad ;
+    Map<String,String> docsFilesToLoad ;
 
 
     public Model(){
@@ -27,6 +28,7 @@ public class Model extends Observable {
         this.PathPosting = PathPosting;
         long start = System.nanoTime();
         readFile = new ReadFile(FileCorpus,stopWords, PathPosting, withStemming, dataCollector);
+        readFile.start();
         long finish = System.nanoTime();
 
         long total = finish-start;
@@ -46,79 +48,63 @@ public class Model extends Observable {
         this.selectedFolderBrowseCollection = selectedFolderBrowseCollection;
     }
 
+    public void loadAllDictionary(String path){
+
+        String dictionary = "Dictionary";
+        dictionaryToLoad = new HashMap<>();
+        loadDict(path,dictionary, dictionaryToLoad,",\\{");
+
+        String FileDocs = "FileDocs";
+        docsFilesToLoad = new HashMap<>();
+        loadDict(path,FileDocs, docsFilesToLoad, ",");
+
+
+        String CitiesPost = "CitiesPost";
+        citiesToLoad = new HashMap<>();
+        loadDict(path,CitiesPost, citiesToLoad, ",");
+
+        dataCollector.setAllDicToLoad(docsFilesToLoad,dictionaryToLoad,citiesToLoad);
+        dataCollector.setPostPath(path);
+    }
+
+
+
     /**
      * Load Dictionary to memory
      * @param path
      */
-    public void loadDict(String  path){
+    public void loadDict(String  path,String kind, Map<String,String> dictionary, String split){
         List<String> lines = new ArrayList<>();
-        dictionaryToLoad = new HashMap<>();
 
         BufferedReader br = null;
         FileReader fr = null;
 
         try {
-            fr = new FileReader(path+"\\Dictionary");
+            fr = new FileReader(path+kind);
             br = new BufferedReader(fr);
             String line;
 
             while ((line = br.readLine()) != null) {
                 lines.add(line);
             }
-            Collections.sort(lines);
-            for(String term:lines){
-                String []tmp = term.split(",\\{");
-                dictionaryToLoad.put(tmp[0],tmp[1]);
-            }
-
-        } catch (IOException e) {
-
-        } finally {
-            try {
-                if (br != null)
-                    br.close();
-
-                if (fr != null)
-                    fr.close();
-            } catch (IOException ex) {
-
-            }
-        }
-
-        loadFileDocs(path);
-
-
-    }
-
-    /**
-     * Load fileDocs
-     */
-    public void loadFileDocs(String path){
-        List<String> lines = new ArrayList<>();
-        docsFilesToLoad = new HashMap<>();
-
-        BufferedReader br = null;
-        FileReader fr = null;
-
-        try{
-            fr = new FileReader(path+"\\FileDocs");
-            br = new BufferedReader(fr);
-            String line;
-
-            while ((line = br.readLine()) != null) {
-                lines.add(line);
-            }
-            List<String>docCounter = new ArrayList<>();
-            for(String term:lines){
-                String []tmp = term.split(",",2);
-                if(tmp.length==2)
-                    docsFilesToLoad.put(tmp[0],tmp[1]);
-                else{
-                    docCounter.add(tmp[0]);
+            if(kind.equals("FileDocs")){
+                List<String>docCounter = new ArrayList<>();
+                for(String term:lines){
+                    String []tmp = term.split(split,2);
+                    if(tmp.length==2)
+                        docsFilesToLoad.put(tmp[0],tmp[1]);
+                    else{
+                        docCounter.add(tmp[0]);
+                    }
+                }
+                dataCollector.setNumberOfDocs(Integer.parseInt(docCounter.get(0)));
+                dataCollector.setAverageNumOfDocs(Double.parseDouble(docCounter.get(1)));
+            }else {
+                for (String term : lines) {
+                    String[] tmp = term.split(split);
+                    dictionary.put(tmp[0], tmp[1]);
                 }
             }
-            dataCollector.setNumberOfDocs(Integer.parseInt(docCounter.get(0)));
-            dataCollector.setAverageNumOfDocs(Double.parseDouble(docCounter.get(1)));
 
         } catch (IOException e) {
 
@@ -129,57 +115,10 @@ public class Model extends Observable {
 
                 if (fr != null)
                     fr.close();
-            } catch (IOException ex) {
-
-            }
+            } catch (IOException ex) { }
         }
-        loadCitiesDocs(path);
-
     }
 
-    /**
-     * Load cities
-     */
-    public void loadCitiesDocs(String path){
-        List<String> lines = new ArrayList<>();
-        citiesToLoad = new HashMap<>();
-
-        BufferedReader br = null;
-        FileReader fr = null;
-
-        try {
-            fr = new FileReader(path + "\\CitiesPost");
-            br = new BufferedReader(fr);
-            String line;
-
-            while ((line = br.readLine()) != null) {
-                lines.add(line);
-            }
-
-            for(String term:lines){
-                String []tmp = term.split(",");
-                citiesToLoad.put(tmp[0],tmp[1]);
-            }
-
-        } catch (IOException e) {
-
-        } finally {
-            try {
-                if (br != null)
-                    br.close();
-
-                if (fr != null)
-                    fr.close();
-            } catch (IOException ex) {
-
-            }
-        }
-
-
-        dataCollector.setAllDicToLoad(docsFilesToLoad,dictionaryToLoad,citiesToLoad);
-
-
-    }
 
 
     /**
@@ -215,12 +154,11 @@ public class Model extends Observable {
         return selectedFolderBrowseCollection;
     }
 
-    public void readQuery(String query) {
+    public void readQuery(String query, String stopWords, boolean withstemming) {
+        if(parse==null)
+            parse = new Parse(stopWords, PathPosting, withstemming, dataCollector);
 
-        Parse = new Parse(stopWords, PathPosting, withStemming, this.dataC);
-
-
-        Parse.parse(query,"","",false);
+        parse.parse(query,"","",false);
     }
 
     public List<String> getDocsName() {
