@@ -15,8 +15,8 @@ public class Searcher {
     private Set<String> docsRelevant;
     private String path;
 
-    private Map<String,String> dictionaryToLoad;
-    private Map<String,String> docsFilesToLoad ;
+    private Map<String,String[]> dictionaryToLoad;
+    private Map<String,String[]> docsFilesToLoad ;
     private Map<String,String> citiesToLoad ;
 
     private PriorityQueue<DocData> returnsDocs;
@@ -64,18 +64,21 @@ public class Searcher {
         for(int i=0;i<query.size();i++){
             found = false;
             String pointer = "";
+            String numLine = "";
             if(dictionaryToLoad.containsKey(query.get(i).finalName.toUpperCase()) ) {
-                pointer = dictionaryToLoad.get(query.get(i).finalName.toUpperCase()).split(":")[2];
+                pointer = dictionaryToLoad.get(query.get(i).finalName.toUpperCase())[2];
+                numLine = dictionaryToLoad.get(query.get(i).finalName.toUpperCase())[3];
                 termsInQuery.add(query.get(i).finalName.toUpperCase());
                 found = true;
             }
             if(!found && dictionaryToLoad.containsKey(query.get(i).finalName.toLowerCase())){
-                pointer = dictionaryToLoad.get(query.get(i).finalName.toLowerCase()).split(":")[2];
+                pointer = dictionaryToLoad.get(query.get(i).finalName.toLowerCase())[2];
+                numLine = dictionaryToLoad.get(query.get(i).finalName.toLowerCase())[3];
                 termsInQuery.add(query.get(i).finalName.toLowerCase());
                 found = true;
             }
             if(found) {
-                String df = readFromPost(pointer);
+                String df = readFromPost(pointer,numLine);
                 if(docsRelevant.size()==0){
                     docsRelevant.addAll(splitDocsName(df));
                 }else{
@@ -109,10 +112,9 @@ public class Searcher {
      * @param pointer
      * @return String
      */
-    private String readFromPost(String pointer) {
-        String [] point = pointer.split("/");
-        String fileName = point[0];
-        String pointerLine = point[1];
+    private String readFromPost(String pointer,String numline) {
+        String fileName = pointer;
+        String pointerLine = numline;
         int numLine = 0;
         String sCurrentLine = ""; // check if doesn't exist
         BufferedReader br = null;
