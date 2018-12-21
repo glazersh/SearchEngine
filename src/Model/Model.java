@@ -15,9 +15,9 @@ public class Model extends Observable {
     String PathPosting;
 
     DataCollector dataCollector;
-    Map<String,String> dictionaryToLoad ;
+    Map<String,String[]> dictionaryToLoad ;
     Map<String,String> citiesToLoad ;
-    Map<String,String> docsFilesToLoad ;
+    Map<String,String[]> docsFilesToLoad ;
 
 
     public Model(){
@@ -50,61 +50,116 @@ public class Model extends Observable {
 
     public void loadAllDictionary(String path){
 
-        String dictionary = "Dictionary";
-        dictionaryToLoad = new HashMap<>();
-        loadDict(path,dictionary, dictionaryToLoad,",\\{");
 
-        String FileDocs = "FileDocs";
-        docsFilesToLoad = new HashMap<>();
-        loadDict(path,FileDocs, docsFilesToLoad, ",");
-
-
-        String CitiesPost = "CitiesPost";
-        citiesToLoad = new HashMap<>();
-        loadDict(path,CitiesPost, citiesToLoad, ",");
+        loadDocs(path+"FileDocs");
+        loadDict(path+"Dictionary");
+        loadCities(path+"CitiesPost");
 
         dataCollector.setAllDicToLoad(docsFilesToLoad,dictionaryToLoad,citiesToLoad);
         dataCollector.setPostPath(path);
     }
 
-
-
     /**
-     * Load Dictionary to memory
+     * load cites
      * @param path
      */
-    public void loadDict(String  path,String kind, Map<String,String> dictionary, String split){
-        List<String> lines = new ArrayList<>();
+    private void loadCities(String path) {
+        citiesToLoad = new HashMap<>();
 
         BufferedReader br = null;
         FileReader fr = null;
 
         try {
-            fr = new FileReader(path+kind);
+            fr = new FileReader(path);
+            br = new BufferedReader(fr);
+            String line;
+
+
+            while ((line = br.readLine()) != null) {
+                String []tmp = line.split(",",2);
+                citiesToLoad.put(tmp[0],tmp[1]);
+            }
+
+
+
+        } catch (IOException e) {
+
+        } finally {
+            try {
+                if (br != null)
+                    br.close();
+
+                if (fr != null)
+                    fr.close();
+            } catch (IOException ex) { }
+        }
+    }
+
+    /**
+     * load docs
+     * @param path
+     */
+    private void loadDocs(String path){
+        docsFilesToLoad = new HashMap<>();
+
+        BufferedReader br = null;
+        FileReader fr = null;
+
+        try {
+            fr = new FileReader(path);
+            br = new BufferedReader(fr);
+            String line;
+
+            List<String>docCounter = new ArrayList<>();
+
+            while ((line = br.readLine()) != null) {
+                String []tmp = line.split(",",2);
+                if(tmp.length==2) {
+                    String[] docInfo = tmp[1].split(",");
+                    docsFilesToLoad.put(tmp[0], docInfo);
+                }
+                else{
+                    docCounter.add(tmp[0]);
+                }
+            }
+            dataCollector.setNumberOfDocs(Integer.parseInt(docCounter.get(0)));
+            dataCollector.setAverageNumOfDocs(Double.parseDouble(docCounter.get(1)));
+
+
+        } catch (IOException e) {
+
+        } finally {
+            try {
+                if (br != null)
+                    br.close();
+
+                if (fr != null)
+                    fr.close();
+            } catch (IOException ex) { }
+        }
+    }
+
+    /**
+     * Load Dictionary to memory
+     * @param path
+     */
+    private void loadDict(String  path){
+        dictionaryToLoad = new HashMap<>();
+
+        BufferedReader br = null;
+        FileReader fr = null;
+
+        try {
+            fr = new FileReader(path);
             br = new BufferedReader(fr);
             String line;
 
             while ((line = br.readLine()) != null) {
-                lines.add(line);
+                String[] tmp = line.split(",\\{");
+                String[] docInfo = tmp[1].split(":");
+                dictionaryToLoad.put(tmp[0],docInfo);
             }
-            if(kind.equals("FileDocs")){
-                List<String>docCounter = new ArrayList<>();
-                for(String term:lines){
-                    String []tmp = term.split(split,2);
-                    if(tmp.length==2)
-                        docsFilesToLoad.put(tmp[0],tmp[1]);
-                    else{
-                        docCounter.add(tmp[0]);
-                    }
-                }
-                dataCollector.setNumberOfDocs(Integer.parseInt(docCounter.get(0)));
-                dataCollector.setAverageNumOfDocs(Double.parseDouble(docCounter.get(1)));
-            }else {
-                for (String term : lines) {
-                    String[] tmp = term.split(split);
-                    dictionary.put(tmp[0], tmp[1]);
-                }
-            }
+
 
         } catch (IOException e) {
 

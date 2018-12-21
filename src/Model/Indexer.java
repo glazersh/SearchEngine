@@ -497,9 +497,9 @@ public class Indexer {
         for(int i=0;i<docsInfo.length;i++){
             counter+=Integer.parseInt(docsInfo[i].split(":")[1]);
         }
-        String lineInPost = nameTerm+",{"+counter+":"+docFrequency+":"+namePostFile+"/"+(index+1)+"\n";
+        String lineInPost = nameTerm+",{"+counter+":"+docFrequency+":"+namePostFile+":"+(index+1)+"\n";
         bigDictionary.put(nameTerm, counter);
-        dictionaryToLoad.put(nameTerm,namePostFile+"/"+(index+1));
+        dictionaryToLoad.put(nameTerm,namePostFile+":"+(index+1));
         return lineInPost;
 
     }

@@ -16,9 +16,9 @@ public class DataCollector {
 
     double averageNumOfDocs;
 
-    private Map<String,String> dictionaryToLoad;
+    private Map<String,String[]> dictionaryToLoad;
     private Map<String,String> citiesToLoad;
-    private Map<String,String> docsFilesToLoad;
+    private Map<String,String[]> docsFilesToLoad;
 
     private List<String>docsName;
 
@@ -31,7 +31,7 @@ public class DataCollector {
     }
 
 
-    public Map<String, String> getDictionaryToLoad() {
+    public Map<String, String[]> getDictionaryToLoad() {
         return dictionaryToLoad;
     }
 
@@ -41,7 +41,7 @@ public class DataCollector {
     }
 
 
-    public Map<String, String> getDocsFilesToLoad() {
+    public Map<String, String[]> getDocsFilesToLoad() {
         return docsFilesToLoad;
     }
 
@@ -106,7 +106,7 @@ public class DataCollector {
 
 
 
-    public void setAllDicToLoad(Map<String, String> docsFilesToLoad, Map<String, String> dictionaryToLoad, Map<String, String> citiesToLoad) {
+    public void setAllDicToLoad(Map<String, String[]> docsFilesToLoad, Map<String, String[]> dictionaryToLoad, Map<String, String> citiesToLoad) {
         this.dictionaryToLoad=dictionaryToLoad;
         this.docsFilesToLoad=docsFilesToLoad;
         this.citiesToLoad=citiesToLoad;
