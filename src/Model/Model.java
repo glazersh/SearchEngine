@@ -1,6 +1,9 @@
 package Model;
 
 import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.*;
 
 
@@ -38,7 +41,6 @@ public class Model extends Observable {
 
 
     }
-
 
     public void setFiles(File selectedFolderBrowseCollection) {
         this.selectedFolderBrowseCollection = selectedFolderBrowseCollection;
@@ -256,7 +258,7 @@ public class Model extends Observable {
     }
 
     public void writeTheAnswer(String numQ, boolean first) {
-            File file = new File("C:\\Users\\USER\\Desktop\\search2018\\post\\query\\result.txt");
+            File file = new File("D:\\documents\\users\\dorlev\\Downloads\\ans\\result.txt");
             if(first){
                 file.delete();
             }
@@ -272,7 +274,7 @@ public class Model extends Observable {
         }
     }
 
-    public void fileOfQuery(String path, String stopWords, boolean withstemming) {
+    public void fileOfQuery(String path, String stopWords, boolean withstemming, boolean withSemantic) {
         if (parse == null) {
             parse = new Parse(stopWords, PathPosting, withstemming, dataCollector);
         }
@@ -280,6 +282,9 @@ public class Model extends Observable {
         List<String[]> allQueries ;
         allQueries = splitQueries(path);
         for(String[]q : allQueries){
+            if(withSemantic){
+                q[1] = getSemantics(q[1]);
+            }
             parse.parse(q[1],"","",false);
             writeTheAnswer(q[0],first);
             first = false;
@@ -287,8 +292,6 @@ public class Model extends Observable {
         cmd(); // don't forget to remove !!!
         writeToCSV(); // don't forget to remove !!!
     }
-
-
 
     private List<String[]> splitQueries(String path) {
         List<String[]> queries = new ArrayList<>();
@@ -336,10 +339,48 @@ public class Model extends Observable {
         return cities;
     }
 
+    public String getSemantics(String query){
+        String queryPlus = query.replace(" ", "+");
+        final String urlString = "https://api.datamuse.com/words?ml=" + queryPlus;
+        BufferedReader br = null;
+        InputStreamReader isr = null;
+        try {
+            URL url = new URL(urlString);
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.setRequestMethod("GET");
+            isr = new InputStreamReader(con.getInputStream());
+            br = new BufferedReader(isr);
+            String line;
+            StringBuffer bf = new StringBuffer();
+            while((line = br.readLine()) != null){
+                int counter = 0;
+                String[]perWord = line.substring(2).split("\\{");
+                for(String word : perWord){
+                    if(counter==10)
+                        break;
+                    String[]tmp = word.split(",")[0].split(":");
+                    bf.append(tmp[1].substring(1).replace('"',' '));
+                    counter++;
+
+                }
+            }
+            br.close();
+            isr.close();
+            return query+" "+bf.toString();
+
+
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return query;
+    }
+
     // don't forget to remove !!!
     private void cmd() {
         String[] command = { "cmd" };
-        String path = "C:\\Users\\USER\\Desktop\\search2018\\post\\query"; // write your path here !
+        String path = "D:\\documents\\users\\dorlev\\Downloads\\ans"; // write your path here !
         Process p;
         try{
             p= Runtime.getRuntime().exec(command);
@@ -360,8 +401,8 @@ public class Model extends Observable {
     }
 
     private void writeToCSV() {
-        String readFromFile="C:\\Users\\USER\\Desktop\\search2018\\post\\query\\output.txt"; // path to output.txt
-        String writeToFile = "C:\\Users\\USER\\Desktop\\search2018\\post\\query\\Ans.csv";
+        String readFromFile="D:\\documents\\users\\dorlev\\Downloads\\ans\\output.txt"; // path to output.txt
+        String writeToFile = "D:\\documents\\users\\dorlev\\Downloads\\ans\\Ans.csv";
         File file = new File(readFromFile);
         if(file.exists()){
             // first read
@@ -465,4 +506,9 @@ public class Model extends Observable {
     }
 
 
+    public static void main(String[] args) {
+        Model m= new Model();
+        String tmp = m.getSemantics("kid dor");
+        int x=4;
+    }
 }
