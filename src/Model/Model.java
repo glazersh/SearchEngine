@@ -284,8 +284,8 @@ public class Model extends Observable {
             writeTheAnswer(q[0],first);
             first = false;
         }
-        cmd(); // don't forget to remove !!!
-        writeToCSV(); // don't forget to remove !!!
+      //  cmd(); // don't forget to remove !!!
+       // writeToCSV(); // don't forget to remove !!!
     }
 
 
