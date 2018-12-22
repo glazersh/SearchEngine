@@ -62,16 +62,15 @@ public class View  implements Observer {
 
     public ListView<DocData> lv_returndocs;
     public ListView lv_entity;
+    public ListView<String> lv_city;
+
 
     public TextField tf_queryPath;
     private File queryFile;
     public Button b_queryPath;
 
     private String queryPath;
-
-    public View(){
-
-    }
+    public ChoiceBox<String> cb_cities;
 
     /**
      * gets the path where the corpus is
@@ -146,6 +145,8 @@ public class View  implements Observer {
                 path = PostingPath + "\\N\\";
             }
             viewModel.loadDic(path);
+            cb_cities.getItems().addAll(viewModel.getAllCities());
+
             l_info.setText("The dictionary is loaded");
         }
     }
@@ -214,10 +215,17 @@ public class View  implements Observer {
     public void query(){
         if(queryPath==null || queryPath.equals("")) {
             String Query = tf_query.getText();
+            if(lv_city.getItems().size()>0) {
+                for(String city : lv_city.getItems()) {
+                    Query += " "+city;
+                }
+            }
             viewModel.startEngineQuery(Query, getStopWordsPath(), withStemming);
             lv_returndocs.getItems().clear();
             List<DocData> docsName = viewModel.getDocsName();
             lv_returndocs.getItems().addAll(docsName);
+        }else{
+            viewModel.fileQuery(queryPath,getStopWordsPath(),withStemming);
         }
     }
 
@@ -234,6 +242,19 @@ public class View  implements Observer {
         queryFile = directoryChooser.showDialog(b_queryPath.getScene().getWindow());
         tf_queryPath.setText(queryFile.getAbsolutePath());
         queryPath = queryFile.getAbsolutePath();
+    }
+
+    public void selectCities(){
+        String city = cb_cities.getSelectionModel().getSelectedItem();
+        if(city!=null) {
+            if(!lv_city.getItems().contains(city)) {
+                lv_city.getItems().add(city);
+            }
+        }
+    }
+
+    public void removeCity(){
+        lv_city.getItems().remove(lv_city.getSelectionModel().getSelectedItem());
     }
 
 

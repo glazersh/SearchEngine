@@ -80,4 +80,12 @@ public class ViewModel extends java.util.Observable implements Observer  {
     public List<DocData> getDocsName() {
         return model.getDocsName();
     }
+
+    public void fileQuery(String queryPath,String stopWords, boolean withstemming) {
+        model.fileOfQuery(queryPath,stopWords,withstemming);
+    }
+
+    public List<String> getAllCities() {
+        return model.getAllCities();
+    }
 }

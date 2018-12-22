@@ -60,25 +60,31 @@ public class Searcher {
         if(dictionaryToLoad == null){
             initAllDict();
         }
+        List<String>cities = new ArrayList<>();
         termsInQuery = new ArrayList<>();
         this.path = dc.getPostPath();
         docsRelevant = new HashSet();
         tf = new HashMap<>();
         boolean found ;
         for(int i=0;i<query.size();i++){
+            String term = query.get(i).finalName;
+            if(citiesToLoad.containsKey(term.toUpperCase())){
+                cities.add(term.toUpperCase());
+                continue;
+            }
             found = false;
             String pointer = "";
             String numLine = "";
-            if(dictionaryToLoad.containsKey(query.get(i).finalName.toUpperCase()) ) {
-                pointer = dictionaryToLoad.get(query.get(i).finalName.toUpperCase())[2];
-                numLine = dictionaryToLoad.get(query.get(i).finalName.toUpperCase())[3];
-                termsInQuery.add(query.get(i).finalName.toUpperCase());
+            if(dictionaryToLoad.containsKey(term.toUpperCase()) ) {
+                pointer = dictionaryToLoad.get(term.toUpperCase())[2];
+                numLine = dictionaryToLoad.get(term.toUpperCase())[3];
+                termsInQuery.add(term.toUpperCase());
                 found = true;
             }
-            if(!found && dictionaryToLoad.containsKey(query.get(i).finalName.toLowerCase())){
-                pointer = dictionaryToLoad.get(query.get(i).finalName.toLowerCase())[2];
-                numLine = dictionaryToLoad.get(query.get(i).finalName.toLowerCase())[3];
-                termsInQuery.add(query.get(i).finalName.toLowerCase());
+            if(!found && dictionaryToLoad.containsKey(term.toLowerCase())){
+                pointer = dictionaryToLoad.get(term.toLowerCase())[2];
+                numLine = dictionaryToLoad.get(term.toLowerCase())[3];
+                termsInQuery.add(term.toLowerCase());
                 found = true;
             }
             if(found) {
@@ -86,8 +92,44 @@ public class Searcher {
                 docsRelevant.addAll(splitDocsName(df,termsInQuery.get(termsInQuery.size()-1)));
             }
         }
+        if(cities.size()>0){
+            Set <String> citydoc= new HashSet<>();
+            for(String city : cities){
+                found = false;
+                String pointer = "";
+                String numLine = "";
+                if(dictionaryToLoad.containsKey(city.toUpperCase()) ) {
+                    pointer = dictionaryToLoad.get(city.toUpperCase())[2];
+                    numLine = dictionaryToLoad.get(city.toUpperCase())[3];
+                    //termsInQuery.add(city.toUpperCase());
+                    found = true;
+                }
+                if(!found && dictionaryToLoad.containsKey(city.toLowerCase())){
+                    pointer = dictionaryToLoad.get(city.toLowerCase())[2];
+                    numLine = dictionaryToLoad.get(city.toLowerCase())[3];
+                    //termsInQuery.add(city.toLowerCase());
+                    found = true;
+                }
+                if(found) {
+                    String df = readFromPost(pointer,numLine);
+                    citydoc.addAll(splitDocsName(df,termsInQuery.get(termsInQuery.size()-1)));
+                }
+                citydoc.addAll(fromTAGS(city));
+
+            }
+            docsRelevant.retainAll(citydoc);
+        }
         createTmpSearcher();
 
+    }
+
+    private List<String> fromTAGS(String city) {
+        String[] docs = citiesToLoad.get(city).split(":");
+        List<String>returnList = new ArrayList<>();
+        for(String doc : docs){
+            returnList.add(doc);
+        }
+        return returnList;
     }
 
     private void initAllDict() {
@@ -179,16 +221,7 @@ public class Searcher {
 
 
         ///////////// here for app /////////////////
-//        try {
-//            BufferedWriter bf = new BufferedWriter(new FileWriter("C:\\Users\\USER\\Desktop\\search2018\\post\\N\\answer.txt"));
-//            for (String s2 : docsName) {
-//                bf.append("352 " + "0 " + s2 + " 1 " + "3.0 " + "test\n");
-//            }
-//            bf.flush();
-//            bf.close();
-//        }catch (IOException e){
 //
-//        }
 
     }
 
