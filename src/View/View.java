@@ -40,9 +40,9 @@ public class View  implements Observer {
     public Label l_info;
     public Label wrongPath;
     public Label l_warning;
+    public Label lb_dictionary;
 
     public ListView lv_terms;
-    public ListView lv_dictionary;
 
     public CheckBox cb_isStem;
 
@@ -115,7 +115,7 @@ public class View  implements Observer {
      * When asked, displays the dictionary with the terms and time it appeared in the whole corpus
      */
     public void showDic() {
-        lv_terms.setVisible(true);
+
         String postInto = postingPath;
         if(withStemming){
             postInto+="\\Y\\";
@@ -128,10 +128,13 @@ public class View  implements Observer {
             String line;
             while ((line = br.readLine()) != null) {
                 String []tmp = line.split(",\\{");
-                lv_dictionary.getItems().add(tmp[0]+" - "+tmp[1].split(":")[0]);
+                lv_terms.getItems().add(tmp[0]+" - "+tmp[1].split(":")[0]);
             }
+            lv_terms.setVisible(true);
+            lb_dictionary.setVisible(true);
             l_info.setText("Dictionary is shown");
         }
+
         catch (FileNotFoundException e) {}
         catch (IOException e) {}
 
