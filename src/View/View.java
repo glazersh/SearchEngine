@@ -2,6 +2,8 @@ package View;
 
 import Model.DocData;
 import ViewModel.ViewModel;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -70,7 +72,18 @@ public class View  implements Observer {
     public Button b_queryPath;
 
     private String queryPath;
-    public ChoiceBox<String> cb_cities;
+    public ComboBox<String> cb_cities;
+
+
+    public void initialize(){
+        cb_cities.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number number2) {
+                selectCities();
+            }
+        });
+    }
+
 
     /**
      * gets the path where the corpus is
@@ -245,12 +258,11 @@ public class View  implements Observer {
     }
 
     public void selectCities(){
-        String city = cb_cities.getSelectionModel().getSelectedItem();
-        if(city!=null) {
+        String city=cb_cities.getSelectionModel().getSelectedItem();
             if(!lv_city.getItems().contains(city)) {
                 lv_city.getItems().add(city);
             }
-        }
+
     }
 
     public void removeCity(){
