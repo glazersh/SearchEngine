@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Font?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="568.0" prefWidth="795.0" xmlns="http://javafx.com/javafx/8.0.131" xmlns:fx="http://javafx.com/fxml/1" fx:controller="View.View">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="568.0" prefWidth="795.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="View.View">
    <children>
       <Button fx:id="b_postPath" layoutX="205.0" layoutY="162.0" mnemonicParsing="false" onAction="#BrowsePostingPath" text="Browse files" />
       <Button fx:id="b_Start" layoutX="34.0" layoutY="210.0" mnemonicParsing="false" onAction="#startEngine" prefHeight="35.0" prefWidth="165.0" text="Start engine">
@@ -94,10 +94,18 @@
          </children>
       </GridPane>
       <ListView fx:id="lv_dictionary" layoutX="464.0" layoutY="4.0" prefHeight="259.0" prefWidth="128.0" />
-      <Label fx:id="l_info" layoutY="386.0" prefHeight="17.0" prefWidth="464.0" />
+      <Label fx:id="l_info" layoutY="546.0" prefHeight="17.0" prefWidth="464.0" />
       <Label fx:id="l_warning" layoutX="34.0" layoutY="257.0" textFill="RED" visible="false" />
-      <TextField fx:id="tf_query" layoutX="28.0" layoutY="391.0" />
-      <Button fx:id="b_query" layoutX="194.0" layoutY="391.0" mnemonicParsing="false" onAction="#query" text="run" />
-      <ListView fx:id="lv_returndocs" layoutX="500.0" layoutY="302.0" prefHeight="234.0" prefWidth="103.0" />
+      <TextField fx:id="tf_query" layoutX="28.0" layoutY="379.0" />
+      <Button fx:id="b_query" layoutX="305.0" layoutY="384.0" mnemonicParsing="false" onAction="#query" text="run" />
+      <ListView fx:id="lv_returndocs" layoutX="500.0" layoutY="302.0" onMouseClicked="#findEntity" prefHeight="234.0" prefWidth="165.0" />
+      <ListView fx:id="lv_entity" layoutX="681.0" layoutY="319.0" prefHeight="110.0" prefWidth="104.0" />
+      <Button fx:id="b_queryPath" layoutX="188.0" layoutY="429.0" mnemonicParsing="false" onAction="#browseQueryPath" text="Brose files" />
+      <Label layoutX="30.0" layoutY="413.0" text="choose query path" textFill="#3154dd">
+         <font>
+            <Font name="Century Gothic" size="10.0" />
+         </font>
+      </Label>
+      <TextField fx:id="tf_queryPath" layoutX="28.0" layoutY="429.0" />
    </children>
 </Pane>

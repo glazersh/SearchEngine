@@ -17,11 +17,13 @@ public class TmpSearcher {
     List<DocData> ListDocs;
 
 
-    Map<String, String> dictionaryToLoad;
+    Map<String, String[]> dictionaryToLoad;
     Map<String, String> docCitiesToLoad;
-    Map<String, String> docFilesToLoad;
+    Map<String, String[]> docFilesToLoad;
 
-    public TmpSearcher(Map<String, String> dictionaryToLoad, Map<String, String> docsFilesToLoad, Map<String, String> citiesToLoad, List<String> termsInQuery, String path, DataCollector dataCollector) {
+    private Map<String,Map<String,Integer>> tf;
+
+    public TmpSearcher(Map<String, String[]> dictionaryToLoad, Map<String, String[]> docsFilesToLoad, Map<String, String> citiesToLoad, List<String> termsInQuery, String path, DataCollector dataCollector, Map<String,Map<String,Integer>> tf) {
         this.postingPath = path;
         this.dictionaryToLoad = dictionaryToLoad;
         this.docCitiesToLoad = citiesToLoad;
@@ -31,7 +33,7 @@ public class TmpSearcher {
         this.dataCollector = dataCollector;
         this.ranker = new Ranker(dataCollector);
         this.ListDocs = new ArrayList<>();
-
+        this.tf = tf;
     }
 
     public void setDocsList(Set<String> docsList){
@@ -47,8 +49,8 @@ public class TmpSearcher {
         for (DocData docdata:ListDocs) {
            ranker.start(docdata);
            //////may change
-           if(docdata.getSumBM25()>2) {
-               getEntities(docdata.getDocName(), docdata);
+           if(docdata.getSumBM25()>0) {
+               //getEntities(docdata.getDocName(), docdata);
                FinalListDocs.add(docdata);
 
            }
@@ -62,25 +64,38 @@ public class TmpSearcher {
 
     public DocData getFromDocPost(String docName) {
         DocData docData = new DocData(docName);
-        String[] DocInfo = docFilesToLoad.get(docName).split(",");
-        docData.setDocLength(Integer.parseInt(DocInfo[2]));
-        if (DocInfo.length == 4) {
-            docData.setCity(DocInfo[3]);
+        String DocInfo = docFilesToLoad.get(docName)[2];
+        docData.setDocLength(Integer.parseInt(DocInfo));
+        if (docFilesToLoad.get(docName).length == 4) {
+            docData.setCity(docFilesToLoad.get(docName)[3]);
         } else
             docData.setCity("");
 
         for (String term : queryList) {
-            String[] termInfo = dictionaryToLoad.get(term).split(":");
+            String numberOfDocsInCorpus = dictionaryToLoad.get(term)[1];
             //number of docs the term occur in all corpus
-            int intToAdd = Integer.parseInt(termInfo[1]);
+            int intToAdd = Integer.parseInt(numberOfDocsInCorpus);
             docData.addNumberOfDocPerTerm(intToAdd);
-            String[] TermPos = termInfo[2].split("/");
-            int termPos = Integer.parseInt(TermPos[1]);
+
+            if (tf.get(term).containsKey(docName)) {
+                int occur = tf.get(term).get(docName);
+                docData.addToFreqList(occur);
+            } else {
+                docData.addToFreqList(0);
+            }
+        }
+
+
+
+/*
+            String termPostFile = dictionaryToLoad.get(term)[2];
+            String termPosition = dictionaryToLoad.get(term)[3];
+            int termPos = Integer.parseInt(termPosition);
             ///open post where the term is
             FileInputStream out = null;
             BufferedReader br = null;
             try {//GZIPInputStream gzip = new GZIPInputStream(new FileInputStream(file));
-                out = new FileInputStream(postingPath + "\\" + TermPos[0]);
+                out = new FileInputStream(postingPath + "\\" + termPostFile);
                 br = new BufferedReader(new InputStreamReader(out, StandardCharsets.UTF_8));
 
 
@@ -108,6 +123,8 @@ public class TmpSearcher {
                 }
                 if(!found)
                     docData.addToFreqList(0);
+
+
             } catch (IOException e) {
             } finally {
                 try {
@@ -121,6 +138,7 @@ public class TmpSearcher {
                 }
             }
         }
+        */
 
         return docData;
     }

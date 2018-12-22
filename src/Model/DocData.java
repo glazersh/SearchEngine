@@ -15,7 +15,8 @@ public class DocData {
     private List<Integer>numberOfDocPerTerm;
     private double Jaccard;
     private double sumBM25;
-    List<String>TopEntities;
+
+    private List<String>TopEntities;
 
 
     public DocData(String docName) {
@@ -26,6 +27,9 @@ public class DocData {
 
     }
 
+    public List<String> getTopEntities() {
+        return TopEntities;
+    }
 
     public void addToTopEntities(String str){
         TopEntities.add(str);
@@ -83,7 +87,9 @@ public class DocData {
         this.sumBM25 = sumBM25;
     }
 
-
+    public String toString(){
+        return DocName;
+    }
 
 
 }

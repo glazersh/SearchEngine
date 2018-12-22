@@ -2,6 +2,7 @@ package ViewModel;
 
 import Model.Model;
 import Model.DataCollector;
+import Model.DocData;
 import View.View;
 //import javafx.beans.Observable;
 
@@ -76,7 +77,7 @@ public class ViewModel extends java.util.Observable implements Observer  {
         model.readQuery(query,StopWordsPath,withStemming);
     }
 
-    public List<String> getDocsName() {
+    public List<DocData> getDocsName() {
         return model.getDocsName();
     }
 }

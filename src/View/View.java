@@ -1,5 +1,6 @@
 package View;
 
+import Model.DocData;
 import ViewModel.ViewModel;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -7,9 +8,12 @@ import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.stage.DirectoryChooser;
 
+import java.awt.event.ActionEvent;
+import java.beans.EventHandler;
 import java.io.*;
 import java.util.*;
 import java.util.List;
@@ -56,7 +60,14 @@ public class View  implements Observer {
     public Button b_query;
     public TextField tf_query;
 
-    public ListView lv_returndocs;
+    public ListView<DocData> lv_returndocs;
+    public ListView lv_entity;
+
+    public TextField tf_queryPath;
+    private File queryFile;
+    public Button b_queryPath;
+
+    private String queryPath;
 
     public View(){
 
@@ -201,15 +212,30 @@ public class View  implements Observer {
     /////////////////////////// part B //////////////////
 
     public void query(){
-        String Query = tf_query.getText();
-        viewModel.startEngineQuery(Query, getStopWordsPath(),withStemming);
-        lv_returndocs.getItems().clear();
-        List<String> docsName = viewModel.getDocsName();
-        int index = 1;
-        for (String doc:docsName) {
-            lv_returndocs.getItems().add(index++ +". "+doc);
+        if(queryPath==null || queryPath.equals("")) {
+            String Query = tf_query.getText();
+            viewModel.startEngineQuery(Query, getStopWordsPath(), withStemming);
+            lv_returndocs.getItems().clear();
+            List<DocData> docsName = viewModel.getDocsName();
+            lv_returndocs.getItems().addAll(docsName);
         }
     }
+
+    public void findEntity(){
+        lv_entity.getItems().clear();
+        DocData doc  = lv_returndocs.getSelectionModel().getSelectedItem();
+        if(doc.getTopEntities() != null && doc.getTopEntities().size()>0){
+            lv_entity.getItems().addAll(doc.getTopEntities());
+        }
+    }
+
+    public void browseQueryPath(){
+        DirectoryChooser directoryChooser = new DirectoryChooser();
+        queryFile = directoryChooser.showDialog(b_queryPath.getScene().getWindow());
+        tf_queryPath.setText(queryFile.getAbsolutePath());
+        queryPath = queryFile.getAbsolutePath();
+    }
+
 
 }
 

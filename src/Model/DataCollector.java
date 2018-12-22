@@ -20,7 +20,13 @@ public class DataCollector {
     private Map<String,String> citiesToLoad;
     private Map<String,String[]> docsFilesToLoad;
 
-    private List<String>docsName;
+    public Map<String, String[]> getEntityToLoad() {
+        return entityToLoad;
+    }
+
+    private Map<String,String[]> entityToLoad;
+
+    private List<DocData>docsName;
 
     /////////////added
     List <String>entityDoc;
@@ -106,25 +112,23 @@ public class DataCollector {
 
 
 
-    public void setAllDicToLoad(Map<String, String[]> docsFilesToLoad, Map<String, String[]> dictionaryToLoad, Map<String, String> citiesToLoad) {
+    public void setAllDicToLoad(Map<String, String[]> docsFilesToLoad, Map<String, String[]> dictionaryToLoad, Map<String, String> citiesToLoad, Map<String,String[]> entity) {
         this.dictionaryToLoad=dictionaryToLoad;
         this.docsFilesToLoad=docsFilesToLoad;
         this.citiesToLoad=citiesToLoad;
+        this.entityToLoad = entity;
     }
 
-    public List<String>getDocs(){
+    public List<DocData>getDocs(){
         return docsName;
     }
 
-    public void setRelevantDocs(List<String>relevantDocs){
+    public void setRelevantDocs(List<DocData>relevantDocs){
         docsName = relevantDocs;
     }
 
-
-
     public void setEntityPost(List<String> entityDoc) {
         this.entityDoc = entityDoc;
-
     }
 
     public List<String> getEntities() {

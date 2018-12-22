@@ -18,6 +18,7 @@ public class Model extends Observable {
     Map<String,String[]> dictionaryToLoad ;
     Map<String,String> citiesToLoad ;
     Map<String,String[]> docsFilesToLoad ;
+    Map<String,String[]>entitesToLoad;
 
 
     public Model(){
@@ -54,9 +55,45 @@ public class Model extends Observable {
         loadDocs(path+"FileDocs");
         loadDict(path+"Dictionary");
         loadCities(path+"CitiesPost");
+        loadEntity(path+"Entities");
 
-        dataCollector.setAllDicToLoad(docsFilesToLoad,dictionaryToLoad,citiesToLoad);
+        dataCollector.setAllDicToLoad(docsFilesToLoad,dictionaryToLoad,citiesToLoad,entitesToLoad);
         dataCollector.setPostPath(path);
+    }
+
+    private void loadEntity(String path) {
+        entitesToLoad = new HashMap<>();
+
+        BufferedReader br = null;
+        FileReader fr = null;
+
+        try {
+            fr = new FileReader(path);
+            br = new BufferedReader(fr);
+            String line;
+
+
+            while ((line = br.readLine()) != null) {
+                String []tmp = line.split(",\\{");
+                if(tmp.length==2) {
+                    String[] entity = tmp[1].split(":");
+                    entitesToLoad.put(tmp[0], entity);
+                }
+            }
+
+
+
+        } catch (IOException e) {
+
+        } finally {
+            try {
+                if (br != null)
+                    br.close();
+
+                if (fr != null)
+                    fr.close();
+            } catch (IOException ex) { }
+        }
     }
 
     /**
@@ -216,7 +253,7 @@ public class Model extends Observable {
         parse.parse(query,"","",false);
     }
 
-    public List<String> getDocsName() {
+    public List<DocData> getDocsName() {
         return dataCollector.getDocs();
     }
 }

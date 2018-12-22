@@ -18,8 +18,11 @@ public class Searcher {
     private Map<String,String[]> dictionaryToLoad;
     private Map<String,String[]> docsFilesToLoad ;
     private Map<String,String> citiesToLoad ;
+    private Map<String,String[]>entityToLoad;
 
     private PriorityQueue<DocData> returnsDocs;
+
+    private Map<String,Map<String,Integer>> tf;
 
 
     public Searcher(DataCollector dataCollector){
@@ -39,7 +42,7 @@ public class Searcher {
     }
 
     public void createTmpSearcher(){
-        tmpSearcher = new TmpSearcher(dictionaryToLoad, docsFilesToLoad, citiesToLoad, termsInQuery, path,dc);
+        tmpSearcher = new TmpSearcher(dictionaryToLoad, docsFilesToLoad, citiesToLoad, termsInQuery, path,dc,tf);
         tmpSearcher.setDocsList(docsRelevant);
         List<DocData> listOfDocs = tmpSearcher.start();
         addListToQueue(listOfDocs);
@@ -60,6 +63,7 @@ public class Searcher {
         termsInQuery = new ArrayList<>();
         this.path = dc.getPostPath();
         docsRelevant = new HashSet();
+        tf = new HashMap<>();
         boolean found ;
         for(int i=0;i<query.size();i++){
             found = false;
@@ -79,12 +83,7 @@ public class Searcher {
             }
             if(found) {
                 String df = readFromPost(pointer,numLine);
-                if(docsRelevant.size()==0){
-                    docsRelevant.addAll(splitDocsName(df));
-                }else{
-                    docsRelevant.retainAll(splitDocsName(df));
-                }
-
+                docsRelevant.addAll(splitDocsName(df,termsInQuery.get(termsInQuery.size()-1)));
             }
         }
         createTmpSearcher();
@@ -95,14 +94,23 @@ public class Searcher {
         dictionaryToLoad = dc.getDictionaryToLoad();
         docsFilesToLoad = dc.getDocsFilesToLoad();
         citiesToLoad = dc.getCitiesToLoad();
+        entityToLoad = dc.getEntityToLoad();
     }
 
-    private List <String> splitDocsName(String df) {
+    private List <String> splitDocsName(String df, String term) {
         List <String> docNames = new ArrayList();
         String withoutTermName = df.split(",\\{")[1];
         String[]docNameFQ = withoutTermName.split("\\{");
         for(int i=0;i<docNameFQ.length;i++){
-            docNames.add(docNameFQ[i].split(":")[0]);
+            String[]DocNameFreq = docNameFQ[i].split(":");
+            docNames.add(DocNameFreq[0]);
+            if(tf.containsKey(term)){
+                tf.get(term).put(DocNameFreq[0],Integer.parseInt(DocNameFreq[1]));
+            }else {
+                Map<String,Integer>tmp = new HashMap<>();
+                tmp.put(DocNameFreq[0],Integer.parseInt(DocNameFreq[1]));
+                tf.put(term, tmp);
+            }
         }
         return docNames;
     }
@@ -156,15 +164,46 @@ public class Searcher {
      */
     public void getRelevantDocs(){
 
-        List<String>docsName = new ArrayList<>();
+        List<DocData>docsName = new ArrayList<>();
         int counter = 0;
         while(!returnsDocs.isEmpty() && counter < 50){
-            docsName.add(returnsDocs.poll().getDocName());
+            DocData returnDoc = returnsDocs.poll();
+            docsName.add(returnDoc);
+            addEntityToDocData(returnDoc);
             counter++;
         }
         returnsDocs.clear();
         dc.setRelevantDocs(docsName);
 
+
+
+
+        ///////////// here for app /////////////////
+//        try {
+//            BufferedWriter bf = new BufferedWriter(new FileWriter("C:\\Users\\USER\\Desktop\\search2018\\post\\N\\answer.txt"));
+//            for (String s2 : docsName) {
+//                bf.append("352 " + "0 " + s2 + " 1 " + "3.0 " + "test\n");
+//            }
+//            bf.flush();
+//            bf.close();
+//        }catch (IOException e){
+//
+//        }
+
     }
+
+    private void addEntityToDocData(DocData docData) {
+        String[]allEntity = entityToLoad.get(docData.getDocName());
+        if(allEntity!=null) {
+            int add5Entity = 0;
+            for (int i = 0; i < allEntity.length && add5Entity < 5; i++) {
+                if (dictionaryToLoad.containsKey(allEntity[i])) {
+                    docData.addToTopEntities(allEntity[i]);
+                    add5Entity++;
+                }
+            }
+        }
+    }
+
 
 }
