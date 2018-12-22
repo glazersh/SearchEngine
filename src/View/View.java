@@ -85,6 +85,8 @@ public class View  implements Observer {
     }
 
 
+    public CheckBox cb_isSem;
+
     /**
      * gets the path where the corpus is
      */
@@ -228,17 +230,20 @@ public class View  implements Observer {
     public void query(){
         if(queryPath==null || queryPath.equals("")) {
             String Query = tf_query.getText();
+            if(cb_isSem.isSelected()){
+                Query = viewModel.getSem(Query);
+            }
             if(lv_city.getItems().size()>0) {
                 for(String city : lv_city.getItems()) {
                     Query += " "+city;
                 }
             }
-            viewModel.startEngineQuery(Query, getStopWordsPath(), withStemming);
+            viewModel.startEngineQuery(Query, getStopWordsPath(), cb_isStem.isSelected());
             lv_returndocs.getItems().clear();
             List<DocData> docsName = viewModel.getDocsName();
             lv_returndocs.getItems().addAll(docsName);
         }else{
-            viewModel.fileQuery(queryPath,getStopWordsPath(),withStemming);
+            viewModel.fileQuery(queryPath,getStopWordsPath(),cb_isStem.isSelected(),cb_isSem.isSelected());
         }
     }
 
