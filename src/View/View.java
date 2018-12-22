@@ -243,7 +243,13 @@ public class View  implements Observer {
             List<DocData> docsName = viewModel.getDocsName();
             lv_returndocs.getItems().addAll(docsName);
         }else{
-            viewModel.fileQuery(queryPath,getStopWordsPath(),cb_isStem.isSelected(),cb_isSem.isSelected());
+            String cities = "";
+            if(lv_city.getItems().size()>0){
+                for(String city : lv_city.getItems()) {
+                    cities += " "+city;
+                }
+            }
+            viewModel.fileQuery(queryPath,getStopWordsPath(),cb_isStem.isSelected(),cb_isSem.isSelected(),cities);
         }
     }
 

@@ -274,7 +274,7 @@ public class Model extends Observable {
         }
     }
 
-    public void fileOfQuery(String path, String stopWords, boolean withstemming, boolean withSemantic) {
+    public void fileOfQuery(String path, String stopWords, boolean withstemming, boolean withSemantic, String cities) {
         if (parse == null) {
             parse = new Parse(stopWords, PathPosting, withstemming, dataCollector);
         }
@@ -285,12 +285,12 @@ public class Model extends Observable {
             if(withSemantic){
                 q[1] = getSemantics(q[1]);
             }
-            parse.parse(q[1],"","",false);
+            parse.parse(q[1]+" "+cities,"","",false);
             writeTheAnswer(q[0],first);
             first = false;
         }
-      // cmd(); // don't forget to remove !!!
-        // writeToCSV(); // don't forget to remove !!!
+        cmd(); // don't forget to remove !!!
+        writeToCSV(); // don't forget to remove !!!
     }
 
     private List<String[]> splitQueries(String path) {
@@ -403,6 +403,9 @@ public class Model extends Observable {
     private void writeToCSV() {
         String readFromFile="D:\\documents\\users\\dorlev\\Downloads\\ans\\output.txt"; // path to output.txt
         String writeToFile = "D:\\documents\\users\\dorlev\\Downloads\\ans\\Ans.csv";
+        File fileW = new File(writeToFile);
+        if(fileW.exists())
+            fileW.delete();
         File file = new File(readFromFile);
         if(file.exists()){
             // first read
@@ -505,10 +508,4 @@ public class Model extends Observable {
         private final InputStream istrm_;
     }
 
-
-    public static void main(String[] args) {
-        Model m= new Model();
-        String tmp = m.getSemantics("kid dor");
-        int x=4;
-    }
 }

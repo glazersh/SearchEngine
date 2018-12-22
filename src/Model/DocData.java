@@ -15,6 +15,7 @@ public class DocData {
     private List<Integer>numberOfDocPerTerm;
     private double Jaccard;
     private double sumBM25;
+    private int termsInDoc;
 
     private List<String>TopEntities;
 
@@ -25,6 +26,14 @@ public class DocData {
         this.freqList = new ArrayList<>();
         TopEntities = new ArrayList<>();
 
+    }
+
+    public int getTermsInDoc() {
+        return termsInDoc;
+    }
+
+    public void setTermsInDoc(int termsInDoc) {
+        this.termsInDoc = termsInDoc;
     }
 
     public List<String> getTopEntities() {

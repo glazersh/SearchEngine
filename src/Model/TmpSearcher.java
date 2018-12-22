@@ -52,7 +52,6 @@ public class TmpSearcher {
            if(docdata.getSumBM25()>0) {
                //getEntities(docdata.getDocName(), docdata);
                FinalListDocs.add(docdata);
-
            }
         }
 
@@ -63,6 +62,7 @@ public class TmpSearcher {
 
 
     public DocData getFromDocPost(String docName) {
+        int counter = queryList.size();
         DocData docData = new DocData(docName);
         String DocInfo = docFilesToLoad.get(docName)[2];
         docData.setDocLength(Integer.parseInt(DocInfo));
@@ -82,8 +82,10 @@ public class TmpSearcher {
                 docData.addToFreqList(occur);
             } else {
                 docData.addToFreqList(0);
+                counter--;
             }
         }
+        docData.setTermsInDoc(counter);
 
 
 
