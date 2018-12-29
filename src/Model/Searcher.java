@@ -32,7 +32,7 @@ public class Searcher {
         returnsDocs = new PriorityQueue(new Comparator<DocData>() {
             @Override
             public int compare(DocData o1, DocData o2) {
-                if(o1.getSumBM25()*0.9 + o1.getJaccard()*0.1 > o2.getSumBM25()*0.9 + o2.getJaccard()*0.1)
+                if(o1.getSumBM25()*0.7 + o1.getTermsInDoc()*0.3 > o2.getSumBM25()*0.7 + o2.getTermsInDoc()*0.3)
                     return -1;
                 else
                     return 1;
@@ -216,12 +216,6 @@ public class Searcher {
         }
         returnsDocs.clear();
         dc.setRelevantDocs(docsName);
-
-
-
-
-        ///////////// here for app /////////////////
-//
 
     }
 

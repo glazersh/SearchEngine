@@ -20,9 +20,26 @@ public class Model extends Observable {
     Map<String, String[]> docsFilesToLoad;
     Map<String, String[]> entitesToLoad;
 
+    Set<String>notR = new HashSet<>();
 
     public Model() {
         this.dataCollector = new DataCollector();
+        notR.add("document");
+        notR.add("documents");
+        notR.add("Documents");
+        notR.add("discussing");
+        notR.add("considered");
+        notR.add("contain");
+        notR.add("least");
+        notR.add("factor");
+        notR.add("discuss");
+        notR.add("shows");
+        notR.add("include");
+        notR.add("relevant");
+        notR.add("Relevant");
+        notR.add("following");
+        notR.add("issues");
+        notR.add("information");
     }
 
     public void readCorpus(String FileCorpus, String stopWords, String PathPosting, Boolean withStemming) {
@@ -52,46 +69,11 @@ public class Model extends Observable {
         loadDocs(path + "FileDocs");
         loadDict(path + "Dictionary");
         loadCities(path + "CitiesPost");
-        loadEntity(path + "Entities");
 
         dataCollector.setAllDicToLoad(docsFilesToLoad, dictionaryToLoad, citiesToLoad, entitesToLoad);
         dataCollector.setPostPath(path);
     }
 
-    private void loadEntity(String path) {
-        entitesToLoad = new HashMap<>();
-
-        BufferedReader br = null;
-        FileReader fr = null;
-
-        try {
-            fr = new FileReader(path);
-            br = new BufferedReader(fr);
-            String line;
-
-
-            while ((line = br.readLine()) != null) {
-                String[] tmp = line.split(",\\{");
-                if (tmp.length == 2) {
-                    String[] entity = tmp[1].split(":");
-                    entitesToLoad.put(tmp[0], entity);
-                }
-            }
-
-
-        } catch (IOException e) {
-
-        } finally {
-            try {
-                if (br != null)
-                    br.close();
-
-                if (fr != null)
-                    fr.close();
-            } catch (IOException ex) {
-            }
-        }
-    }
 
     /**
      * load cites
@@ -137,6 +119,7 @@ public class Model extends Observable {
      */
     private void loadDocs(String path) {
         docsFilesToLoad = new HashMap<>();
+        entitesToLoad = new HashMap<>();
 
         BufferedReader br = null;
         FileReader fr = null;
@@ -151,8 +134,16 @@ public class Model extends Observable {
             while ((line = br.readLine()) != null) {
                 String[] tmp = line.split(",", 2);
                 if (tmp.length == 2) {
-                    String[] docInfo = tmp[1].split(",");
-                    docsFilesToLoad.put(tmp[0], docInfo);
+                    String[] docInfo = tmp[1].split(",",5);
+                    if(docInfo.length==5) {
+                        String[] entity = docInfo[4].split(":");
+                        entitesToLoad.put(tmp[0],entity);
+                    }else{
+                        entitesToLoad.put(tmp[0],new String[]{""});
+                    }
+
+                    String[]untilCity = {docInfo[0],docInfo[1],docInfo[2],docInfo[3]};
+                    docsFilesToLoad.put(tmp[0], untilCity);
                 } else {
                     docCounter.add(tmp[0]);
                 }
@@ -251,6 +242,7 @@ public class Model extends Observable {
             parse = new Parse(stopWords, PathPosting, withstemming, dataCollector);
 
         parse.parse(query, "", "", false);
+        writeTheAnswer("351",true); // remove here !
     }
 
     public List<DocData> getDocsName() {
@@ -258,7 +250,8 @@ public class Model extends Observable {
     }
 
     public void writeTheAnswer(String numQ, boolean first) {
-            File file = new File("D:\\documents\\users\\dorlev\\Downloads\\ans\\result.txt");
+            //File file = new File("D:\\documents\\users\\dorlev\\Downloads\\ans\\result.txt");
+            File file = new File("C:\\Users\\USER\\Desktop\\search2018\\post\\query\\result.txt");
             if(first){
                 file.delete();
             }
@@ -283,14 +276,77 @@ public class Model extends Observable {
         allQueries = splitQueries(path);
         for(String[]q : allQueries){
             if(withSemantic){
-                q[1] = getSemantics(q[1]);
+                String semanticWords = getSemantics(q[1]);
+                Set<String> s1 = new HashSet<String>(Arrays.asList(semanticWords.split(" ")));
+                Set<String> s2 = new HashSet<String>(Arrays.asList(q[3].split(" ")));
+                s1.retainAll(s2);
+                for(String str :s1){
+                    q[1]+=" "+str;
+                }
             }
+            q[1]+= check(q[2],q[1]);
             parse.parse(q[1]+" "+cities,"","",false);
             writeTheAnswer(q[0],first);
             first = false;
         }
         cmd(); // don't forget to remove !!!
         writeToCSV(); // don't forget to remove !!!
+    }
+
+    private String check(String str,String query) {
+        StringBuffer bf = new StringBuffer(" ");
+        String[]words = str.split(" ");
+
+//        int positionRelevant = str.indexOf("relevant");
+//        if(positionRelevant==-1){
+//            positionRelevant = str.indexOf("Relevant");
+//        }
+//        int positionNotRelevant = Math.max(str.indexOf("not relevant"),str.indexOf("non-relevant"));
+//        if(positionRelevant>positionNotRelevant && positionNotRelevant!=-1)
+//            positionRelevant = str.lastIndexOf("relevant");
+//        int length = str.length();
+//
+//        if(positionNotRelevant!=-1) {
+//            // first relevant and after non relevant
+//            // take back
+//            String[] dot = str.split("relevant");
+//            for (String line : dot) {
+//                if (line.contains("not relevant") || line.contains("non-relevant")) {
+//                    if ((line.indexOf("not relevant") < line.length() / 2 && line.indexOf("not relevant") != -1) || (line.indexOf("non-relevant") < line.length() / 2 && line.indexOf("non-relevant") != -1)) {
+//                        String[] wordsR = line.split(" ");
+//                        for (String wr : wordsR) {
+//                            if (!query.contains(wr) && !notR.contains(wr)) {
+//                                bf.append(wr + " ");
+//                            }
+//                        }
+//                    } else {
+//                        int x = 4;
+//                        // delete the last
+//                    }
+//                } else {
+//                    String[] wordsR = line.split(" ");
+//                    for (String wr : wordsR) {
+//                        if (!query.contains(wr) && !notR.contains(wr)) {
+//                            bf.append(wr + " ");
+//                        }
+//                    }
+//                }
+//            }
+//        }
+////        else{
+////            String[] wordsR = str.split(" ");
+////            for (String wr : wordsR) {
+////                if (!query.contains(wr) && !notR.contains(wr)) {
+////                    bf.append(wr + " ");
+////                }
+////            }
+////        }
+//
+//
+
+        return bf.toString();
+
+
     }
 
     private List<String[]> splitQueries(String path) {
@@ -303,19 +359,39 @@ public class Model extends Observable {
             fr = new FileReader(path+"\\queries.txt");
             br = new BufferedReader(fr);
             String line;
-            String[] numQuery = new String[2];
+            String[] numQuery = new String[4];
             while ((line = br.readLine()) != null) {
                 if (line.startsWith("<num>")) {
                     numQuery[0] = line.substring(14);
                     if(numQuery[0].endsWith(" ")){
                         numQuery[0]=numQuery[0].substring(0,numQuery[0].length()-1);
                     }
+                    continue;
                 }
                 if (line.startsWith("<title>")) {
                     numQuery[1] = line.substring(8);
-                    queries.add(numQuery);
-                    numQuery = new String[2];
+                    continue;
                 }
+                if(line.startsWith("<desc>")){
+                    String dec="";
+                    while((line = br.readLine()) != null){
+                        if(!line.startsWith("<narr>"))
+                            dec += line+" ";
+                        else
+                            break;
+                    }
+                    numQuery[2] = dec;
+                }
+                if(line.startsWith("<narr>")){
+                    String narr="";
+                    while((line = br.readLine()) != null && !line.equals("</top>") ){
+                        narr += line+" ";
+                    }
+                    numQuery[3] = narr;
+                    queries.add(numQuery);
+                    numQuery = new String[4];
+                }
+
             }
 
         } catch (IOException e) {
@@ -356,11 +432,11 @@ public class Model extends Observable {
                 int counter = 0;
                 String[]perWord = line.substring(2).split("\\{");
                 for(String word : perWord){
-                    if(counter==10)
-                        break;
+                    //if(counter==10)
+                    //    break;
                     String[]tmp = word.split(",")[0].split(":");
                     bf.append(tmp[1].substring(1).replace('"',' '));
-                    counter++;
+                    //counter++;
 
                 }
             }
@@ -380,7 +456,8 @@ public class Model extends Observable {
     // don't forget to remove !!!
     private void cmd() {
         String[] command = { "cmd" };
-        String path = "D:\\documents\\users\\dorlev\\Downloads\\ans"; // write your path here !
+        //String path = "D:\\documents\\users\\dorlev\\Downloads\\ans"; // write your path here !
+        String path = "C:\\Users\\USER\\Desktop\\search2018\\post\\query"; // write your path here !
         Process p;
         try{
             p= Runtime.getRuntime().exec(command);
@@ -401,8 +478,10 @@ public class Model extends Observable {
     }
 
     private void writeToCSV() {
-        String readFromFile="D:\\documents\\users\\dorlev\\Downloads\\ans\\output.txt"; // path to output.txt
-        String writeToFile = "D:\\documents\\users\\dorlev\\Downloads\\ans\\Ans.csv";
+        //String readFromFile="D:\\documents\\users\\dorlev\\Downloads\\ans\\output.txt"; // path to output.txt
+        String readFromFile="C:\\Users\\USER\\Desktop\\search2018\\post\\query\\output.txt"; // path to output.txt
+        //String writeToFile = "D:\\documents\\users\\dorlev\\Downloads\\ans\\Ans.csv";
+        String writeToFile = "C:\\Users\\USER\\Desktop\\search2018\\post\\query\\Ans.csv";
         File fileW = new File(writeToFile);
         if(fileW.exists())
             fileW.delete();

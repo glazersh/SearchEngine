@@ -57,9 +57,14 @@ public class Ranker {
 
         double upNum ;
         double downNum;
-        final double B=0.75;
-        final double K=1.2;
+        double B=0.75;
+        double K=1.2;
+        //double K = Math.min(docData.getDocLength()*(1.2/dataCollector.getAverageNumOfDocs()),2);
+        //if(K<0.05)
+        //    K=0.05;
         double BM25 =0;
+
+
 
         for (int num=0; num<docData.getNumberOfDocPerTerm().size(); num++){
                 upNum = docData.getFreqList().get(num)*(K+1);

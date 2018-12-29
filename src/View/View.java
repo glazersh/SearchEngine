@@ -10,15 +10,15 @@ import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.input.MouseEvent;
+
 import javafx.scene.layout.GridPane;
 import javafx.stage.DirectoryChooser;
 
-import java.awt.event.ActionEvent;
-import java.beans.EventHandler;
 import java.io.*;
+
 import java.util.*;
 import java.util.List;
+
 
 
 public class View  implements Observer {
@@ -73,6 +73,9 @@ public class View  implements Observer {
 
     private String queryPath;
     public ComboBox<String> cb_cities;
+
+    public TextField tf_docname;
+    public TextArea ta_doc;
 
 
     public void initialize(){

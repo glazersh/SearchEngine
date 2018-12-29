@@ -574,8 +574,10 @@ public class Parse {
             return;
         }
         // is normal string
-        else // trash here
+        else { // trash here
             term = new Word(real);
+            increaseCounter(term);
+        }
     }
 
     /**
@@ -1062,16 +1064,20 @@ public class Parse {
                     allWordsDic.put(term, termMap);
                 }
             }
+
             //// Finish
             avgDocs+=termInDoc;
-            docInfo.add(docName + "," + maxTermCounter + "," + wordsInDoc.size() + "," + termInDoc + "," + cityName);
+            //docInfo.add(docName + "," + maxTermCounter + "," + wordsInDoc.size() + "," + termInDoc + "," + cityName);
             StringBuffer bf = new StringBuffer();
+
             while (!entityTerms.isEmpty()) {
                 ATerm tmp = entityTerms.poll();
-                if (setPerDoc.get(tmp.finalName).getValue() == 0)
+                if (setPerDoc.get(tmp.finalName)!=null &&setPerDoc.get(tmp.finalName).getValue() == 0)
                     bf.append(":" + tmp.finalName);
             }
-            entityDoc.add(docName + ",{" + bf.toString());
+            //entityDoc.add(docName + ":" + bf.toString());
+            docInfo.add(docName + "," + maxTermCounter + "," + wordsInDoc.size() + "," + termInDoc + "," + cityName + ","+bf.toString());
+
         }else{
             search.getQuery(finalTermsQuery);
         }
