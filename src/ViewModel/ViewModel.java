@@ -81,8 +81,8 @@ public class ViewModel extends java.util.Observable implements Observer  {
         return model.getDocsName();
     }
 
-    public void fileQuery(String queryPath,String stopWords, boolean withstemming, boolean withSemantic, String cities) {
-        model.fileOfQuery(queryPath,stopWords,withstemming,withSemantic,cities);
+    public void fileQuery(String queryPath,String stopWords, boolean withstemming, boolean withSemantic, String cities, String queryToSavePath) {
+        model.fileOfQuery(queryPath,stopWords,withstemming,withSemantic,cities, queryToSavePath);
     }
 
     public List<String> getAllCities() {

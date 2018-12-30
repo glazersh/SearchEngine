@@ -46,6 +46,7 @@ public class View  implements Observer {
 
     public CheckBox cb_isStem;
 
+
     public ChoiceBox cb_Languages;
 
     public GridPane gd_info;
@@ -61,15 +62,24 @@ public class View  implements Observer {
     //partB
     public Button b_query;
     public TextField tf_query;
+    public TextField tf_resultsPath;
+    private File queryResultPath;
+    private String queryToSavePath="";
+
+
+
+
 
     public ListView<DocData> lv_returndocs;
     public ListView lv_entity;
     public ListView<String> lv_city;
-
+    public CheckBox cb_Path;
+    public CheckBox cb_queryPath;
 
     public TextField tf_queryPath;
     private File queryFile;
     public Button b_queryPath;
+    public Button b_queryPath1;
 
     private String queryPath;
     public ComboBox<String> cb_cities;
@@ -102,6 +112,15 @@ public class View  implements Observer {
         } catch (Exception e) {}
     }
 
+    public void checkBoxQuery(){
+        cb_Path.setSelected(true);
+    }
+
+
+    public void checkBoxBrowse(){
+        cb_queryPath.setVisible(true);
+    }
+
     /**
      * gets the path in which to save the postins
      */
@@ -111,6 +130,15 @@ public class View  implements Observer {
             PostingPath = directoryChooser.showDialog(b_postPath.getScene().getWindow());
             tf_postingPath.setText(PostingPath.getAbsolutePath());
             postingPath = PostingPath.getAbsolutePath();
+        } catch (Exception e) {}
+    }
+
+    public void browseQueryPathToSave(){
+        try {
+            DirectoryChooser directoryChooser = new DirectoryChooser();
+            queryResultPath = directoryChooser.showDialog(b_queryPath1.getScene().getWindow());
+            tf_resultsPath.setText(queryResultPath.getAbsolutePath());
+            queryToSavePath = queryResultPath.getAbsolutePath();
         } catch (Exception e) {}
     }
 
@@ -234,20 +262,24 @@ public class View  implements Observer {
     /////////////////////////// part B //////////////////
 
     public void query(){
-        if(queryPath==null || queryPath.equals("")) {
-            String Query = tf_query.getText();
-            if(cb_isSem.isSelected()){
-                Query = viewModel.getSem(Query);
-            }
-            if(lv_city.getItems().size()>0) {
-                for(String city : lv_city.getItems()) {
-                    Query += " "+city;
+        if(cb_Path.isSelected()){
+            if(queryPath==null || queryPath.equals("")) {
+                String Query = tf_query.getText();
+                if (cb_isSem.isSelected()) {
+                    Query = viewModel.getSem(Query);
                 }
+                if (lv_city.getItems().size() > 0) {
+                    for (String city : lv_city.getItems()) {
+                        Query += " " + city;
+                    }
+                }
+                viewModel.startEngineQuery(Query, getStopWordsPath(), cb_isStem.isSelected());
+                lv_returndocs.getItems().clear();
+                List<DocData> docsName = viewModel.getDocsName();
+                lv_returndocs.getItems().addAll(docsName);
+
+
             }
-            viewModel.startEngineQuery(Query, getStopWordsPath(), cb_isStem.isSelected());
-            lv_returndocs.getItems().clear();
-            List<DocData> docsName = viewModel.getDocsName();
-            lv_returndocs.getItems().addAll(docsName);
         }else{
             String cities = "";
             if(lv_city.getItems().size()>0){
@@ -255,8 +287,12 @@ public class View  implements Observer {
                     cities += " "+city;
                 }
             }
-            viewModel.fileQuery(queryPath,getStopWordsPath(),cb_isStem.isSelected(),cb_isSem.isSelected(),cities);
+            viewModel.fileQuery(queryPath,getStopWordsPath(),cb_isStem.isSelected(),cb_isSem.isSelected(),cities,queryToSavePath );
         }
+
+
+
+
     }
 
     public void findEntity(){

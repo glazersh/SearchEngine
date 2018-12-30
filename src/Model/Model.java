@@ -250,8 +250,8 @@ public class Model extends Observable {
     }
 
     public void writeTheAnswer(String numQ, boolean first) {
-            File file = new File("D:\\documents\\users\\glazersh\\Downloads\\query\\result.txt");
-            //File file = new File("C:\\Users\\USER\\Desktop\\search2018\\post\\query\\result.txt");
+            //File file = new File("D:\\documents\\users\\dorlev\\Downloads\\ans\\result.txt");
+            File file = new File("C:\\Users\\USER\\Desktop\\search2018\\post\\query\\result.txt");
             if(first){
                 file.delete();
             }
@@ -267,10 +267,12 @@ public class Model extends Observable {
         }
     }
 
-    public void fileOfQuery(String path, String stopWords, boolean withstemming, boolean withSemantic, String cities) {
+    public void fileOfQuery(String path, String stopWords, boolean withstemming, boolean withSemantic, String cities, String queryToSavePath) {
         if (parse == null) {
             parse = new Parse(stopWords, PathPosting, withstemming, dataCollector);
         }
+        dataCollector.setQueryToSavePath(queryToSavePath);
+
         boolean first = true;
         List<String[]> allQueries ;
         allQueries = splitQueries(path);
@@ -281,7 +283,6 @@ public class Model extends Observable {
                 for (String str : s1) {
                     q[1] += " " + str;
                 }
-
             }
             q[1]+= check(q[2],q[1]);
             parse.parse(q[1]+" "+cities,"","",false);
@@ -405,6 +406,7 @@ public class Model extends Observable {
             isr.close();
             return query+" "+bf.toString();
 
+
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -416,8 +418,8 @@ public class Model extends Observable {
     // don't forget to remove !!!
     private void cmd() {
         String[] command = { "cmd" };
-        String path = "D:\\documents\\users\\glazersh\\Downloads\\query"; // write your path here !
-        //String path = "C:\\Users\\USER\\Desktop\\search2018\\post\\query"; // write your path here !
+        //String path = "D:\\documents\\users\\dorlev\\Downloads\\ans"; // write your path here !
+        String path = "C:\\Users\\USER\\Desktop\\search2018\\post\\query"; // write your path here !
         Process p;
         try{
             p= Runtime.getRuntime().exec(command);
@@ -438,10 +440,10 @@ public class Model extends Observable {
     }
 
     private void writeToCSV() {
-        String readFromFile="D:\\documents\\users\\glazersh\\Downloads\\query\\output.txt"; // path to output.txt
-        //String readFromFile="C:\\Users\\USER\\Desktop\\search2018\\post\\query\\output.txt"; // path to output.txt
-        String writeToFile = "D:\\documents\\users\\glazersh\\Downloads\\query\\Ans.csv";
-        //String writeToFile = "C:\\Users\\USER\\Desktop\\search2018\\post\\query\\Ans.csv";
+        //String readFromFile="D:\\documents\\users\\dorlev\\Downloads\\ans\\output.txt"; // path to output.txt
+        String readFromFile="C:\\Users\\USER\\Desktop\\search2018\\post\\query\\output.txt"; // path to output.txt
+        //String writeToFile = "D:\\documents\\users\\dorlev\\Downloads\\ans\\Ans.csv";
+        String writeToFile = "C:\\Users\\USER\\Desktop\\search2018\\post\\query\\Ans.csv";
         File fileW = new File(writeToFile);
         if(fileW.exists())
             fileW.delete();
