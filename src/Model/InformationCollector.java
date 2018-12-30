@@ -7,7 +7,7 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
-public class TmpSearcher {
+public class InformationCollector {
     Set<String> DocsList;
     String postingPath;
     List<String> queryList;
@@ -23,7 +23,7 @@ public class TmpSearcher {
 
     private Map<String,Map<String,Integer>> tf;
 
-    public TmpSearcher(Map<String, String[]> dictionaryToLoad, Map<String, String[]> docsFilesToLoad, Map<String, String> citiesToLoad, List<String> termsInQuery, String path, DataCollector dataCollector, Map<String,Map<String,Integer>> tf) {
+    public InformationCollector(Map<String, String[]> dictionaryToLoad, Map<String, String[]> docsFilesToLoad, Map<String, String> citiesToLoad, List<String> termsInQuery, String path, DataCollector dataCollector, Map<String,Map<String,Integer>> tf) {
         this.postingPath = path;
         this.dictionaryToLoad = dictionaryToLoad;
         this.docCitiesToLoad = citiesToLoad;

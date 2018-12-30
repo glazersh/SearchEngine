@@ -3,12 +3,11 @@ package Model;
 import Model.Term.ATerm;
 
 import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class Searcher {
 
-    private TmpSearcher tmpSearcher;
+    private InformationCollector tmpSearcher;
     private DataCollector dc;
 
     private List<String> termsInQuery;
@@ -42,7 +41,7 @@ public class Searcher {
     }
 
     public void createTmpSearcher(){
-        tmpSearcher = new TmpSearcher(dictionaryToLoad, docsFilesToLoad, citiesToLoad, termsInQuery, path,dc,tf);
+        tmpSearcher = new InformationCollector(dictionaryToLoad, docsFilesToLoad, citiesToLoad, termsInQuery, path,dc,tf);
         tmpSearcher.setDocsList(docsRelevant);
         List<DocData> listOfDocs = tmpSearcher.start();
         addListToQueue(listOfDocs);
@@ -101,7 +100,7 @@ public class Searcher {
                 if(dictionaryToLoad.containsKey(city.toUpperCase()) ) {
                     pointer = dictionaryToLoad.get(city.toUpperCase())[2];
                     numLine = dictionaryToLoad.get(city.toUpperCase())[3];
-                    
+
                     found = true;
                 }
                 if(!found && dictionaryToLoad.containsKey(city.toLowerCase())){
