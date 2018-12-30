@@ -30,7 +30,7 @@ public class DataCollector {
 
     /////////////added
     List <String>entityDoc;
-
+    String queryToSavePath;
 
     public void insertToEntitiesDoc(String str){
         entityDoc.add(str);
@@ -133,5 +133,13 @@ public class DataCollector {
 
     public List<String> getEntities() {
         return entityDoc;
+    }
+
+    public void setQueryToSavePath(String queryToSavePath) {
+        this.queryToSavePath = queryToSavePath;
+
+    }
+    public String getQueryToSavePath(){
+        return queryToSavePath;
     }
 }
