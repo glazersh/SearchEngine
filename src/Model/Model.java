@@ -250,8 +250,8 @@ public class Model extends Observable {
     }
 
     public void writeTheAnswer(String numQ, boolean first) {
-            //File file = new File("D:\\documents\\users\\dorlev\\Downloads\\ans\\result.txt");
-            File file = new File("C:\\Users\\USER\\Desktop\\search2018\\post\\query\\result.txt");
+            File file = new File("D:\\documents\\users\\glazersh\\Downloads\\query\\result.txt");
+            //File file = new File("C:\\Users\\USER\\Desktop\\search2018\\post\\query\\result.txt");
             if(first){
                 file.delete();
             }
@@ -278,11 +278,10 @@ public class Model extends Observable {
             if(withSemantic){
                 String semanticWords = getSemantics(q[1]);
                 Set<String> s1 = new HashSet<String>(Arrays.asList(semanticWords.split(" ")));
-                Set<String> s2 = new HashSet<String>(Arrays.asList(q[3].split(" ")));
-                s1.retainAll(s2);
-                for(String str :s1){
-                    q[1]+=" "+str;
+                for (String str : s1) {
+                    q[1] += " " + str;
                 }
+
             }
             q[1]+= check(q[2],q[1]);
             parse.parse(q[1]+" "+cities,"","",false);
@@ -294,55 +293,16 @@ public class Model extends Observable {
     }
 
     private String check(String str,String query) {
+        Set queryF = new HashSet();
         StringBuffer bf = new StringBuffer(" ");
         String[]words = str.split(" ");
+        for(String word:words){
+            if(!query.contains(word) && !queryF.contains(word)) {
+                bf.append(" " + word);
+                queryF.add(word);
+            }
 
-//        int positionRelevant = str.indexOf("relevant");
-//        if(positionRelevant==-1){
-//            positionRelevant = str.indexOf("Relevant");
-//        }
-//        int positionNotRelevant = Math.max(str.indexOf("not relevant"),str.indexOf("non-relevant"));
-//        if(positionRelevant>positionNotRelevant && positionNotRelevant!=-1)
-//            positionRelevant = str.lastIndexOf("relevant");
-//        int length = str.length();
-//
-//        if(positionNotRelevant!=-1) {
-//            // first relevant and after non relevant
-//            // take back
-//            String[] dot = str.split("relevant");
-//            for (String line : dot) {
-//                if (line.contains("not relevant") || line.contains("non-relevant")) {
-//                    if ((line.indexOf("not relevant") < line.length() / 2 && line.indexOf("not relevant") != -1) || (line.indexOf("non-relevant") < line.length() / 2 && line.indexOf("non-relevant") != -1)) {
-//                        String[] wordsR = line.split(" ");
-//                        for (String wr : wordsR) {
-//                            if (!query.contains(wr) && !notR.contains(wr)) {
-//                                bf.append(wr + " ");
-//                            }
-//                        }
-//                    } else {
-//                        int x = 4;
-//                        // delete the last
-//                    }
-//                } else {
-//                    String[] wordsR = line.split(" ");
-//                    for (String wr : wordsR) {
-//                        if (!query.contains(wr) && !notR.contains(wr)) {
-//                            bf.append(wr + " ");
-//                        }
-//                    }
-//                }
-//            }
-//        }
-////        else{
-////            String[] wordsR = str.split(" ");
-////            for (String wr : wordsR) {
-////                if (!query.contains(wr) && !notR.contains(wr)) {
-////                    bf.append(wr + " ");
-////                }
-////            }
-////        }
-//
-//
+        }
 
         return bf.toString();
 
@@ -416,6 +376,8 @@ public class Model extends Observable {
     }
 
     public String getSemantics(String query){
+        StringBuffer bf = new StringBuffer();
+
         String queryPlus = query.replace(" ", "+");
         final String urlString = "https://api.datamuse.com/words?ml=" + queryPlus;
         BufferedReader br = null;
@@ -427,23 +389,21 @@ public class Model extends Observable {
             isr = new InputStreamReader(con.getInputStream());
             br = new BufferedReader(isr);
             String line;
-            StringBuffer bf = new StringBuffer();
             while((line = br.readLine()) != null){
                 int counter = 0;
                 String[]perWord = line.substring(2).split("\\{");
                 for(String word : perWord){
-                    //if(counter==10)
-                    //    break;
                     String[]tmp = word.split(",")[0].split(":");
                     bf.append(tmp[1].substring(1).replace('"',' '));
-                    //counter++;
+                    counter++;
+                    if(counter == 10)
+                        break;
 
                 }
             }
             br.close();
             isr.close();
             return query+" "+bf.toString();
-
 
         } catch (MalformedURLException e) {
             e.printStackTrace();
@@ -456,8 +416,8 @@ public class Model extends Observable {
     // don't forget to remove !!!
     private void cmd() {
         String[] command = { "cmd" };
-        //String path = "D:\\documents\\users\\dorlev\\Downloads\\ans"; // write your path here !
-        String path = "C:\\Users\\USER\\Desktop\\search2018\\post\\query"; // write your path here !
+        String path = "D:\\documents\\users\\glazersh\\Downloads\\query"; // write your path here !
+        //String path = "C:\\Users\\USER\\Desktop\\search2018\\post\\query"; // write your path here !
         Process p;
         try{
             p= Runtime.getRuntime().exec(command);
@@ -478,10 +438,10 @@ public class Model extends Observable {
     }
 
     private void writeToCSV() {
-        //String readFromFile="D:\\documents\\users\\dorlev\\Downloads\\ans\\output.txt"; // path to output.txt
-        String readFromFile="C:\\Users\\USER\\Desktop\\search2018\\post\\query\\output.txt"; // path to output.txt
-        //String writeToFile = "D:\\documents\\users\\dorlev\\Downloads\\ans\\Ans.csv";
-        String writeToFile = "C:\\Users\\USER\\Desktop\\search2018\\post\\query\\Ans.csv";
+        String readFromFile="D:\\documents\\users\\glazersh\\Downloads\\query\\output.txt"; // path to output.txt
+        //String readFromFile="C:\\Users\\USER\\Desktop\\search2018\\post\\query\\output.txt"; // path to output.txt
+        String writeToFile = "D:\\documents\\users\\glazersh\\Downloads\\query\\Ans.csv";
+        //String writeToFile = "C:\\Users\\USER\\Desktop\\search2018\\post\\query\\Ans.csv";
         File fileW = new File(writeToFile);
         if(fileW.exists())
             fileW.delete();

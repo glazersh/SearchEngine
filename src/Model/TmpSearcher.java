@@ -86,111 +86,14 @@ public class TmpSearcher {
             }
         }
         docData.setTermsInDoc(counter);
+        int And = counter;
+        int docLength = docData.getDocLength();
+        int Or = queryList.size()-counter;
+        double Jaccard = (double)And/(docLength + Or);
+        docData.setJaccard(Jaccard);
 
-
-
-/*
-            String termPostFile = dictionaryToLoad.get(term)[2];
-            String termPosition = dictionaryToLoad.get(term)[3];
-            int termPos = Integer.parseInt(termPosition);
-            ///open post where the term is
-            FileInputStream out = null;
-            BufferedReader br = null;
-            try {//GZIPInputStream gzip = new GZIPInputStream(new FileInputStream(file));
-                out = new FileInputStream(postingPath + "\\" + termPostFile);
-                br = new BufferedReader(new InputStreamReader(out, StandardCharsets.UTF_8));
-
-
-                String line;
-                int counter = 0;
-                while ((line = br.readLine()) != null) {
-                    if (counter == termPos - 1)
-                        break;
-                    counter++;
-                }
-
-                //split the term from the documents
-                String termData = line.split(",\\{")[1];
-                //split to array of documents
-                String[] DocsInTermOccur = termData.split("\\{");
-                boolean found = false;
-                for (int i = 0; i < DocsInTermOccur.length; i++) {
-                    String DocNameInPost = DocsInTermOccur[i].split(":")[0];
-                    //if twe found the relevant doc
-                    if (DocNameInPost.equals(docName)) {
-                        docData.addToFreqList(Integer.parseInt(DocsInTermOccur[i].split(":")[1]));
-                        found = true;
-                        break;
-                    }
-                }
-                if(!found)
-                    docData.addToFreqList(0);
-
-
-            } catch (IOException e) {
-            } finally {
-                try {
-                    if (out != null)
-                        out.close();
-
-                    if (br != null)
-                        br.close();
-                } catch (IOException ex) {
-
-                }
-            }
-        }
-        */
 
         return docData;
-    }
-
-
-
-    public void getEntities(String docName,DocData docData){
-        FileInputStream out = null;
-        BufferedReader br = null;
-        try {//GZIPInputStream gzip = new GZIPInputStream(new FileInputStream(file));
-            out = new FileInputStream(postingPath + "\\Entities");
-            br = new BufferedReader(new InputStreamReader(out, StandardCharsets.UTF_8));
-
-            String line;
-            while ((line = br.readLine()) != null) {
-                String[] docInfo = line.split(",\\{");
-                if (docInfo[0].equals(docName) && docInfo.length!=1) {
-                    splitEntities(docInfo[1], docData);
-                    break;
-                }
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (out != null)
-                    out.close();
-
-                if (br != null)
-                    br.close();
-            } catch (IOException ex) {
-
-            }
-        }
-
-    }
-
-    private void splitEntities(String strEntities, DocData docData) {
-        String[] entities= strEntities.split(":");
-        int counter=0;
-        for(int i=0; i<entities.length || counter<5;i++){
-            if(dictionaryToLoad.containsKey(entities[i])){
-                docData.addToTopEntities(entities[i]);
-                counter++;
-            }
-        }
-
-
     }
 
 }

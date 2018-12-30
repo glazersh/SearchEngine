@@ -32,7 +32,7 @@ public class Searcher {
         returnsDocs = new PriorityQueue(new Comparator<DocData>() {
             @Override
             public int compare(DocData o1, DocData o2) {
-                if(o1.getSumBM25()*0.7 + o1.getTermsInDoc()*0.3 > o2.getSumBM25()*0.7 + o2.getTermsInDoc()*0.3)
+                if(0.9 * o1.getSumBM25()/100 + 0.1*o1.getJaccard() > 0.9*o2.getSumBM25()/100+0.1*o2.getJaccard())
                     return -1;
                 else
                     return 1;
@@ -101,13 +101,13 @@ public class Searcher {
                 if(dictionaryToLoad.containsKey(city.toUpperCase()) ) {
                     pointer = dictionaryToLoad.get(city.toUpperCase())[2];
                     numLine = dictionaryToLoad.get(city.toUpperCase())[3];
-                    //termsInQuery.add(city.toUpperCase());
+                    
                     found = true;
                 }
                 if(!found && dictionaryToLoad.containsKey(city.toLowerCase())){
                     pointer = dictionaryToLoad.get(city.toLowerCase())[2];
                     numLine = dictionaryToLoad.get(city.toLowerCase())[3];
-                    //termsInQuery.add(city.toLowerCase());
+
                     found = true;
                 }
                 if(found) {

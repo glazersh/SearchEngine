@@ -59,9 +59,11 @@ public class Ranker {
         double downNum;
         double B=0.75;
         double K=1.2;
-        //double K = Math.min(docData.getDocLength()*(1.2/dataCollector.getAverageNumOfDocs()),2);
-        //if(K<0.05)
-        //    K=0.05;
+//        double K = Math.min(docData.getDocLength()*(1.2/dataCollector.getAverageNumOfDocs()),2);
+//        if(K<0.05)
+//            K=0.05;
+//        if(K>2.00)
+//            K=2.00;
         double BM25 =0;
 
 

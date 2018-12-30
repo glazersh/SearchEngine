@@ -160,7 +160,7 @@ public class View  implements Observer {
             l_warning.setVisible(true);
             l_warning.setText("Empty path");
         } else {
-            if (withStemming) {
+            if (cb_isStem.isSelected()) {
                 path = PostingPath + "\\Y\\";
             } else {
                 path = PostingPath + "\\N\\";
