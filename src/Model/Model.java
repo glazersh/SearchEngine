@@ -267,6 +267,16 @@ public class Model extends Observable {
         }
     }
 
+    /**
+     * function which cuts the words of the query and sends to the parser
+     * @param path
+     * @param stopWords
+     * @param withstemming
+     * @param withSemantic
+     * @param cities
+     * @param queryToSavePath
+     */
+
     public void fileOfQuery(String path, String stopWords, boolean withstemming, boolean withSemantic, String cities, String queryToSavePath) {
         if (parse == null) {
             parse = new Parse(stopWords, PathPosting, withstemming, dataCollector);
@@ -293,6 +303,12 @@ public class Model extends Observable {
         writeToCSV(); // don't forget to remove !!!
     }
 
+    /***
+     * adding the description to the query
+     * @param str
+     * @param query
+     * @return
+     */
     private String check(String str,String query) {
         Set queryF = new HashSet();
         StringBuffer bf = new StringBuffer(" ");
@@ -310,6 +326,11 @@ public class Model extends Observable {
 
     }
 
+    /**
+     * cuts the details from the given queries files
+     * @param path
+     * @return
+     */
     private List<String[]> splitQueries(String path) {
         List<String[]> queries = new ArrayList<>();
 
@@ -317,6 +338,7 @@ public class Model extends Observable {
         FileReader fr = null;
 
         try {
+            //gets the file
             fr = new FileReader(path+"\\queries.txt");
             br = new BufferedReader(fr);
             String line;
@@ -329,10 +351,12 @@ public class Model extends Observable {
                     }
                     continue;
                 }
+                //gets the title
                 if (line.startsWith("<title>")) {
                     numQuery[1] = line.substring(8);
                     continue;
                 }
+                //gets the description
                 if(line.startsWith("<desc>")){
                     String dec="";
                     while((line = br.readLine()) != null){
@@ -343,6 +367,7 @@ public class Model extends Observable {
                     }
                     numQuery[2] = dec;
                 }
+                //gets the narrative
                 if(line.startsWith("<narr>")){
                     String narr="";
                     while((line = br.readLine()) != null && !line.equals("</top>") ){
@@ -370,12 +395,21 @@ public class Model extends Observable {
         return queries;
     }
 
+    /**
+     *
+     * @return list of cities from the cities dictionary
+     */
     public List<String> getAllCities() {
         List<String>cities = new ArrayList<>();
         cities.addAll(citiesToLoad.keySet());
         return cities;
     }
 
+    /**
+     * function which gets the semantic from a given api
+     * @param query
+     * @return
+     */
     public String getSemantics(String query){
         StringBuffer bf = new StringBuffer();
 

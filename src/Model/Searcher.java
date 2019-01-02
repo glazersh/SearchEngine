@@ -122,6 +122,7 @@ public class Searcher {
 
     }
 
+
     private List<String> fromTAGS(String city) {
         String[] docs = citiesToLoad.get(city).split(":");
         List<String>returnList = new ArrayList<>();
@@ -131,12 +132,16 @@ public class Searcher {
         return returnList;
     }
 
+    /**
+     * function for the loading in the gui
+     */
     private void initAllDict() {
         dictionaryToLoad = dc.getDictionaryToLoad();
         docsFilesToLoad = dc.getDocsFilesToLoad();
         citiesToLoad = dc.getCitiesToLoad();
         entityToLoad = dc.getEntityToLoad();
     }
+
 
     private List <String> splitDocsName(String df, String term) {
         List <String> docNames = new ArrayList();
@@ -217,6 +222,11 @@ public class Searcher {
         dc.setRelevantDocs(docsName);
 
     }
+
+    /**
+     * function for adding the entities we found to the post of the docs
+     * @param docData
+     */
 
     private void addEntityToDocData(DocData docData) {
         String[]allEntity = entityToLoad.get(docData.getDocName());
