@@ -87,6 +87,10 @@ public class View  implements Observer {
     public TextField tf_docname;
     public TextArea ta_doc;
 
+    public CheckBox cb_isSem;
+    public ListView lv_idQuery;
+    private boolean isLoad = false;
+
 
     public void initialize(){
         cb_cities.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
@@ -98,7 +102,7 @@ public class View  implements Observer {
     }
 
 
-    public CheckBox cb_isSem;
+
 
     /**
      * gets the path where the corpus is
@@ -114,6 +118,7 @@ public class View  implements Observer {
 
     public void checkBoxQuery(){
         cb_Path.setSelected(true);
+        cb_queryPath.setSelected(false);
     }
 
 
@@ -139,6 +144,9 @@ public class View  implements Observer {
             queryResultPath = directoryChooser.showDialog(b_queryPath1.getScene().getWindow());
             tf_resultsPath.setText(queryResultPath.getAbsolutePath());
             queryToSavePath = queryResultPath.getAbsolutePath();
+            if(!queryToSavePath.equals("")){
+                b_query.setDisable(false);
+            }
         } catch (Exception e) {}
     }
 
@@ -195,7 +203,7 @@ public class View  implements Observer {
             }
             viewModel.loadDic(path);
             cb_cities.getItems().addAll(viewModel.getAllCities());
-
+            isLoad = true;
             l_info.setText("The dictionary is loaded");
         }
     }
@@ -247,9 +255,6 @@ public class View  implements Observer {
         return corpusFile.getPath()+"\\stop_words.txt";
     }
 
-    public File getFile() {
-        return corpusFile;
-    }
 
     @Override
     public void update(java.util.Observable o, Object arg) {
@@ -262,8 +267,11 @@ public class View  implements Observer {
     /////////////////////////// part B //////////////////
 
     public void query(){
+        lv_idQuery.getItems().clear();
+        viewModel.clearIDS();
         if(cb_Path.isSelected()){
-            if(queryPath==null || queryPath.equals("")) {
+            if(tf_query.getText().equals("")) {
+
                 String Query = tf_query.getText();
                 if (cb_isSem.isSelected()) {
                     Query = viewModel.getSem(Query);
@@ -280,6 +288,9 @@ public class View  implements Observer {
 
 
             }
+            else{
+                int x=4;
+            }
         }else{
             String cities = "";
             if(lv_city.getItems().size()>0){
@@ -288,6 +299,7 @@ public class View  implements Observer {
                 }
             }
             viewModel.fileQuery(queryPath,getStopWordsPath(),cb_isStem.isSelected(),cb_isSem.isSelected(),cities,queryToSavePath );
+            getAnswer();
         }
 
 
@@ -307,7 +319,13 @@ public class View  implements Observer {
         DirectoryChooser directoryChooser = new DirectoryChooser();
         queryFile = directoryChooser.showDialog(b_queryPath.getScene().getWindow());
         tf_queryPath.setText(queryFile.getAbsolutePath());
+        if(!tf_queryPath.getText().equals("") && isLoad==true){
+            b_query.setDisable(false);
+        }
         queryPath = queryFile.getAbsolutePath();
+        cb_queryPath.setSelected(true);
+        cb_Path.setSelected(false);
+
     }
 
     public void selectCities(){
@@ -320,6 +338,30 @@ public class View  implements Observer {
 
     public void removeCity(){
         lv_city.getItems().remove(lv_city.getSelectionModel().getSelectedItem());
+    }
+
+    public void canRun(){
+        String tmp = tf_query.getText();
+        if(!tmp.equals("") && isLoad==true)
+            b_query.setDisable(false);
+        else
+            b_query.setDisable(true);
+    }
+
+
+
+    public void getAnswer(){
+        lv_idQuery.getItems().clear();
+        lv_returndocs.getItems().clear();
+        lv_idQuery.getItems().addAll(viewModel.getIDs());
+    }
+
+    public void showAns(){
+        lv_returndocs.getItems().clear();
+//        lv_idQuery.getItems().clear();
+        int value = lv_idQuery.getSelectionModel().getSelectedIndex();
+        List<DocData> tmp = viewModel.getANS(value+1);
+        lv_returndocs.getItems().addAll(tmp);
     }
 
 

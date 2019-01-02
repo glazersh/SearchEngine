@@ -31,7 +31,7 @@ public class Searcher {
         returnsDocs = new PriorityQueue(new Comparator<DocData>() {
             @Override
             public int compare(DocData o1, DocData o2) {
-                if(0.9 * o1.getSumBM25()/100 + 0.1*o1.getJaccard() > 0.9*o2.getSumBM25()/100+0.1*o2.getJaccard())
+                if( 0.9 * o1.getSumBM25()/100 + 0.1 * o1.getJaccard() > 0.9 * o2.getSumBM25()/100 + 0.1 * o2.getJaccard())
                     return -1;
                 else
                     return 1;
@@ -56,7 +56,7 @@ public class Searcher {
 
     public void getQuery(List<ATerm> query){
 
-        if(dictionaryToLoad == null){
+        if(dictionaryToLoad == null || dc.refresh){
             initAllDict();
         }
         List<String>cities = new ArrayList<>();
@@ -136,6 +136,7 @@ public class Searcher {
         docsFilesToLoad = dc.getDocsFilesToLoad();
         citiesToLoad = dc.getCitiesToLoad();
         entityToLoad = dc.getEntityToLoad();
+        dc.refresh = false;
     }
 
     private List <String> splitDocsName(String df, String term) {
@@ -200,11 +201,12 @@ public class Searcher {
         returnsDocs.add(newDoc);
     }
 
+
     /**
      * @return list of docs name (max 50 docs)
      */
     public void getRelevantDocs(){
-
+        Map<Integer,List> idDocsAns = new HashMap<>();
         List<DocData>docsName = new ArrayList<>();
         int counter = 0;
         while(!returnsDocs.isEmpty() && counter < 50){
@@ -215,8 +217,11 @@ public class Searcher {
         }
         returnsDocs.clear();
         dc.setRelevantDocs(docsName);
+        dc.setIDWithDocs(docsName);
 
     }
+    int counterID = 1;
+
 
     private void addEntityToDocData(DocData docData) {
         String[]allEntity = entityToLoad.get(docData.getDocName());
