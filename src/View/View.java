@@ -147,6 +147,7 @@ public class View  implements Observer {
             if(!queryToSavePath.equals("")){
                 b_query.setDisable(false);
             }
+            viewModel.setQueryPathToSave(queryToSavePath);
         } catch (Exception e) {}
     }
 
@@ -270,7 +271,7 @@ public class View  implements Observer {
         lv_idQuery.getItems().clear();
         viewModel.clearIDS();
         if(cb_Path.isSelected()){
-            if(tf_query.getText().equals("")) {
+            if(!tf_query.getText().equals("")) {
 
                 String Query = tf_query.getText();
                 if (cb_isSem.isSelected()) {
@@ -298,13 +299,9 @@ public class View  implements Observer {
                     cities += " "+city;
                 }
             }
-            viewModel.fileQuery(queryPath,getStopWordsPath(),cb_isStem.isSelected(),cb_isSem.isSelected(),cities,queryToSavePath );
+            viewModel.fileQuery(queryPath,getStopWordsPath(),cb_isStem.isSelected(),cb_isSem.isSelected(),cities );
             getAnswer();
         }
-
-
-
-
     }
 
     public void findEntity(){
@@ -325,6 +322,7 @@ public class View  implements Observer {
         queryPath = queryFile.getAbsolutePath();
         cb_queryPath.setSelected(true);
         cb_Path.setSelected(false);
+
 
     }
 

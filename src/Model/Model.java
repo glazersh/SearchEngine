@@ -249,7 +249,9 @@ public class Model extends Observable {
             parse = new Parse(stopWords, PathPosting, withstemming, dataCollector);
 
         parse.parse(query, "", "", false);
-        writeTheAnswer("351",true); // remove here !
+        int ID = (int) (Math.random()*900+100);
+        writeTheAnswer(ID+"",true);
+        dataCollector.addID(ID+"");
     }
 
     public List<DocData> getDocsName() {
@@ -257,7 +259,8 @@ public class Model extends Observable {
     }
 
     public void writeTheAnswer(String numQ, boolean first) {
-            File file = new File("D:\\documents\\users\\dorlev\\Downloads\\query\\result.txt");
+        String path = dataCollector.getQueryToSavePath();
+            File file = new File(path + "\\result.txt");
             //File file = new File("C:\\Users\\USER\\Desktop\\search2018\\post\\query\\result.txt");
             if(first){
                 file.delete();
@@ -281,14 +284,12 @@ public class Model extends Observable {
      * @param withstemming
      * @param withSemantic
      * @param cities
-     * @param queryToSavePath
      */
 
-    public void fileOfQuery(String path, String stopWords, boolean withstemming, boolean withSemantic, String cities, String queryToSavePath) {
+    public void fileOfQuery(String path, String stopWords, boolean withstemming, boolean withSemantic, String cities) {
         if (parse == null) {
             parse = new Parse(stopWords, PathPosting, withstemming, dataCollector);
         }
-        dataCollector.setQueryToSavePath(queryToSavePath);
 
         boolean first = true;
         List<String[]> allQueries ;
@@ -571,6 +572,10 @@ public class Model extends Observable {
     public List<DocData> getANS(int value) {
         List<DocData>tmp = dataCollector.getCurrent(value);
         return tmp;
+    }
+
+    public void setQueryPathToSave(String queryPathToSave) {
+        this.dataCollector.setQueryToSavePath(queryPathToSave);
     }
 
     class SyncPipe implements Runnable
