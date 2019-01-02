@@ -825,15 +825,21 @@ public class Parse {
             if (!word.equals("") && ((word.equals("Between") || (word.equals("May")  || !stopWords.contains(word.toLowerCase()))))) {
                 // regular text
                 if (pos + 1 < allText.length && isNormalWord(word, cutSigns(allText[pos + 1]))) {
-
+                    boolean isUpper = false;
                     // stemmer
                     if(withStem) {
+                        if(Character.isUpperCase(word.charAt(0))){
+                            isUpper = true;
+                            word = word.toLowerCase();
+                        }
                         stem.add(word.toCharArray(), word.length());
                         stem.stem();
                         if (stem.toString().endsWith("'") || stem.toString().endsWith("`")) {
                             word = cutSigns(stem.toString());
                         } else {
                             word = stem.toString();
+                            if(isUpper)
+                                word = word.toUpperCase();
                         }
                     }
 

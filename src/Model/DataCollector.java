@@ -1,9 +1,8 @@
 package Model;
 
+import javax.print.Doc;
 import java.io.File;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class DataCollector {
 
@@ -19,6 +18,11 @@ public class DataCollector {
     private Map<String,String[]> dictionaryToLoad;
     private Map<String,String> citiesToLoad;
     private Map<String,String[]> docsFilesToLoad;
+    public boolean refresh;
+
+    public boolean getRefresh(){
+        return refresh;
+    }
 
     public Map<String, String[]> getEntityToLoad() {
         return entityToLoad;
@@ -31,6 +35,10 @@ public class DataCollector {
     /////////////added
     List <String>entityDoc;
     String queryToSavePath;
+    private  Map<String,List> IDWithDocs = new HashMap<>();
+    private List<String> ID = new ArrayList<>();
+    int counter =1 ;
+
 
     public void insertToEntitiesDoc(String str){
         entityDoc.add(str);
@@ -59,6 +67,12 @@ public class DataCollector {
         this.averageNumOfDocs = averageNumOfDocs;
     }
 
+    public void resetIDs(){
+        ID.clear();
+        IDWithDocs.clear();
+        counter=1;
+        refresh = true;
+    }
 
     public String getPostPath() {
         return postPath;
@@ -117,6 +131,7 @@ public class DataCollector {
         this.docsFilesToLoad=docsFilesToLoad;
         this.citiesToLoad=citiesToLoad;
         this.entityToLoad = entity;
+
     }
 
     public List<DocData>getDocs(){
@@ -141,5 +156,25 @@ public class DataCollector {
     }
     public String getQueryToSavePath(){
         return queryToSavePath;
+    }
+
+    public void setIDWithDocs(List<DocData> IDWithDocs) {
+        this.IDWithDocs.put((counter++)+"",IDWithDocs);
+    }
+
+    public Map<String, List> getIDWithDocs() {
+        return IDWithDocs;
+    }
+
+    public List<DocData>getCurrent(int index){
+        List<DocData>tmp = IDWithDocs.get(index+"");
+        return tmp;
+    }
+
+    public void addID(String s) {
+        ID.add(s);
+    }
+    public List<String> getIDs(){
+        return ID;
     }
 }

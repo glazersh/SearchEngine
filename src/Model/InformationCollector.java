@@ -48,11 +48,7 @@ public class InformationCollector {
 
         for (DocData docdata:ListDocs) {
            ranker.start(docdata);
-           //////may change
-           if(docdata.getSumBM25()>0) {
-               //getEntities(docdata.getDocName(), docdata);
-               FinalListDocs.add(docdata);
-           }
+           FinalListDocs.add(docdata);
         }
 
        return FinalListDocs;

@@ -24,7 +24,7 @@ public class Main extends Application {
 
         primaryStage.setTitle("Search Engine");
 
-        primaryStage.setScene(new Scene(root, 1000, 600));
+        primaryStage.setScene(new Scene(root, 1000, 650));
         primaryStage.show();
     }
 

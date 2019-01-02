@@ -17,10 +17,9 @@ public class ViewModel extends java.util.Observable implements Observer  {
 
 
     private Model model;
-    private DataCollector dataCollector;
     private View MainWindow;
     public File selectedFolderBrowseCollection;
-    Map<String, Integer> bigDic;
+
 
 
     public ViewModel(Model model, View mainWindow) {
@@ -28,15 +27,7 @@ public class ViewModel extends java.util.Observable implements Observer  {
         this.MainWindow = mainWindow;
     }
 
-    public void getFile() {
 
-        model.setFiles(MainWindow.getFile());
-    }
-
-
-    public Map getMap(){
-        return model.getMap();
-    }
 
     @Override
     public void update(java.util.Observable o, Object arg) {
@@ -91,5 +82,18 @@ public class ViewModel extends java.util.Observable implements Observer  {
 
     public String getSem(String query) {
         return model.getSemantics(query);
+    }
+
+    public List<String> getIDs() {
+        return model.getIDs();
+    }
+
+    public List<DocData> getANS(int value) {
+        List<DocData>tmp =  model.getANS(value);
+        return tmp;
+    }
+
+    public void clearIDS(){
+        model.IDsClear();
     }
 }
