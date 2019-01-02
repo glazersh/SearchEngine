@@ -19,6 +19,7 @@ public class DataCollector {
     private Map<String,String> citiesToLoad;
     private Map<String,String[]> docsFilesToLoad;
     public boolean refresh;
+    private List<String> langToLoad;
 
     public boolean getRefresh(){
         return refresh;
@@ -126,11 +127,12 @@ public class DataCollector {
 
 
 
-    public void setAllDicToLoad(Map<String, String[]> docsFilesToLoad, Map<String, String[]> dictionaryToLoad, Map<String, String> citiesToLoad, Map<String,String[]> entity) {
+    public void setAllDicToLoad(Map<String, String[]> docsFilesToLoad, Map<String, String[]> dictionaryToLoad, Map<String, String> citiesToLoad, Map<String,String[]> entity, Set<String> Lang) {
         this.dictionaryToLoad=dictionaryToLoad;
         this.docsFilesToLoad=docsFilesToLoad;
         this.citiesToLoad=citiesToLoad;
         this.entityToLoad = entity;
+        this.lang = Lang;
 
     }
 

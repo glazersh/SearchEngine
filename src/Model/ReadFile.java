@@ -93,8 +93,6 @@ public class ReadFile {
                     Parse.post.fromMapToPostFiles(Parse.allWordsDic);
                     Parse.post.writePerDoc(Parse.docInfo);
                     Parse.clearDictionary();
-//                    if(counterFiles==10)
-//                        break;
                 }
             }
 
@@ -111,10 +109,9 @@ public class ReadFile {
             Parse.post.setCitiesMap(citiesMap);
             Parse.post.createMap();
             Parse.post.createCapitalPost(Parse.getCapitalDictionary());
-            /////
             Parse.setEntityPost();
-            Parse.post.setEntitiesPost(Parse.getEntities());
-            ///////
+            Parse.post.setLang(languages);
+            //Parse.post.setEntitiesPost(Parse.getEntities());
             dataC.setNumberOfDocs(countDoc);
             dataC.setAverageNumOfDocs(Parse.avgDocs/countDoc);
             List<String>docCounter = new ArrayList<>();

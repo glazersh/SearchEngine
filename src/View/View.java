@@ -144,9 +144,6 @@ public class View  implements Observer {
             queryResultPath = directoryChooser.showDialog(b_queryPath1.getScene().getWindow());
             tf_resultsPath.setText(queryResultPath.getAbsolutePath());
             queryToSavePath = queryResultPath.getAbsolutePath();
-            if(!queryToSavePath.equals("")){
-                b_query.setDisable(false);
-            }
             viewModel.setQueryPathToSave(queryToSavePath);
         } catch (Exception e) {}
     }
@@ -205,6 +202,12 @@ public class View  implements Observer {
             viewModel.loadDic(path);
             cb_cities.getItems().addAll(viewModel.getAllCities());
             isLoad = true;
+            Set<String> lang = viewModel.getLang();
+            List<String> langList = new ArrayList<>();
+            for(String str :lang){
+                langList.add(str);
+            }
+            cb_Languages.getItems().addAll(langList);
             l_info.setText("The dictionary is loaded");
         }
     }
@@ -284,9 +287,8 @@ public class View  implements Observer {
                 }
                 viewModel.startEngineQuery(Query, getStopWordsPath(), cb_isStem.isSelected());
                 lv_returndocs.getItems().clear();
-                List<DocData> docsName = viewModel.getDocsName();
-                lv_returndocs.getItems().addAll(docsName);
-
+                getAnswer();
+                l_info.setText("The results are shown");
 
             }
             else{
@@ -301,6 +303,7 @@ public class View  implements Observer {
             }
             viewModel.fileQuery(queryPath,getStopWordsPath(),cb_isStem.isSelected(),cb_isSem.isSelected(),cities );
             getAnswer();
+            l_info.setText("The results are shown");
         }
     }
 
@@ -309,6 +312,7 @@ public class View  implements Observer {
         DocData doc  = lv_returndocs.getSelectionModel().getSelectedItem();
         if(doc.getTopEntities() != null && doc.getTopEntities().size()>0){
             lv_entity.getItems().addAll(doc.getTopEntities());
+            l_info.setText("Entity is shown !");
         }
     }
 
@@ -356,7 +360,6 @@ public class View  implements Observer {
 
     public void showAns(){
         lv_returndocs.getItems().clear();
-//        lv_idQuery.getItems().clear();
         int value = lv_idQuery.getSelectionModel().getSelectedIndex();
         List<DocData> tmp = viewModel.getANS(value+1);
         lv_returndocs.getItems().addAll(tmp);

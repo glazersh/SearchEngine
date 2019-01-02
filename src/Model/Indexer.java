@@ -641,8 +641,17 @@ public class Indexer {
         this.citiesMap = citiesMap;
     }
 
-    public void setEntitiesPost(List<String> entityDoc) {
-        File EntitiesPost = new File(pathWithStem + "\\" + "Entities");
+    public class SortIgnoreCase implements Comparator<Object> {
+        public int compare(Object o1, Object o2) {
+            String s1 = (String) o1;
+            String s2 = (String) o2;
+            return s1.toLowerCase().compareTo(s2.toLowerCase());
+        }
+    }
+
+
+    public void setLang(Set<String> languages) {
+        File EntitiesPost = new File(pathWithStem + "\\" + "Lang");
         FileWriter out = null;
         try {
             EntitiesPost.createNewFile();
@@ -650,7 +659,7 @@ public class Indexer {
             try {
                 out = new FileWriter(EntitiesPost);
                 writer = new BufferedWriter(out);
-                for (String str : entityDoc) {
+                for (String str : languages) {
                     writer.write(str + "\n");
                 }
                 writer.flush();
@@ -667,21 +676,6 @@ public class Indexer {
             }
         } catch (IOException e) {
 
-        }
-
-
-
-
-
-
-
-    }
-
-    public class SortIgnoreCase implements Comparator<Object> {
-        public int compare(Object o1, Object o2) {
-            String s1 = (String) o1;
-            String s2 = (String) o2;
-            return s1.toLowerCase().compareTo(s2.toLowerCase());
         }
     }
 }

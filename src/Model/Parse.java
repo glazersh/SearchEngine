@@ -86,17 +86,11 @@ public class Parse {
         entityTerms  = new PriorityQueue<>(new Comparator<ATerm>() {
             @Override
             public int compare(ATerm o1, ATerm o2) {
-                if(o1.getTf()<o2.getTf())
+                if((o1.getTf()*0.9) + (0.1 * 1/(1+o1.getPosition()))<(o2.getTf()*0.9) + (0.1 * 1/(1+o2.getPosition())))
                     return 1;
-                if(o1.getTf()>o2.getTf())
+                else
                     return -1;
-                else{
-                    if(o1.getPosition() < o2.getPosition())
-                        return -1;
-                    if(o1.getPosition() > o2.getPosition())
-                        return 1;
-                }
-                return 0;
+
             }
         });
         entityDoc = new ArrayList<>();
@@ -1073,15 +1067,13 @@ public class Parse {
 
             //// Finish
             avgDocs+=termInDoc;
-            //docInfo.add(docName + "," + maxTermCounter + "," + wordsInDoc.size() + "," + termInDoc + "," + cityName);
             StringBuffer bf = new StringBuffer();
 
             while (!entityTerms.isEmpty()) {
                 ATerm tmp = entityTerms.poll();
                 if (setPerDoc.get(tmp.finalName)!=null &&setPerDoc.get(tmp.finalName).getValue() == 0)
-                    bf.append(":" + tmp.finalName);
+                    bf.append(":" + tmp.finalName +"," +(((double)tmp.getTf()*0.9) + (0.1* 1/(tmp.getPosition()+1))));
             }
-            //entityDoc.add(docName + ":" + bf.toString());
             docInfo.add(docName + "," + maxTermCounter + "," + wordsInDoc.size() + "," + termInDoc + "," + cityName + ","+bf.toString());
 
         }else{

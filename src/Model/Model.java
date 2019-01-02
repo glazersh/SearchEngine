@@ -19,6 +19,7 @@ public class Model extends Observable {
     Map<String, String> citiesToLoad;
     Map<String, String[]> docsFilesToLoad;
     Map<String, String[]> entitesToLoad;
+    Set<String>loadLang;
 
     Set<String>notR = new HashSet<>();
 
@@ -76,9 +77,40 @@ public class Model extends Observable {
         loadDocs(path + "FileDocs");
         loadDict(path + "Dictionary");
         loadCities(path + "CitiesPost");
+        loadLang(path + "Lang");
 
-        dataCollector.setAllDicToLoad(docsFilesToLoad, dictionaryToLoad, citiesToLoad, entitesToLoad);
+        dataCollector.setAllDicToLoad(docsFilesToLoad, dictionaryToLoad, citiesToLoad, entitesToLoad,loadLang);
         dataCollector.setPostPath(path);
+    }
+
+    private void loadLang(String path) {
+        loadLang = new HashSet<>();
+        BufferedReader br = null;
+        FileReader fr = null;
+
+        try {
+            fr = new FileReader(path);
+            br = new BufferedReader(fr);
+            String line;
+
+
+            while ((line = br.readLine()) != null) {
+                loadLang.add(line);
+            }
+
+
+        } catch (IOException e) {
+
+        } finally {
+            try {
+                if (br != null)
+                    br.close();
+
+                if (fr != null)
+                    fr.close();
+            } catch (IOException ex) {
+            }
+        }
     }
 
 
@@ -308,8 +340,6 @@ public class Model extends Observable {
             first = false;
             dataCollector.addID(q[0]);
         }
-        cmd(); // don't forget to remove !!!
-        writeToCSV(); // don't forget to remove !!!
     }
 
     /***
@@ -417,11 +447,7 @@ public class Model extends Observable {
      */
     public String getSemantics(String query){
         StringBuffer bf = new StringBuffer();
-        //String[] wordsInQuery = query.split(" ");
-        //for(String words:wordsInQuery) {
-
             String queryPlus = query.replace(" ", "+");
-
             final String urlString = "https://api.datamuse.com/words?ml=" + queryPlus;
             BufferedReader br = null;
             InputStreamReader isr = null;
@@ -439,7 +465,7 @@ public class Model extends Observable {
                         String[] tmp = word.split(",")[0].split(":");
                         bf.append(tmp[1].substring(1).replace('"', ' '));
                         counter++;
-                        if (counter == 7)
+                        if (counter == 7) // 7
                             break;
 
                     }
@@ -454,119 +480,7 @@ public class Model extends Observable {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        //}
         return query;
-    }
-
-    // don't forget to remove !!!
-    private void cmd() {
-        String[] command = { "cmd" };
-        String path = "D:\\documents\\users\\dorlev\\Downloads\\query"; // write your path here !
-        //String path = "C:\\Users\\USER\\Desktop\\search2018\\post\\query"; // write your path here !
-        Process p;
-        try{
-            p= Runtime.getRuntime().exec(command);
-            new Thread(new SyncPipe(p.getErrorStream(), System.err)).start();
-            new Thread(new SyncPipe(p.getInputStream(), System.out)).start();
-            PrintWriter stdin = new PrintWriter(p.getOutputStream());
-            stdin.println("D:");
-            stdin.println("cd "+path);
-            stdin.println("treceval -q qrels.txt result.txt > output.txt");
-
-            stdin.close();
-            p.waitFor();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void writeToCSV() {
-        String readFromFile="D:\\documents\\users\\dorlev\\Downloads\\query\\output.txt"; // path to output.txt
-        //String readFromFile="C:\\Users\\USER\\Desktop\\search2018\\post\\query\\output.txt"; // path to output.txt
-        String writeToFile = "D:\\documents\\users\\dorlev\\Downloads\\query\\Ans.csv";
-        //String writeToFile = "C:\\Users\\USER\\Desktop\\search2018\\post\\query\\Ans.csv";
-        File fileW = new File(writeToFile);
-        if(fileW.exists())
-            fileW.delete();
-        File file = new File(readFromFile);
-        if(file.exists()){
-            // first read
-            BufferedReader br = null;
-            FileReader fr = null;
-
-            BufferedWriter bw = null;
-            FileWriter fw = null;
-            StringBuilder sb = new StringBuilder();
-
-            try {
-                fr = new FileReader(readFromFile);
-                br = new BufferedReader(fr);
-                fw= new FileWriter(writeToFile);
-                bw = new BufferedWriter(fw);
-                bw.write("ID,Retrieved,Relevant,Rel_ret\n");
-                String line;
-                while ((line = br.readLine()) != null) {
-                    if(line.startsWith("Queryid")){
-                        String ID=line.substring(20);
-                        sb.append(ID);
-                        sb.append(",");
-                        continue;
-                    }
-                    if(line.contains("Retrieved:")){
-                        String Retrieved=line.substring(21);
-                        if(Retrieved.startsWith(" ")){
-                            Retrieved = Retrieved.substring(1);
-                        }
-                        sb.append(Retrieved);
-                        sb.append(",");
-                        continue;
-                    }
-                    if(line.contains("Relevant:")){
-                        String Relevant=line.substring(20);
-                        if(Relevant.startsWith(" ")){
-                            Relevant = Relevant.substring(1);
-                        }
-                        sb.append(Relevant);
-                        sb.append(",");
-                        continue;
-                    }
-                    if(line.contains("Rel_ret:")){
-                        String Rel_ret=line.substring(20);
-                        if(Rel_ret.startsWith(" ")){
-                            Rel_ret = Rel_ret.substring(1);
-                        }
-                        sb.append(Rel_ret);
-                        sb.append("\n");
-                        bw.write(sb.toString());
-                        sb=new StringBuilder();
-
-                    }
-                }
-
-
-
-            } catch (IOException e) {
-
-            } finally {
-                try {
-                    if (br != null)
-                        br.close();
-
-                    if (fr != null)
-                        fr.close();
-
-                    if (bw != null)
-                        bw.close();
-
-                    if (fw != null)
-                        fw.close();
-                } catch (IOException ex) {
-                }
-            }
-        }
     }
 
     public List<DocData> getANS(int value) {
@@ -577,29 +491,5 @@ public class Model extends Observable {
     public void setQueryPathToSave(String queryPathToSave) {
         this.dataCollector.setQueryToSavePath(queryPathToSave);
     }
-
-    class SyncPipe implements Runnable
-    {
-        public SyncPipe(InputStream istrm, OutputStream ostrm) {
-            istrm_ = istrm;
-            ostrm_ = ostrm;
-        }
-        public void run() {
-            try
-            {
-                final byte[] buffer = new byte[1024];
-                for (int length = 0; (length = istrm_.read(buffer)) != -1; )
-                {
-                    ostrm_.write(buffer, 0, length);
-                }
-            }
-            catch (Exception e)
-            {
-                e.printStackTrace();
-            }
-        }
-        private final OutputStream ostrm_;
-        private final InputStream istrm_;
-    }
-
+    
 }

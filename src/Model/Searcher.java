@@ -238,7 +238,7 @@ public class Searcher {
         if(allEntity!=null) {
             int add5Entity = 0;
             for (int i = 0; i < allEntity.length && add5Entity < 5; i++) {
-                if (dictionaryToLoad.containsKey(allEntity[i])) {
+                if (dictionaryToLoad.containsKey(allEntity[i].split(",")[0])) {
                     docData.addToTopEntities(allEntity[i]);
                     add5Entity++;
                 }
