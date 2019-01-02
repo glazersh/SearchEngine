@@ -491,5 +491,5 @@ public class Model extends Observable {
     public void setQueryPathToSave(String queryPathToSave) {
         this.dataCollector.setQueryToSavePath(queryPathToSave);
     }
-    
+
 }
